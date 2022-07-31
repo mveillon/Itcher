@@ -9,7 +9,7 @@ const checkNewBat = (gs: GameState, lastBat: number) => {
 
 test('platoon', () => {
     let gs = new GameState();
-    gs.pitcher = new Pitcher('Luis Castillo', [], 'r');
+    gs.pitcher = new Pitcher('Luis Castillo', 'r');
     gs.lineup = ['l', 'r', 's'];
     expect(gs.pitcherPlatoon()).toBe(false);
     gs.lineSpot++;

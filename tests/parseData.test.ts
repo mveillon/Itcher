@@ -1,4 +1,4 @@
-import { findAllPitchers, trainAllSheets, pitchAbbreviations } from "../src/ml/parseData";
+import { findAllPitchers, trainAllPitches, pitchAbbreviations } from "../src/ml/parseData";
 import { allPitchTypes } from "../src/utils/utilities";
 
 test('pitch types', () => {
@@ -20,5 +20,5 @@ test('pitch types', () => {
 
 test('read data', () => {
     findAllPitchers();
-    trainAllSheets();
+    // trainAllPitches();
 });

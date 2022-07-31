@@ -1,20 +1,18 @@
+export type pitcherJSON = {
+    name: string,
+    pitches: { [key: string]: number },
+    hand: string
+};
+
 export class Pitcher {
     name: string;
-    pitches: string[];
+    pitches: { [key: string]: number }
     hand: string;
-    pitchInds: { [key: string]: number };
-    timesThrown: number[];
 
-    constructor(_name: string, _pitches: string[], _hand: string) {
+    constructor(_name: string, _hand: string) {
         this.name = _name;
-        this.pitches = _pitches;
+        this.pitches = {};
         this.hand = _hand;
-        this.pitchInds = {};
-        this.timesThrown = [];
-        for (let i = 0; i < _pitches.length; i++) {
-            this.pitchInds[_pitches[i]] = i;
-            this.timesThrown.push(0);
-        }
     }
 
     /**
@@ -22,14 +20,18 @@ export class Pitcher {
      * @param obj the raw object
      * @returns an object of type Pitcher
      */
-    static fromObj(obj: { 
-        name: string, 
-        pitches: string[], 
-        timesThrown: number[], 
-        hand: string 
-    }): Pitcher {
-        let res = new Pitcher(obj.name, obj.pitches, obj.hand);
-        res.timesThrown = obj.timesThrown;
+    static fromObj(obj: pitcherJSON): Pitcher {
+        let res = new Pitcher(obj.name, obj.hand);
+        let total = 0;
+        for (const pitch in obj.pitches) {
+            total += obj.pitches[pitch];
+        }
+
+        for (const pitch in obj.pitches) {
+            if (obj.pitches[pitch] / total > 0.05) {
+                res.pitches[pitch] = obj.pitches[pitch];
+            }
+        }
         return res;
     }
 
@@ -38,8 +40,8 @@ export class Pitcher {
      * @returns a copy of this pitcher
      */
     copy(): Pitcher {
-        let res = new Pitcher(this.name, this.pitches, this.hand);
-        res.timesThrown = this.timesThrown;
+        let res = new Pitcher(this.name, this.hand);
+        res.pitches = this.pitches;
         return res;
     }
 }
@@ -52,7 +54,6 @@ const readAllPitchers = (): { [key: string]: Pitcher } => {
     return {
         'Justin Verlander': new Pitcher(
             'Justin Verlander', 
-            ['4-seam', 'slider', 'curveball', 'changeup'],
             'r'
         )
     };

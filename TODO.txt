@@ -6,4 +6,5 @@
 
 - write CLICK_ME.html
 
-- add installation instructions
+- add installation instructions to README
+    relevant command is "npm install" - maybe add shell script or something?
