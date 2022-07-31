@@ -1,0 +1,9 @@
+- write all stubs
+    ml/weights.ts
+    ml/NextPitch.ts
+    ml/parseData.ts
+    baseballLogic/Pitcher.ts
+
+- write CLICK_ME.html
+
+- add installation instructions
