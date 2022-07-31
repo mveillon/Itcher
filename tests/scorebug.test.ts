@@ -142,7 +142,7 @@ test('change pitcher', () => {
     const newName = 'Justin Verlander';
     bug.changePitcher(newName);
     expect(state.pitcher.name).toBe(newName);
-    expect(state.pitcher.hand).toBe('r');
+    expect(state.pitcher.hand).toBe('R');
 
     state.undo();
     expect(state.pitcher.name).toBe(oldName);
@@ -151,7 +151,7 @@ test('change pitcher', () => {
 test('change lineup', () => {
     resetState(false, false);
     const oldLine = state.lineup;
-    const newLine = ['r', 'l', 's'];
+    const newLine = ['R', 'L', 'S'];
     bug.changeLineup(newLine);
     expect(state.lineup).toEqual(newLine);
     state.undo();

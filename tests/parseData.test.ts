@@ -1,6 +1,9 @@
 import { findAllPitchers, trainAllPitches, pitchAbbreviations } from "../src/ml/parseData";
 import { allPitchTypes } from "../src/utils/utilities";
 
+// kinda slow so you don't want it to always be on
+const enableTraining = false; 
+
 test('pitch types', () => {
     for (const p of allPitchTypes) {
         let found = false;
@@ -19,6 +22,8 @@ test('pitch types', () => {
 });
 
 test('read data', () => {
-    findAllPitchers();
-    // trainAllPitches();
+    if (enableTraining) {
+        findAllPitchers();
+        trainAllPitches();
+    }
 });

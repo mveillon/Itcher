@@ -65,7 +65,7 @@ export const changePitcher = (pitcherName: string) => {
  */
 export const changeLineup = (newLineup: string[]) => {
     if (newLineup.length === state.lineup.length) {
-        const allowed = ['r', 'l', 's'];
+        const allowed = ['R', 'L', 'S'];
         let diff = false;
         for (let i = 0; i < newLineup.length; i++) {
             if (!allowed.includes(newLineup[i])) return;

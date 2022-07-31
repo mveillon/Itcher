@@ -9,8 +9,8 @@ const checkNewBat = (gs: GameState, lastBat: number) => {
 
 test('platoon', () => {
     let gs = new GameState();
-    gs.pitcher = new Pitcher('Luis Castillo', 'r');
-    gs.lineup = ['l', 'r', 's'];
+    gs.pitcher = new Pitcher('Luis Castillo', 'R');
+    gs.lineup = ['L', 'R', 'S'];
     expect(gs.pitcherPlatoon()).toBe(false);
     gs.lineSpot++;
     expect(gs.pitcherPlatoon()).toBe(true);
@@ -137,7 +137,7 @@ test('outs', () => {
 test('undo', () => {
     let gs = new GameState();
     gs.undo();
-    gs.lineup = ['l', 'r', 's'];
+    gs.lineup = ['L', 'R', 'S'];
     gs.ball();
     expect(gs.balls).toBe(1);
     gs.undo();
@@ -160,11 +160,11 @@ test('undo', () => {
     expect(gs.bases).toEqual([false, false, false]);
 
     gs.backup();
-    gs.lineup[0] = 'r';
-    expect(gs.lineup).toEqual(['r', 'r', 's']);
+    gs.lineup[0] = 'R';
+    expect(gs.lineup).toEqual(['R', 'R', 'S']);
 
     gs.undo();
-    expect(gs.lineup).toEqual(['l', 'r', 's']);
+    expect(gs.lineup).toEqual(['L', 'R', 'S']);
 
     gs.pitcher.name = 'original name';
     gs.backup();

@@ -153,7 +153,7 @@ export class GameState {
      * @returns if the pitcher has the platoon advantage
      */
     pitcherPlatoon(): boolean {
-        return this.pitcher.hand === this.lineup[this._lineSpot];
+        return this.pitcher.hand === 'S' || this.pitcher.hand === this.lineup[this._lineSpot];
     }
 
     ball() {

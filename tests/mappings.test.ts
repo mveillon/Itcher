@@ -9,8 +9,8 @@ test('state to ind', () => {
                 let gs = new GameState();
                 gs.balls = b;
                 gs.strikes = s;
-                gs.lineup = ['r'];
-                gs.pitcher.hand = p ? 'r' : 'l';
+                gs.lineup = ['R'];
+                gs.pitcher.hand = p ? 'R' : 'L';
                 const i = stateToInd(gs);
                 expect(used.has(i)).toBe(false);
                 used.add(i);

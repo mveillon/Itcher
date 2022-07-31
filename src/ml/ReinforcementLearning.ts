@@ -36,6 +36,14 @@ class ReinforcementLearning {
     readWeights(): weightSet {
         return readJSON(weightPath) as weightSet;
     }
+    
+    /**
+     * Saves the weights for later use without having 
+     * to train everytime
+     */
+    saveWeights() {
+        writeJSON(this.weights, weightPath);
+    }
 
     /**
      * Resets weights.json to its initial values
