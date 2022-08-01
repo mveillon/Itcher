@@ -1,4 +1,56 @@
-.buttons {
+:root {
+   --font: "Optima";
+   --dominant: #181e29;
+   --secondary: #9bb1a0;
+   --accent: #a1c9a7;
+   --other-accent: #21302c;
+}
+
+.header-div {
+    position: relative;
+    text-align: center;
+    color: var(--dominant);
+    background-color: var(--accent);
+    margin-top: -22px;
+    height: 100px;
+    margin-left: -8px;
+    margin-right: -8px;
+}
+
+h1 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    font-family: var(--font);
+    font-size: 50px;
+    color: var(--other-accent);
+}
+
+body {
+    background-color: var(--dominant);
+}
+
+.button-div {
     float: left;
-    width: 50%;
+    width: 40%;
+    text-align: center;
+    transform: translateY(50px);
+}
+
+button {
+    margin: 10px;
+    padding: 10px;
+    width: 80px;
+    height: 60px;
+    background-color: var(--secondary);
+    box-shadow: 4px 4px 10px var(--dominant);
+    font-size: medium;
+    font-family: var(--font);
+}
+
+button:hover {
+    background-color: var(--dominant);
+    color: var(--secondary)
 }
