@@ -115,6 +115,15 @@ export const updateBug = () => {
             const file = state.bases[i] ? 'occupied' : 'empty';
             ($(baseIds[i]) as HTMLImageElement).src = `../../assets/${file}.png`;
         }
+
+        const outIds = [
+            'one-out',
+            'two-out',
+        ];
+        for (let i = 0; i < outIds.length; i++) {
+            const file = state.outs > i ? 'out' : 'no-out';
+            ($(outIds[i]) as HTMLImageElement).src = `../../assets/${file}.png`;
+        }
     }
 }
 
@@ -123,11 +132,19 @@ const updateBases = (baseInd: number) => {
     updateBug();
 }
 
+const updateOut = (outInd: number) => {
+    toggleOuts(outInd);
+    updateBug();
+}
+
 export const bindToggles = () => {
     if (!usingNode()) {
         $('first-base').onclick = () => updateBases(0);
         $('second-base').onclick = () => updateBases(1);
         $('third-base').onclick = () => updateBases(2);
+        $('one-out').onclick = () => updateOut(0);
+        $('two-out').onclick = () => updateOut(1);
+        $('three-out').onclick = () => updateOut(2);
     }
 }
 
