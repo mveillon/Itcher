@@ -1,4 +1,32 @@
-import { readFileSync, writeFileSync} from "fs";
+let readFile: (path: string, encoding?: string) => string;
+let writeFile: (path: string, data: string) => void;
+
+if (typeof process !== 'undefined' &&
+    process.release.name.search(/node|io.js/) !== -1) {
+    // running via node
+    let fs = eval('require("fs")');
+    readFile = fs.readFileSync;
+    writeFile = fs.writeFileSync;
+} else {
+    readFile = (path: string, encoding?: string): string => {
+        let res = '';
+        (async () => {
+            await fetch(path)
+                .then((response) => response.text())
+                .then((data) => res = data)
+        })();
+        return res;
+    }
+
+    writeFile = (path: string, data: string) => {
+        (async() => {
+            await fetch(path, {
+                method: 'POST',
+                body: data
+            })
+        })();
+    }
+}
 
 export type sheetRow = { [key: string]: string };
 export type sheet = sheetRow[];
@@ -10,7 +38,7 @@ export type sheet = sheetRow[];
  * @returns a 2D string array
  */
  export const readSpreadSheet = (path: string, delimiter: string = ','): sheet => {
-    let data = readFileSync(path, 'utf8');
+    let data = readFile(path, 'utf8');
     const firstNewLine = data.indexOf('\n');
     const headers = data.slice(0, firstNewLine).split(delimiter);
     const rows = data.slice(firstNewLine + 1).split('\n');
@@ -31,14 +59,7 @@ export type sheet = sheetRow[];
  * @returns an object with the same data
  */
  export const readJSON = (path: string): Object => {
-    return JSON.parse(readFileSync(path, 'utf8'));
-    // let res = {};
-    // (async () => {
-    //     await fetch(path)
-    //     .then((response) => response.json())
-    //     .then((data) => res = data);
-    // })();
-    // return res;
+    return JSON.parse(readFile(path, 'utf8'));
 }
 
 /**
@@ -47,7 +68,7 @@ export type sheet = sheetRow[];
  * @param path where to save the data to
  */
 export const writeJSON = (obj: Object, path: string) => {
-    writeFileSync(path, JSON.stringify(obj));
+    writeFile(path, JSON.stringify(obj));
     // (async () => {
     //     await fetch(path, {
     //         method: 'POST',
@@ -55,7 +76,6 @@ export const writeJSON = (obj: Object, path: string) => {
     //     })
     // })();
 }
-
 
 export const weightPath = "./src/ml/weights.json";
 export const pitcherPath = "./src/baseballLogic/pitchers.json";

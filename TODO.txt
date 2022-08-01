@@ -1,4 +1,6 @@
 - package hell
+    basically as far as I'm aware, it's impossible to make the code work for
+    jest/node (unit testing) and in the browser
 
 - write CLICK_ME.html
 

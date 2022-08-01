@@ -2,7 +2,7 @@
    "compilerOptions":{ 
       "target":"es6",
       "moduleResolution":"node",
-      "module":"commonjs",
+      "module":"es6",
       "declaration":false,
       "noLib":false,
       "emitDecoratorMetadata":true,
@@ -17,7 +17,8 @@
       "outDir":"dist/",
       "baseUrl":"src/",
       "listFiles":false,
-      "noEmitHelpers":true,
+      "noEmitHelpers":false,
+      "esModuleInterop": true
    },
    "include":[ 
       "src/**/*"
