@@ -1,4 +1,4 @@
-import { pitcherPath, readJSON } from "../utils/files";
+import { pitcherPath, readJSON } from "../utils/files.js";
 
 export type pitcherJSON = {
     name: string,

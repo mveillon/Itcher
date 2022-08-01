@@ -1,7 +1,7 @@
-import { learner } from "./ReinforcementLearning";
-import { stateToInd, pitchToInd } from "./mappings";
-import { state } from "../baseballLogic/GameState";
-import { choice } from "../utils/random";
+import { learner } from "./ReinforcementLearning.js";
+import { stateToInd, pitchToInd } from "./mappings.js";
+import { state } from "../baseballLogic/GameState.js";
+import { choice } from "../utils/random.js";
 
 /**
  * Given the current game state, computes the next pitch to throw

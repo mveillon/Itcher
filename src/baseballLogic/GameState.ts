@@ -1,5 +1,5 @@
-import { Pitcher } from "./Pitcher";
-import { List } from "../utils/LinkedList";
+import { Pitcher } from "./Pitcher.js";
+import { List } from "../utils/LinkedList.js";
 
 export class GameState {
     private _outs: number;

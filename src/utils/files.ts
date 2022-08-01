@@ -13,7 +13,12 @@ if (typeof process !== 'undefined' &&
         (async () => {
             await fetch(path)
                 .then((response) => response.text())
-                .then((data) => res = data)
+                .then((data) => {
+                    res = data;
+                })
+                .catch(error => {
+                    throw new Error(error);
+                });
         })();
         return res;
     }

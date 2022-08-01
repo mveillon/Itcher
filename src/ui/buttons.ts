@@ -1,4 +1,4 @@
-import { state } from "../baseballLogic/GameState";
+import { state } from "../baseballLogic/GameState.js";
 
 export const ball = () => {
     state.ball();

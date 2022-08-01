@@ -1,8 +1,8 @@
-import { learner } from "./ReinforcementLearning";
-import { readSpreadSheet, sheetRow, dataPaths, pitcherPath, writeJSON } from "../utils/files";
-import { Pitcher } from "../baseballLogic/Pitcher";
-import { state } from "../baseballLogic/GameState";
-import { allPitchers } from "../baseballLogic/Pitcher";
+import { learner } from "./ReinforcementLearning.js";
+import { readSpreadSheet, sheetRow, dataPaths, pitcherPath, writeJSON } from "../utils/files.js";
+import { Pitcher } from "../baseballLogic/Pitcher.js";
+import { state } from "../baseballLogic/GameState.js";
+import { allPitchers } from "../baseballLogic/Pitcher.js";
 
 let idToEvent = new Map<number, string>();
 let abToPitcher = new Map<number, number>();

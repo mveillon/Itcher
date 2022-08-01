@@ -1,6 +1,6 @@
-import { weightPath, readJSON, writeJSON } from "../utils/files";
-import { numStates, numActions, stateToInd, pitchToInd } from "./mappings";
-import { state } from "../baseballLogic/GameState";
+import { weightPath, readJSON, writeJSON } from "../utils/files.js";
+import { numStates, numActions, stateToInd, pitchToInd } from "./mappings.js";
+import { state } from "../baseballLogic/GameState.js";
 
 export type weightSet = {
     q: number[][], 
