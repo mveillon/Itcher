@@ -1,7 +1,7 @@
-import * as scorebug from "./ui/scorebug.js";
 import { bindButtons } from "./ui/buttons.js";
-import { usingNode } from "./utils/usingNode.js";
+import { bindToggles } from "./ui/scorebug.js";
 
 export const main = () => {
     bindButtons();
+    bindToggles();
 }

@@ -54,3 +54,17 @@ button:hover {
     background-color: var(--dominant);
     color: var(--secondary)
 }
+
+.bases {
+    float: right;
+    margin: 60px 300px;
+    transform: rotate(45deg);
+}
+
+#third-base {
+    transform: translate(35px, 40px);
+}
+
+#first-base {
+    transform: translateX(3px);
+}

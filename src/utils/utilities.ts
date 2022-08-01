@@ -1,3 +1,5 @@
+import { usingNode } from "./usingNode.js";
+
 /**
  * All of the pitch types that this code recognizes
  */
@@ -33,3 +35,13 @@ export const dot = (x: number[], y: number[]): number => {
     return res;
 }
 
+export let $: (id: string) => HTMLElement;
+if (usingNode()) {
+    $ = (id: string): HTMLElement => {
+        throw new Error('Cannot use $ when running via node!');
+    }
+} else {
+    $ = (id: string): HTMLElement => {
+        return document.getElementById(id);
+    }
+}

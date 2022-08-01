@@ -1,6 +1,8 @@
 import { state } from "../baseballLogic/GameState.js";
 import { allPitchers } from "../baseballLogic/Pitcher.js";
 import { learner } from "../ml/ReinforcementLearning.js";
+import { usingNode } from "../utils/usingNode.js";
+import { $ } from "../utils/utilities.js";
 
 /**
  * Toggles whether the base is occupied or not
@@ -100,5 +102,32 @@ export const changeLineSpot = (newSpot: number) => {
  */
 export const updateNext = () => {
 
+}
+
+export const updateBug = () => {
+    if (!usingNode()) {
+        const baseIds = [
+            'first-base',
+            'second-base',
+            'third-base'
+        ];
+        for (let i = 0; i < baseIds.length; i++) {
+            const file = state.bases[i] ? 'occupied' : 'empty';
+            ($(baseIds[i]) as HTMLImageElement).src = `../../assets/${file}.png`;
+        }
+    }
+}
+
+const updateBases = (baseInd: number) => {
+    toggleBase(baseInd);
+    updateBug();
+}
+
+export const bindToggles = () => {
+    if (!usingNode()) {
+        $('first-base').onclick = () => updateBases(0);
+        $('second-base').onclick = () => updateBases(1);
+        $('third-base').onclick = () => updateBases(2);
+    }
 }
 
