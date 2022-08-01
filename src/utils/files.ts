@@ -1,26 +1,26 @@
+/* AVERT YOUR EYES - THIS IS THE HELL REQUIRED TO READ A FILE IN JS */
 let readFile: (path: string, encoding?: string) => string;
 let writeFile: (path: string, data: string) => void;
 
 if (typeof process !== 'undefined' &&
     process.release.name.search(/node|io.js/) !== -1) {
-    // running via node
+    // running via node - we need it to work both ways for testing
     let fs = eval('require("fs")');
     readFile = fs.readFileSync;
     writeFile = fs.writeFileSync;
 } else {
+    // running via the browser
     readFile = (path: string, encoding?: string): string => {
-        let res = '';
-        (async () => {
-            await fetch(path)
-                .then((response) => response.text())
-                .then((data) => {
-                    res = data;
-                })
-                .catch(error => {
-                    throw new Error(error);
-                });
-        })();
-        return res;
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", path, false);
+        xhr.send(null);
+        if (xhr.status === 0 || xhr.status === 200) {
+            return xhr.responseText;
+        } else {
+            throw new Error(`
+                xhr failed with status ${xhr.status}
+            `)
+        }
     }
 
     writeFile = (path: string, data: string) => {
@@ -32,6 +32,7 @@ if (typeof process !== 'undefined' &&
         })();
     }
 }
+/* Ok you can look now */
 
 export type sheetRow = { [key: string]: string };
 export type sheet = sheetRow[];
@@ -74,12 +75,6 @@ export type sheet = sheetRow[];
  */
 export const writeJSON = (obj: Object, path: string) => {
     writeFile(path, JSON.stringify(obj));
-    // (async () => {
-    //     await fetch(path, {
-    //         method: 'POST',
-    //         body: JSON.stringify(obj)
-    //     })
-    // })();
 }
 
 export const weightPath = "./src/ml/weights.json";
