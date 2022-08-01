@@ -1,8 +1,4 @@
-- package hell
-    basically as far as I'm aware, it's impossible to make the code work for
-    jest/node (unit testing) and in the browser
-
-- write CLICK_ME.html
+- write index.html
 
 - add installation and running instructions to README
     relevant command is "npm install" - maybe add shell script or something?

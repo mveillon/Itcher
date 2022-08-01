@@ -1,4 +1,5 @@
 import { state } from "../baseballLogic/GameState.js";
+import { usingNode } from "../utils/usingNode.js";
 
 export const ball = () => {
     state.ball();
@@ -56,3 +57,26 @@ export const undo = () => {
     state.undo();
 }
 
+export const bindButtons = () => {
+    if (!usingNode()) {
+        const buttonFuncs: { [key: string]: () => void } = {
+            'ball': ball,
+            'strike': strike,
+            'foul': foul,
+            '1b': single,
+            '2b': double,
+            '3b': triple,
+            'hr': homeRun,
+            'error': error,
+            'go': groundout,
+            'lo': lineout,
+            'fo': flyout,
+            'dp': doublePlay,
+            'undo': undo,
+        }
+
+        for (const id in buttonFuncs) {
+            document.getElementById(id).onclick = buttonFuncs[id];
+        }
+    }
+}

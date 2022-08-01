@@ -1,9 +1,9 @@
 /* AVERT YOUR EYES - THIS IS THE HELL REQUIRED TO READ A FILE IN JS */
 let readFile: (path: string, encoding?: string) => string;
 let writeFile: (path: string, data: string) => void;
+import { usingNode } from "./usingNode.js";
 
-if (typeof process !== 'undefined' &&
-    process.release.name.search(/node|io.js/) !== -1) {
+if (usingNode()) {
     // running via node - we need it to work both ways for testing
     let fs = eval('require("fs")');
     readFile = fs.readFileSync;
@@ -24,12 +24,10 @@ if (typeof process !== 'undefined' &&
     }
 
     writeFile = (path: string, data: string) => {
-        (async() => {
-            await fetch(path, {
-                method: 'POST',
-                body: data
-            })
-        })();
+        fetch(path, {
+            method: 'POST',
+            body: data
+        });
     }
 }
 /* Ok you can look now */

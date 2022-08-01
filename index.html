@@ -4,11 +4,32 @@
         <meta charset="utf-8" />
         <title>ML Pitch Chooser</title>
         <link rel="stylesheet" type="text/css" href="./src/ui/styling.css">
+
+        <script type="module">
+            let exports = {};
+            import { main } from "./dist/main.js";
+            window.main = main;
+        </script>
     </head>
 
-    <body>
+    <body onload="main()">
         <div class="buttons">
-            
+            <button id="ball">Ball</button>
+            <button id="strike">Strike</button>
+            <button id="foul">Foul</button>
+
+            <button id="1b">1b</button>
+            <button id="2b">2b</button>
+            <button id="3b">3b</button>
+            <button id="hr">HR</button>
+
+            <button id="error">Error</button>
+            <button id="go">GO</button>
+            <button id="lo">LO</button>
+            <button id="fo">FO</button>
+
+            <button id="dp">DP</button>
+            <button id="undo">Undo</button>
         </div>
 
         <div class="scorebug">
@@ -22,9 +43,10 @@
         <div class="next-pitch">
 
         </div>
-
-        <script>let exports = {};</script>
         
+        <script type="module" src="./dist/main.js"></script>
+
+        <script type="module" src="./dist/utils/usingNode.js"></script>
         <script type="module" src="./dist/utils/files.js"></script>
         <script type="module" src="./dist/utils/LinkedList.js"></script>
         <script type="module" src="./dist/utils/random.js"></script>
