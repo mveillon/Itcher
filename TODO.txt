@@ -1,7 +1,7 @@
-- write all stubs
-    ml/NextPitch.ts
+- package hell
 
 - write CLICK_ME.html
 
-- add installation instructions to README
+- add installation and running instructions to README
     relevant command is "npm install" - maybe add shell script or something?
+    

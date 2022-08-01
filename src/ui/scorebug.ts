@@ -1,5 +1,6 @@
 import { state } from "../baseballLogic/GameState";
 import { allPitchers } from "../baseballLogic/Pitcher";
+import { learner } from "../ml/ReinforcementLearning";
 
 /**
  * Toggles whether the base is occupied or not

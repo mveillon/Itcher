@@ -1,4 +1,4 @@
-import { readJSON, pitcherPath } from "../utils/files";
+import { pitcherPath, readJSON } from "../utils/files";
 
 export type pitcherJSON = {
     name: string,
@@ -52,7 +52,7 @@ export class Pitcher {
  * Reads pitchers.json and returns all pitchers in it
  * @returns all of the pitchers in the dataset
  */
-const readAllPitchers = (): { [key: string]: Pitcher } => {
+const readAllPitchers = (): { [key: string]: Pitcher; } => {
     const objs = readJSON(pitcherPath) as { [key: string]: pitcherJSON };
     let res: { [key: string]: Pitcher } = {};
     for (const k in objs) {

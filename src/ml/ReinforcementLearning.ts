@@ -1,4 +1,4 @@
-import { readJSON, writeJSON, weightPath } from "../utils/files";
+import { weightPath, readJSON, writeJSON } from "../utils/files";
 import { numStates, numActions, stateToInd, pitchToInd } from "./mappings";
 import { state } from "../baseballLogic/GameState";
 

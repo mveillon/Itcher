@@ -1,5 +1,5 @@
 import { learner } from "./ReinforcementLearning";
-import { readSpreadSheet, sheetRow, dataPaths, writeJSON, pitcherPath } from "../utils/files";
+import { readSpreadSheet, sheetRow, dataPaths, pitcherPath, writeJSON } from "../utils/files";
 import { Pitcher } from "../baseballLogic/Pitcher";
 import { state } from "../baseballLogic/GameState";
 import { allPitchers } from "../baseballLogic/Pitcher";
