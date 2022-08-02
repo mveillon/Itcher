@@ -72,5 +72,4 @@ test('overall accuracy', () => {
         expect(p).toBeLessThanOrEqual(maxReward);
     }
     expect(err).toBeLessThan(1);
-    console.log(err);
 });

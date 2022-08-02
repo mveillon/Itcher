@@ -1,6 +1,7 @@
 import { MachineLearning } from "./MachineLearning.js";
 import { KNN } from "./KNN.js";
 import { trainLearner } from "../trainTest.js";
+import { Regression } from "./Regression.js";
 
 /**
  * Trains the machine learning network that will predict
@@ -10,7 +11,8 @@ import { trainLearner } from "../trainTest.js";
  * @returns a machine learning model for selecting pitches
  */
 export const getLearner = (): MachineLearning => {
-    let res = new KNN(8);
+    // let res = new KNN(8);
+    let res = new Regression(2);
     trainLearner(res);
     return res;
 }

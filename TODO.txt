@@ -1,4 +1,4 @@
-- pass all tests
+- better accuracy, possibly with different models
 
 - write index.html
 

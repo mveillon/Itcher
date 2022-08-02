@@ -1,0 +1,5 @@
+KNN: 
+    mse ~ 0.75
+
+Regression:
+    mse === 0.62

@@ -39,11 +39,13 @@ export const getFeature = (pitch: string): number[] => {
         pType.push(+(pitchAbbreviations[p] === pitch));
     }
 
+    let freq = state.pitcher.pitches[pitch];
+    if (typeof freq === 'undefined') freq = 0.025;
     return [
         state.balls,
         state.strikes,
         Number(state.pitcherPlatoon()),
-        state.pitcher.pitches[pitchAbbreviations[pitch]],
+        freq,
         ...pType
     ];
 }

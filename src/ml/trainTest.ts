@@ -1,4 +1,4 @@
-import { aidToPitcher, getPlayType, abToPlat, idToEvent } from "./parseData.js";
+import { aidToPitcher, getPlayType, abToPlat, idToEvent, pitchAbbreviations } from "./parseData.js";
 import { MachineLearning } from "./models/MachineLearning.js";
 import { readAllPitchers, Pitcher } from "../baseballLogic/Pitcher.js";
 import { dataPaths, readSpreadSheet, sheet, sheetRow } from "../utils/files.js";
@@ -73,7 +73,7 @@ export const learnerMSE = (learner: MachineLearning): [number, number[]] => {
         throw new Error(`Undefined event with result ${result} and aid ${aid}`);
     }
 
-    state.pitcher = aidToPitcher(aid, allPitchers);
+    state.pitcher = aidToPitcher(aid, allPitchers);    
     if (typeof state.pitcher === 'undefined') {
         return [[], 0];
     }
@@ -92,8 +92,8 @@ export const learnerMSE = (learner: MachineLearning): [number, number[]] => {
     state.balls = parseInt(play['b_count']);
     state.strikes = parseInt(play['s_count']);
     state.outs = parseInt(play['outs']);
-    const pitch = play['pitch_type'];
 
+    const pitch = pitchAbbreviations[play['pitch_type']];
     result = getPlayType(result, event);
     const target = rewards[result];
     const features = getFeature(pitch);

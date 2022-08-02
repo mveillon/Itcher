@@ -51,6 +51,4 @@ def main(splits: List[float] = [0.5, 0.3, 0.2]):
         )
 
 if __name__ == '__main__':
-    # splits are to make testing faster
-    # change back to default before finding actual MSE
-    main(splits = [0.1, 0.1, 0.8])
+    main()
