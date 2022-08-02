@@ -75,12 +75,14 @@ export const writeJSON = (obj: Object, path: string) => {
     writeFile(path, JSON.stringify(obj));
 }
 
-export const weightPath = "./src/ml/weights.json";
 export const pitcherPath = "./src/baseballLogic/pitchers.json";
 
 const dataRoot = "./src/ml/data/";
-export const dataPaths: { [key: string]: string} = {
-    atBats: dataRoot + "2019_atbats.csv",
-    pitches: dataRoot + "2019_pitches.csv",
-    playerNames: dataRoot + "player_names.csv"
+export const dataPaths: { [key: string]: string } = {
+    atBats: dataRoot + "2019_atbats.ignore.csv",
+    pitches: dataRoot + "2019_pitches.ignore.csv",
+    playerNames: dataRoot + "player_names.ignore.csv",
+    train: dataRoot + "train.csv",
+    valid: dataRoot + "valid.csv",
+    test: dataRoot + "test.csv",
 }

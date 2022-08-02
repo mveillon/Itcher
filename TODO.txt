@@ -1,3 +1,5 @@
+- trainLearner isn't being called
+
 - write index.html
 
 - add installation and running instructions to README

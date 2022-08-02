@@ -1,5 +1,5 @@
-import { learner } from "./ReinforcementLearning.js";
-import { stateToInd, pitchToInd } from "./mappings.js";
+import { learner } from "./KNN.js";
+import { getFeature } from "./mappings.js";
 import { state } from "../baseballLogic/GameState.js";
 import { choice } from "../utils/random.js";
 
@@ -10,49 +10,13 @@ import { choice } from "../utils/random.js";
  * @returns what pitch to throw
  */
 export const nextPitch = (): string => {
-    const ws = getWeights();
-    if (ws.length === 0) {
-        throw new Error(
-            `Empty pitch list for ${state.pitcher.name} (${state.pitcher.pitches})`
-        );
+    let rewards: number[] = [];
+    const pitches = Object.keys(state.pitcher.pitches);
+    for (const p of pitches) {
+        rewards.push(learner.predict([getFeature(p)])[0]);
+        if (rewards.length > 1) {
+            rewards[rewards.length - 1] += rewards[rewards.length - 2];
+        }
     }
-    const pitchNames = Object.keys(state.pitcher.pitches);
-    const inds: number[] = [];
-    for (let i = 0; i < ws.length; i++) {
-        inds.push(i);
-    }
-    return pitchNames[choice(inds, ws)];
+    return choice(pitches, rewards);
 }
-
-/**
- * Uses the current state to compute the weights for each pitch
- * @returns a weight for each pitch the current pitcher throws
- */
-const getWeights = (): number[] => {
-    const q = learner.weights.q[stateToInd(state)];
-    const canThrow = state.pitcher.pitches;
-    const pitchNames = Object.keys(canThrow); // to guarantee iteration order
-    const relevant: number[] = [];
-    let total = 0;
-
-    for (const pitch in pitchNames) {
-        relevant.push(q[pitchToInd[pitch]]);
-        total += canThrow[pitch];
-    }
-
-    const mean = total / relevant.length;
-    let variance = 0;
-    for (const pitch in pitchNames) {
-        variance += Math.pow(canThrow[pitch] - mean, 2) / relevant.length;
-    }
-    const stdDev = Math.sqrt(variance);
-
-    let ind = 0;
-    for (const pitch in pitchNames) {
-        const z = (canThrow[pitch] - mean) / stdDev;
-        relevant[ind++] *= Math.sqrt(z);
-    }
-
-    return relevant;
-}
-

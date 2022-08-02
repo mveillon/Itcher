@@ -1,5 +1,6 @@
-import { GameState } from "../baseballLogic/GameState.js";
+import { GameState, state } from "../baseballLogic/GameState.js";
 import { dot, allPitchTypes } from "../utils/utilities.js";
+import { pitchAbbreviations } from "./parseData.js";
 
 const maxes = [
     4, // max number of balls
@@ -15,16 +16,36 @@ for (let i = 0; i < maxes.length; i++) {
 /**
  * Maps the current game state to the index of the state 
  * within the q and n matrices
- * @param state the current game state
+ * @param theState the current game state
  * @returns the corresponding column withing q and n
  */
-export const stateToInd = (state: GameState): number => {
+export const stateToInd = (theState: GameState): number => {
     const factors = [
+        theState.balls,
+        theState.strikes,
+        Number(theState.pitcherPlatoon()),
+    ];
+    return dot(cumulative, factors);
+}
+
+/**
+ * Returns a feature array for the given state
+ * @param pitch what pitch is being thrown
+ * @returns the corresponding feature array
+ */
+export const getFeature = (pitch: string): number[] => {
+    let pType: number[] = [];
+    for (const p in pitchAbbreviations) {
+        pType.push(+(pitchAbbreviations[p] === pitch));
+    }
+
+    return [
         state.balls,
         state.strikes,
         Number(state.pitcherPlatoon()),
+        state.pitcher.pitches[pitchAbbreviations[pitch]],
+        ...pType
     ];
-    return dot(cumulative, factors);
 }
 
 /**

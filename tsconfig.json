@@ -19,7 +19,8 @@
       "listFiles":false,
       "noEmitHelpers":false,
       "esModuleInterop": true,
-      "allowJs":true
+      "allowJs":true,
+      "skipLibCheck": true
    },
    "include":[ 
       "src/**/*"

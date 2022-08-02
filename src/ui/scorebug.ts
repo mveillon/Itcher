@@ -1,6 +1,5 @@
 import { state } from "../baseballLogic/GameState.js";
 import { allPitchers } from "../baseballLogic/Pitcher.js";
-import { learner } from "../ml/ReinforcementLearning.js";
 import { usingNode } from "../utils/usingNode.js";
 import { $ } from "../utils/utilities.js";
 
@@ -25,13 +24,7 @@ export const toggleOuts = (outInd: number) => {
         }
         state.outs = 0;
     } else {
-        if (outInd >= state.outs) {
-            state.outs = outInd + 1;
-        } else if (outInd === 0) {
-            state.outs = 0;
-        } else {
-            state.outs = 1;
-        }
+        state.outs = outInd + +(outInd >= state.outs);
     }
 }
 

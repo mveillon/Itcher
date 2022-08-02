@@ -24,13 +24,9 @@ export class Pitcher {
      */
     static fromObj(obj: pitcherJSON): Pitcher {
         let res = new Pitcher(obj.name, obj.hand);
-        let total = 0;
-        for (const pitch in obj.pitches) {
-            total += obj.pitches[pitch];
-        }
 
         for (const pitch in obj.pitches) {
-            if (obj.pitches[pitch] / total > 0.05) {
+            if (obj.pitches[pitch] > 0.05) {
                 res.pitches[pitch] = obj.pitches[pitch];
             }
         }

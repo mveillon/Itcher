@@ -1,4 +1,5 @@
-import { findAllPitchers, trainAllPitches, pitchAbbreviations } from "../src/ml/parseData";
+import { learner } from "../src/ml/KNN";
+import { pitchAbbreviations, learnerMSE } from "../src/ml/parseData";
 import { allPitchTypes } from "../src/utils/utilities";
 
 const training = true;
@@ -22,7 +23,6 @@ test('pitch types', () => {
 
 test('read data', () => {
     if (training) {
-        findAllPitchers();
-        trainAllPitches();
+        console.log(learnerMSE(learner));
     }
 });
