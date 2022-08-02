@@ -44,11 +44,13 @@ export class Pitcher {
     }
 }
 
+import { findAllPitchers } from "../ml/parseData.js";
 /**
  * Reads pitchers.json and returns all pitchers in it
  * @returns all of the pitchers in the dataset
  */
-const readAllPitchers = (): { [key: string]: Pitcher; } => {
+export const readAllPitchers = (): { [key: string]: Pitcher; } => {
+    findAllPitchers();
     const objs = readJSON(pitcherPath) as { [key: string]: pitcherJSON };
     let res: { [key: string]: Pitcher } = {};
     for (const k in objs) {
@@ -56,5 +58,3 @@ const readAllPitchers = (): { [key: string]: Pitcher; } => {
     }
     return res;
 }
-
-export const allPitchers = readAllPitchers();

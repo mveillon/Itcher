@@ -14,7 +14,7 @@ test('state to ind', () => {
                 const i = stateToInd(gs);
                 expect(used.has(i)).toBe(false);
                 used.add(i);
-                expect(i).toBeLessThan(numStates);
+                expect(i).toBeLessThan(numStates());
             }
         }
     }
@@ -22,11 +22,12 @@ test('state to ind', () => {
 
 test('pitch to ind', () => {
     let used = new Set<number>();
-    for (const p in pitchToInd) {
-        const i = pitchToInd[p];
+    const inds = pitchToInd();
+    for (const p in inds) {
+        const i = inds[p];
         expect(used.has(i)).toBe(false);
         used.add(i);
-        expect(i).toBeLessThan(numActions)
+        expect(i).toBeLessThan(numActions())
     }
 });
 

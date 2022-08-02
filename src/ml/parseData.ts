@@ -1,28 +1,28 @@
-import { readSpreadSheet, sheetRow, dataPaths, pitcherPath, writeJSON } from "../utils/files.js";
+import { readSpreadSheet, dataPaths, pitcherPath, writeJSON } from "../utils/files.js";
 import { Pitcher } from "../baseballLogic/Pitcher.js";
 import { state } from "../baseballLogic/GameState.js";
-import { allPitchers } from "../baseballLogic/Pitcher.js";
-import { rewards } from "./rewards.js"
-import { dispatch } from "../baseballLogic/dispatch.js";
-import { getFeature } from "./mappings.js";
-import { usingNode } from "../utils/usingNode.js";
-import { MachineLearning } from "./MachineLearning.js";
 
-let idToEvent = new Map<number, string>();
+export let idToEvent = new Map<number, string>();
+export let abToPlat = new Map<number, boolean>();
 let abToPitcher = new Map<number, number>();
 let idToName = new Map<number, string>();
-let abToPlat = new Map<number, boolean>();
 
 /**
  * Returns the pitcher of a given at bat
  * @param aid the at bat id
  * @returns the pitcher object
  */
-const aidToPitcher = (aid: number): Pitcher => {
+export const aidToPitcher = (aid: number, allPitchers: { [key: string]: Pitcher }): Pitcher => {
     return allPitchers[idToName.get(abToPitcher.get(aid))];
 }
 
-const getPlayType = (result: string, event: string): string => {
+/**
+ * Returns a key into rewards based on the play type
+ * @param result the result from the pitches sheet
+ * @param event the event from the at bat spreadsheet
+ * @returns the play type as a key into rewards
+ */
+export const getPlayType = (result: string, event: string): string => {
     result = playTypes[result];
     const outTypes = new Set([
         'Flyout', 
@@ -81,47 +81,6 @@ const getPlayType = (result: string, event: string): string => {
 }
 
 /**
- * Extracts the set of features and the target from one row
- * @param play one row of data
- * @returns the features of that row and the target
- */
-export const extractFeaturesTargets = (play: sheetRow): [number[], number] => {
-    const aid = parseInt(play['ab_id']);
-    let result = play['code'];
-    let event = idToEvent.get(aid);
-    if (isNaN(aid)) {
-        return [[], 0];
-    } 
-    if (typeof result === 'undefined') {
-        throw new Error(`Undefined result with event ${event} and aid ${aid}`);
-    }
-    if (typeof event === 'undefined') {
-        throw new Error(`Undefined event with result ${result} and aid ${aid}`);
-    }
-
-    state.pitcher = aidToPitcher(aid);
-    state.bases = [
-        !!parseInt(play['on_1b']),
-        !!parseInt(play['on_2b']),
-        !!parseInt(play['on_3b'])
-    ];
-    state.lineSpot = 0;
-    if (abToPlat.get(aid)) {
-        state.lineup = [state.pitcher.hand];
-    } else {
-        state.lineup = ['Z'];
-    }
-    const pitch = play['pitch_type'];
-
-    result = getPlayType(result, event);
-    const target = rewards[result];
-    const features = getFeature(pitch);
-    
-    dispatch(result);
-    return [features, target];
-}
-
-/**
  * Goes through the data and records all pitchers in it
  */
 export const findAllPitchers = () => {
@@ -157,6 +116,9 @@ export const findAllPitchers = () => {
     for (const p of pitches) {
         const pid = abToPitcher.get(parseInt(p['ab_id']));
         const playerName = idToName.get(pid);
+        if (typeof playerName === 'undefined') {
+            continue;
+        }
 
         if (!(playerName in pitchers)) {
             pitchers[playerName] = new Pitcher(playerName, idToHand.get(pid));
@@ -184,51 +146,6 @@ export const findAllPitchers = () => {
     }
 
     writeJSON(pitchers, pitcherPath);    
-}
-
-/**
- * Trains the learner on the appropriate dataset
- */
-export const trainLearner = (learner: MachineLearning) => {
-    findAllPitchers();
-    const trainData = usingNode() ? dataPaths.train : dataPaths.pitches;
-    const allData = readSpreadSheet(trainData);
-    let features: number[][] = [];
-    let targets: number[] = [];
-
-    for (const row of allData) {
-        const [f, t] = extractFeaturesTargets(row);
-        if (f.length === 0) continue;
-        features.push(f);
-        targets.push(t);
-    }
-
-    learner.fit(features, targets);
-}
-
-/**
- * Returns the mean squared error of learner on the validation set
- * @returns the mse
- */
-export const learnerMSE = (learner: MachineLearning): number => {
-    const validData = readSpreadSheet(dataPaths.valid);
-    let features: number[][] = [];
-    let targets: number[] = [];
-
-    for (const row of validData) {
-        const [f, t] = extractFeaturesTargets(row);
-        if (f.length === 0) continue;
-        features.push(f);
-        targets.push(t);
-    }
-
-    const preds = learner.predict(features);
-    let mse = 0;
-    for (let i = 0; i < preds.length; i++) {
-        mse += Math.pow(preds[i] - targets[i], 2);
-    }
-
-    return mse;
 }
 
 export const pitchAbbreviations: { [key: string]: string } = {

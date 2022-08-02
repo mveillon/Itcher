@@ -1,8 +1,5 @@
-import { learner } from "../src/ml/KNN";
-import { pitchAbbreviations, learnerMSE } from "../src/ml/parseData";
+import { pitchAbbreviations } from "../src/ml/parseData";
 import { allPitchTypes } from "../src/utils/utilities";
-
-const training = true;
 
 test('pitch types', () => {
     for (const p of allPitchTypes) {
@@ -18,11 +15,5 @@ test('pitch types', () => {
 
     for (const abb in pitchAbbreviations) {
         expect(allPitchTypes.includes(pitchAbbreviations[abb]));
-    }
-});
-
-test('read data', () => {
-    if (training) {
-        console.log(learnerMSE(learner));
     }
 });

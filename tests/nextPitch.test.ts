@@ -1,11 +1,13 @@
 import { nextPitch } from "../src/ml/nextPitch";
 import { state, resetState } from "../src/baseballLogic/GameState";
-import { allPitchers } from "../src/baseballLogic/Pitcher";
+import { readAllPitchers } from "../src/baseballLogic/Pitcher";
+import { getLearner } from "../src/ml/models/getLearner";
 
 test('next pitch', () => {
-    resetState();
+    const learner = getLearner();
+    resetState(false);
     state.lineup = ['R'];
-    const pitcher = allPitchers['Justin Verlander'];
+    const pitcher = readAllPitchers()['Justin Verlander'];
     state.pitcher = pitcher;
     for (let b = 0; b < 4; b++) {
         for (let s = 0; s < 3; s++) {
@@ -13,7 +15,14 @@ test('next pitch', () => {
                 state.balls = b;
                 state.strikes = s;
                 state.lineup[0] = p ? 'R' : 'L';
-                expect(nextPitch() in pitcher.pitches).toBe(true);
+                const pitch = nextPitch(learner);
+                const contained = pitch in pitcher.pitches;
+                if (!contained) {
+                    console.log(
+                        `${pitch} not found in ${JSON.stringify(pitcher.pitches)}`
+                    );
+                }
+                expect(contained).toBe(true);
             }
         }
     }

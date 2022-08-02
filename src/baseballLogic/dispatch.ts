@@ -41,8 +41,10 @@ export const dispatch = (result: string) => {
         case 'o':
             state.out();
             break;
-        default:
+        case 'undo':
             state.undo();
+            break;
+        default:
             throw new Error(`Unexpected result ${result}`);
             break;
     }

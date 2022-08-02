@@ -1,5 +1,5 @@
 import { state } from "../baseballLogic/GameState.js";
-import { allPitchers } from "../baseballLogic/Pitcher.js";
+import { readAllPitchers } from "../baseballLogic/Pitcher.js";
 import { usingNode } from "../utils/usingNode.js";
 import { $ } from "../utils/utilities.js";
 
@@ -49,6 +49,7 @@ export const changeCount = (balls: number, strikes: number) => {
  * @param pitcherName the new pitcher
  */
 export const changePitcher = (pitcherName: string) => {
+    const allPitchers = readAllPitchers();
     if (pitcherName !== state.pitcher.name && pitcherName in allPitchers) {
         state.backup();
         state.pitcher = allPitchers[pitcherName];

@@ -1,3 +1,5 @@
+import { writeJSON } from "../../utils/files.js";
+
 export abstract class MachineLearning {
     /**
      * Fits the model based on the given features and targets
@@ -13,11 +15,22 @@ export abstract class MachineLearning {
      */
     abstract predict(features: number[][]): number[];
 
+    /**
+     * Reads the machine learning model from the given path
+     * Allows for more efficient creation than training
+     * @param path the location of the saved model
+     * @returns the pre-trained model
+     */
     static read(path: string): MachineLearning {
         throw new Error('Calling method of abstract class');
     }
 
-    static write(path: string) {
-        throw new Error('Calling method of abstract class');
+    /**
+     * Saves the pre-trained model to the given path
+     * @param path the location to save to
+     */
+    write(path: string) {
+        writeJSON(this, path);
     }
 }
+

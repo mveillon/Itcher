@@ -1,4 +1,4 @@
-- trainLearner isn't being called
+- pass all tests
 
 - write index.html
 

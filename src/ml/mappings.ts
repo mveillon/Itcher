@@ -49,19 +49,29 @@ export const getFeature = (pitch: string): number[] => {
 }
 
 /**
- * Maps each pitch type to the corresponding row in q and n
+ * Maps each pitch type to the corresponding index
+ * @returns an index for each pitch type
  */
-export const pitchToInd: { [key: string]: number } = {};
-for (let i = 0; i < allPitchTypes.length; i++) {
-    pitchToInd[allPitchTypes[i]] = i;
+export const pitchToInd = (): { [key: string]: number } => {
+    let res: { [key: string]: number } = {};
+    for (let i = 0; i < allPitchTypes.length; i++) {
+        res[allPitchTypes[i]] = i;
+    }
+    return res;
 }
 
 /**
  * Total number of possible states
+ * @returns the total number of possible states
  */
-export const numStates = cumulative[cumulative.length - 1];
+export const numStates = (): number => {
+    return cumulative[cumulative.length - 1];
+}
 
 /**
  * Total number of possible actions (pitches)
+ * @returns the total number of possible actions
  */
-export const numActions = Object.keys(pitchToInd).length;
+export const numActions = (): number => {
+    return Object.keys(pitchToInd()).length;
+}

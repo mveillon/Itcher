@@ -62,7 +62,7 @@ export type sheet = sheetRow[];
  * @param path where the file is
  * @returns an object with the same data
  */
- export const readJSON = (path: string): Object => {
+ export const readJSON = (path: string): { [key: string]: any } => {
     return JSON.parse(readFile(path, 'utf8'));
 }
 
@@ -71,7 +71,7 @@ export type sheet = sheetRow[];
  * @param obj the object to save as a json
  * @param path where to save the data to
  */
-export const writeJSON = (obj: Object, path: string) => {
+export const writeJSON = (obj: { [key: string]: any }, path: string) => {
     writeFile(path, JSON.stringify(obj));
 }
 
