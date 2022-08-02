@@ -18,7 +18,7 @@
 }
 
 h1 {
-    position: absolute;
+    position: relative;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -37,6 +37,14 @@ body {
     width: 40%;
     text-align: center;
     transform: translateY(50px);
+}
+
+.scorebug {
+    position: relative;
+    display: flex;
+    float: right;
+    width: 60%;
+    align-items: center;
 }
 
 button {
@@ -62,18 +70,33 @@ button:hover {
 }
 
 #third-base {
-    transform: translate(35px, 40px);
+    transform: translate(39px, 36px);
 }
 
 #first-base {
-    transform: translateX(3px);
+    transform: translate(0px, 3px);
 }
 
 .outs {
     float: right;
-    margin: 0px 343px;
+    flex-direction: column;
+    margin: 0px 0px;
 }
 
 .out {
     margin: 0px 3px;
+}
+
+.count-input {
+    flex-direction: row;
+    width: 40px;
+    height: 40px;
+    margin: 10px;
+}
+
+.count-dash {
+    font-family: var(--font);
+    color: var(--secondary);
+    font-size: 50px;
+    flex-direction: row;
 }
