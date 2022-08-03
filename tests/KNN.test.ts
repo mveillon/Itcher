@@ -1,6 +1,6 @@
 import { KNN } from "../src/ml/models/KNN";
 import { learnerMSE, mse, trainLearner } from "../src/ml/trainTest";
-import { rewards } from "../src/ml/rewards";
+import { checkModel } from "./checkModel";
 import { BinaryTree } from "../src/utils/BinaryTree";
 
 test('fake data', () => {
@@ -61,15 +61,6 @@ test('train learner', () => {
     }
 });
 
-test('overall accuracy', () => {
-    let knn = new KNN(8);
-    trainLearner(knn);
-    const [err, preds] = learnerMSE(knn);
-    const minReward = -0.3;
-    const maxReward = 1.5;
-    for (const p of preds) {
-        expect(p).toBeGreaterThanOrEqual(minReward);
-        expect(p).toBeLessThanOrEqual(maxReward);
-    }
-    expect(err).toBeLessThan(1);
+test('overall sensibility', () => {
+    checkModel(new KNN(8));
 });

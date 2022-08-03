@@ -1,4 +1,5 @@
 import { Regression } from "../src/ml/models/Regression";
+import { checkModel } from "./checkModel";
 
 test('Regression', () => {
     const x: number[][] = [...Array(20).keys()].map(n => [n]);
@@ -16,3 +17,7 @@ test('Regression', () => {
         expect(preds[i]).toBeCloseTo(y[i]);
     }
 });
+
+test('overall sensibility', () => {
+    checkModel(new Regression(2));
+})

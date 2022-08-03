@@ -2,6 +2,7 @@ import { MachineLearning } from "./MachineLearning.js";
 import { KNN } from "./KNN.js";
 import { trainLearner } from "../trainTest.js";
 import { Regression } from "./Regression.js";
+import { AlwaysMean } from "./alwaysMean.js";
 
 /**
  * Trains the machine learning network that will predict
@@ -12,7 +13,8 @@ import { Regression } from "./Regression.js";
  */
 export const getLearner = (): MachineLearning => {
     // let res = new KNN(8);
-    let res = new Regression(2);
+    // let res = new Regression(2);
+    let res = new AlwaysMean();
     trainLearner(res);
     return res;
 }

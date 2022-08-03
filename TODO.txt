@@ -1,10 +1,4 @@
-- try regression with degrees 3 and maybe 4
-
-- add always mean model for control
-
 - better accuracy, possibly with different models
-
-- deal with import problem with Regression.ts
 
 - write index.html
 

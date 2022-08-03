@@ -1,5 +1,5 @@
 import { MachineLearning } from "./MachineLearning.js";
-import { Matrix, inverse } from "ml-matrix";
+import { Matrix, inverse } from "../../../node_modules/ml-matrix/matrix.js";
 
 export class Regression extends MachineLearning {
     degree: number;

@@ -22,7 +22,7 @@ export class KNN extends MachineLearning {
         this.targets = targets;
 
         let inds: number[] = [...new Array(this.features.length).keys()]
-        const _tree = this.buildTree(inds, 0);
+        const _tree = this.buildTree(inds);
         if (_tree instanceof BinaryTree<number[]>) {
             this.tree = _tree;
         } else {
@@ -48,7 +48,7 @@ export class KNN extends MachineLearning {
      * @param inds the remaining indices
      * @returns the binary tree, or the leaf node
      */
-    private buildTree(inds: number[], indents: number): BinaryTree<number[]> | number[] {
+    private buildTree(inds: number[]): BinaryTree<number[]> | number[] {
         if (inds.length <= this.k) {
             return inds;
         }
@@ -59,8 +59,8 @@ export class KNN extends MachineLearning {
         let left: number[] = inds.slice(0, med);
         let right: number[] = inds.slice(med, inds.length);
         return new BinaryTree<number[]>(
-            this.buildTree(left, indents + 1),
-            this.buildTree(right, indents + 1),
+            this.buildTree(left),
+            this.buildTree(right),
             (val: number[]): boolean => val[splitDim] < this.features[inds[med]][splitDim]
         );
     }
