@@ -3,3 +3,6 @@ KNN:
 
 Regression:
     mse === 0.05
+
+Always Mean:
+    mse === 0.05
