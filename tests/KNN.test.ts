@@ -53,8 +53,8 @@ test('train learner', () => {
     expect(knn.features[0].length).toBe(20);
     expect(knn.targets.length).toBe(knn.features.length);
 
-    const minReward = Math.min(...Object.values(rewards));
-    const maxReward = Math.max(...Object.values(rewards));
+    const minReward = Math.min(-2);
+    const maxReward = Math.max(2);
     for (const t of knn.targets) {
         expect(t).toBeGreaterThanOrEqual(minReward);
         expect(t).toBeLessThanOrEqual(maxReward);
@@ -65,8 +65,8 @@ test('overall accuracy', () => {
     let knn = new KNN(8);
     trainLearner(knn);
     const [err, preds] = learnerMSE(knn);
-    const minReward = Math.min(...Object.values(rewards));
-    const maxReward = Math.max(...Object.values(rewards));
+    const minReward = -0.3;
+    const maxReward = 1.5;
     for (const p of preds) {
         expect(p).toBeGreaterThanOrEqual(minReward);
         expect(p).toBeLessThanOrEqual(maxReward);

@@ -95,7 +95,7 @@ export const learnerMSE = (learner: MachineLearning): [number, number[]] => {
 
     const pitch = pitchAbbreviations[play['pitch_type']];
     result = getPlayType(result, event);
-    const target = rewards[result];
+    const target = rewards(result);
     const features = getFeature(pitch);
     
     return [features, target];

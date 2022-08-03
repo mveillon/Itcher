@@ -12,9 +12,11 @@ export const nextPitch = (learner: MachineLearning): string => {
     const pitches = Object.keys(state.pitcher.pitches);
     const feats = pitches.map(getFeature);
     const rewards = learner.predict(feats);
-    let cum = [rewards[0]];
+    const weights = rewards.map(Math.tanh);
+
+    let cum = [weights[0]];
     for (let i = 1; i < rewards.length; i++) {
-        cum.push(cum[i - 1] + rewards[i]);
+        cum.push(cum[i - 1] + weights[i]);
     }
     return choice(pitches, cum);
 }
