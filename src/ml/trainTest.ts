@@ -29,12 +29,12 @@ const allFeatsTargs = (data: sheet): [number[][], number[]] => {
 /**
  * Trains the learner on the appropriate dataset
  */
- export const trainLearner = (learner: MachineLearning) => {
+ export const trainLearner = async (learner: MachineLearning) => {
     const trainData = usingNode() ? dataPaths.train : dataPaths.pitches;
     const allData = readSpreadSheet(trainData);
     const [features, targets] = allFeatsTargs(allData);
 
-    learner.fit(features, targets);
+    await learner.fit(features, targets);
     resetState();
 }
 

@@ -22,6 +22,8 @@
         "@babel/cli": "^7.18.9",
         "@babel/core": "^7.18.9",
         "@babel/preset-env": "^7.18.9",
+        "@tensorflow/tfjs": "^3.19.0",
+        "@tensorflow/tfjs-node": "^3.19.0",
         "@types/jest": "^28.1.6",
         "@types/synaptic": "^1.0.4",
         "jest": "^28.1.3",

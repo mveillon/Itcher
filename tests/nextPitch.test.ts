@@ -3,8 +3,8 @@ import { state, resetState } from "../src/baseballLogic/GameState";
 import { readAllPitchers } from "../src/baseballLogic/Pitcher";
 import { getLearner } from "../src/ml/models/getLearner";
 
-test('next pitch', () => {
-    const learner = getLearner();
+test('next pitch', async () => {
+    const learner = await getLearner();
     resetState(false);
     state.lineup = ['R'];
     const pitcher = readAllPitchers()['Justin Verlander'];

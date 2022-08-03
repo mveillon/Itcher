@@ -11,10 +11,10 @@ import { AlwaysMean } from "./alwaysMean.js";
  * THIS FUNCTION RESETS THE GLOBAL STATE VARIABLE
  * @returns a machine learning model for selecting pitches
  */
-export const getLearner = (): MachineLearning => {
+export const getLearner = async (): Promise<MachineLearning> => {
     // let res = new KNN(8);
     // let res = new Regression(2);
     let res = new AlwaysMean();
-    trainLearner(res);
+    await trainLearner(res);
     return res;
 }
