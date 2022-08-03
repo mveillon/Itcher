@@ -1,7 +1,8 @@
 import { KNN } from "../src/ml/models/KNN";
 import { learnerMSE, mse, trainLearner } from "../src/ml/trainTest";
-import { checkModel } from "./checkModel";
+import { checkModel, defaultTimeout } from "./checkModel";
 import { BinaryTree } from "../src/utils/BinaryTree";
+jest.setTimeout(defaultTimeout)
 
 test('fake data', () => {
     let feats: number[][] = [];
@@ -61,6 +62,6 @@ test('train learner', () => {
     }
 });
 
-test('overall sensibility', () => {
-    checkModel(new KNN(8));
+test('overall sensibility', async () => {
+    await checkModel(new KNN(8));
 });

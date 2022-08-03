@@ -1,8 +1,11 @@
 import { MachineLearning } from "../src/ml/models/MachineLearning";
 import { trainLearner, learnerMSE } from "../src/ml/trainTest";
 
-export const checkModel = (model: MachineLearning) => {
-    trainLearner(model);
+
+export const defaultTimeout = 1200 * 10_000;
+
+export const checkModel = async (model: MachineLearning) => {
+    await trainLearner(model);
     const [err, preds] = learnerMSE(model);
     const minReward = -2;
     const maxReward = 2;

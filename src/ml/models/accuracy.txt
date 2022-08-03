@@ -6,3 +6,6 @@ Regression:
 
 Always Mean:
     mse === 0.05
+
+Neural Net:
+    mse === 0.05

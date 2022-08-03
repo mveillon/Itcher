@@ -1,5 +1,5 @@
 import { MachineLearning } from "./MachineLearning.js";
-import * as tf from "../../../node_modules/@tensorflow/tfjs";
+import * as tf from "../../../node_modules/@tensorflow/tfjs-node";
 
 export class NeuralNet extends MachineLearning {
     private net: tf.Sequential;
@@ -28,21 +28,27 @@ export class NeuralNet extends MachineLearning {
 
         this.net.compile({
             optimizer: 'sgd',
-            loss: 'mse',
-            metrics: ['mse']
+            loss: tf.losses.meanSquaredError,
+            metrics: [tf.metrics.meanSquaredError]
         });
     }
 
     async fit(features: number[][], targets: number[]) {
         await this.net.fit(
             tf.tensor(features),
-            tf.tensor(targets)
+            tf.tensor(targets),
+            {
+                verbose: 0
+            }
         );
     }
 
     predict(features: number[][]): number[] {
-        const preds = this.net.predict(tf.tensor(features));
+        const preds = this.net.predict(
+            tf.tensor(features), {
+                verbose: false
+            });
         const res = (preds as tf.Tensor).arraySync();
-        return res as number[];
+        return (res as number[][]).map(row => row[0]);
     }
 }

@@ -2,6 +2,8 @@ import { nextPitch } from "../src/ml/nextPitch";
 import { state, resetState } from "../src/baseballLogic/GameState";
 import { readAllPitchers } from "../src/baseballLogic/Pitcher";
 import { getLearner } from "../src/ml/models/getLearner";
+import { defaultTimeout } from "./checkModel";
+jest.setTimeout(defaultTimeout);
 
 test('next pitch', async () => {
     const learner = await getLearner();

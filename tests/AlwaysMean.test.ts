@@ -1,6 +1,7 @@
-import { checkModel } from "./checkModel";
+import { checkModel, defaultTimeout } from "./checkModel";
 import { AlwaysMean } from "../src/ml/models/AlwaysMean";
 
+jest.setTimeout(defaultTimeout)
 test('right mean', () => {
     const x: number[][] = [...Array(20).keys()].map(n => [n]);
     let y: number[] = [];
@@ -19,6 +20,6 @@ test('right mean', () => {
     }
 })
 
-test('overall sensibility', () => {
-    checkModel(new AlwaysMean());
+test('overall sensibility', async () => {
+    await checkModel(new AlwaysMean());
 })

@@ -1,6 +1,7 @@
 import { Regression } from "../src/ml/models/Regression";
-import { checkModel } from "./checkModel";
+import { checkModel, defaultTimeout } from "./checkModel";
 
+jest.setTimeout(defaultTimeout);
 test('Regression', () => {
     const x: number[][] = [...Array(20).keys()].map(n => [n]);
     const y: number[] = x.map(n => 5 + 3 * n[0] + 4 * Math.pow(n[0], 2));
@@ -18,6 +19,6 @@ test('Regression', () => {
     }
 });
 
-test('overall sensibility', () => {
-    checkModel(new Regression(2));
+test('overall sensibility', async () => {
+    await checkModel(new Regression(2));
 })
