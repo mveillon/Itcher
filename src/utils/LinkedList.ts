@@ -3,6 +3,12 @@ class ListNode<T> {
     val: T;
     next: ListNode<T> | undefined;
 
+    /**
+     * One node in a doubly-linked list
+     * @param _val the value of the node
+     * @param _prev the previous node
+     * @param _next the next node
+     */
     constructor(_val: T, _prev?: ListNode<T>, _next?: ListNode<T>) {
         this.prev = _prev;
         this.val = _val;
@@ -15,6 +21,11 @@ export class List<T> {
     private _head: ListNode<T> | undefined;
     private _tail: ListNode<T> | undefined;
 
+    /**
+     * A doubly linked list capable of pushing and popping
+     * from the left and right
+     * @param initials optional iterable of initial values
+     */
     constructor(initials?: Iterable<T>) {
         this._length = 0;
         this._head = undefined;
@@ -175,11 +186,7 @@ export class List<T> {
      * @returns a string printout of the list
      */
     toString(): string {
-        let vals = [];
-        for (const v of this) {
-            vals.push(v);
-        }
-        return `(${vals.join(', ')})`;
+        return `(${[...this].join(', ')})`;
     }
 }
 

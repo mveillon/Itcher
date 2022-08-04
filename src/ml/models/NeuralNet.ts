@@ -1,9 +1,13 @@
 import { MachineLearning } from "./MachineLearning.js";
-import * as tf from "../../../node_modules/@tensorflow/tfjs-node";
+import * as tf from "@tensorflow/tfjs-node";
 
 export class NeuralNet extends MachineLearning {
     private net: tf.Sequential;
 
+    /**
+     * A deep learning neural network
+     * @param layerSizes the sizes of each layer. Should include the input and output layers
+     */
     constructor(...layerSizes: number[]) {
         super();
         if (layerSizes.length < 2) {

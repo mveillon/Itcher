@@ -11,6 +11,11 @@ export class Pitcher {
     pitches: { [key: string]: number }
     hand: string;
 
+    /**
+     * Represents a baseball pitcher
+     * @param _name the name of the pitcher
+     * @param _hand the handedness of the pitcher; either 'R', 'L', or 'S'
+     */
     constructor(_name: string, _hand: string) {
         this.name = _name;
         this.pitches = {};

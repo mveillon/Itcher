@@ -2,6 +2,10 @@ import { writeJSON } from "../../utils/files.js";
 
 export abstract class MachineLearning {
     /**
+     * The abstract base class for all machine learning models
+     */
+    
+    /**
      * Fits the model based on the given features and targets
      * @param features the dependent variables to train on
      * @param targets the response variables

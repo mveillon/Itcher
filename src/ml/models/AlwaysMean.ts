@@ -3,6 +3,10 @@ import { MachineLearning } from "./MachineLearning.js";
 export class AlwaysMean extends MachineLearning {
     mean: number;
 
+    /**
+     * Always predicts the mean of the targets supplied in training
+     * Useful as a control model
+     */
     constructor() {
         super();
         this.mean = 0;

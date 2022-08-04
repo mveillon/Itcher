@@ -6,6 +6,7 @@ import { usingNode } from "../utils/usingNode.js";
 import { resetState, state } from "../baseballLogic/GameState.js";
 import { rewards } from "./rewards.js";
 import { getFeature } from "./mappings.js";
+import { mse } from "./metrics.js";
 
 /**
  * Splits the spreadsheet into features and targets
@@ -100,19 +101,3 @@ export const learnerMSE = (learner: MachineLearning): [number, number[]] => {
     
     return [features, target];
 }
-
-/**
- * Finds the mean squared error
- * @param x the first array
- * @param y the second array
- * @returns the mean squared error of x and y
- */
-export const mse = (x: number[], y: number[]): number => {
-    let total = 0;
-    const len = Math.min(x.length, y.length);
-    for (let i = 0; i < len; i++) {
-        total += Math.pow(x[i] - y[i], 2) / len;
-    }
-    return total;
-}
-

@@ -5,6 +5,10 @@ export class Regression extends MachineLearning {
     degree: number;
     w: Matrix;
 
+    /**
+     * Finds a line of best fit of nth degree to make predictions
+     * @param _degree the degree of the polynomial describing the trendline
+     */
     constructor(_degree: number = 2) {
         super();
         this.degree = _degree;

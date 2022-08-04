@@ -8,4 +8,4 @@ Always Mean:
     mse === 0.05
 
 Neural Net:
-    mse === 0.05
+    mse ~ 0.05

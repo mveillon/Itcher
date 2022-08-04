@@ -12,6 +12,9 @@ export class GameState {
     bases: boolean[];
     static maxBackups = 20;
 
+    /**
+     * Keeps track of the current state of a baseball game
+     */
     constructor() {
         this._outs = 0;
         this._strikes = 0;

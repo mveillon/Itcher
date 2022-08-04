@@ -1,47 +1,11 @@
-import { KNN } from "../src/ml/models/KNN";
-import { trainLearner } from "../src/ml/trainTest";
 import { checkModel, defaultTimeout } from "./checkModel";
+import { KNNBall } from "../src/ml/models/KNNBall";
+import { trainLearner } from "../src/ml/trainTest";
 import { BinaryTree } from "../src/utils/BinaryTree";
-import { mse } from "../src/ml/metrics";
-jest.setTimeout(defaultTimeout)
 
-test('fake data', () => {
-    let feats: number[][] = [];
-    let targs: number[] = [];
-    for (let i = 0; i < 20; i++) {
-        feats.push([i, i, i, i]);
-        targs.push(i);
-    }
-
-    let knn = new KNN(1);
-    knn.fit(feats, targs);
-
-    let valid: number[][] = [
-        [
-            5, 5, 5, 5
-        ],
-        [
-            10, 10, 10, 10
-        ],
-        [
-            15, 15, 15, 15
-        ]
-    ];
-    let actual: number[] = [
-        5,
-        10,
-        15
-    ];
-
-    expect(mse(knn.predict(valid), actual)).toBeLessThan(1);
-
-    let knn2 = new KNN(2);
-    knn2.fit(feats, targs);
-    expect(mse(knn2.predict(valid), actual)).toBeLessThan(1);
-});
-
+jest.setTimeout(defaultTimeout);
 test('train learner', () => {
-    let knn = new KNN(8);
+    let knn = new KNNBall(8);
     trainLearner(knn);
     expect(knn.k).toBe(8);
     expect(typeof knn.features).not.toBe('undefined');
@@ -64,5 +28,5 @@ test('train learner', () => {
 });
 
 test('overall sensibility', async () => {
-    await checkModel(new KNN(8));
+    await checkModel(new KNNBall(8));
 });

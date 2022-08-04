@@ -1,7 +1,6 @@
 import { MachineLearning } from "./MachineLearning.js";
 import { BinaryTree } from "../../utils/BinaryTree.js";
 import { randInt } from "../../utils/random.js";
-import { readJSON } from "../../utils/files.js";
 
 export class KNN extends MachineLearning {
     features: number[][];
@@ -9,6 +8,12 @@ export class KNN extends MachineLearning {
     k: number;
     tree: BinaryTree<number[]>;
 
+    /**
+     * Aggregates predictions from the k nearest neighbors to
+     * each of the features of the testing set.
+     * Uses a KD tree
+     * @param _k how many neighbors to consider
+     */
     constructor(_k: number) {
         super()
         this.k = _k;
@@ -48,25 +53,22 @@ export class KNN extends MachineLearning {
      * @param inds the remaining indices
      * @returns the binary tree, or the leaf node
      */
-    private buildTree(inds: number[]): BinaryTree<number[]> | number[] {
-        if (inds.length <= this.k) {
-            return inds;
-        }
+    protected buildTree(inds: number[]): BinaryTree<number[]> | number[] {
+        if (inds.length <= this.k) return inds;
+
+
         const splitDim = randInt(this.features[0].length);
         inds.sort((a, b) => this.features[a][splitDim] - this.features[b][splitDim]);
 
         const med = Math.ceil(inds.length / 2);
         let left: number[] = inds.slice(0, med);
         let right: number[] = inds.slice(med, inds.length);
+        const medDim = this.features[inds[med]][splitDim];
+
         return new BinaryTree<number[]>(
             this.buildTree(left),
             this.buildTree(right),
-            (val: number[]): boolean => val[splitDim] < this.features[inds[med]][splitDim]
+            (val: number[]): boolean => val[splitDim] < medDim
         );
-    }
-
-    // Doesn't work because of the functions in the binary tree
-    static read(path: string): KNN {
-        return readJSON(path) as KNN;
     }
 }
