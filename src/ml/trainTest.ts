@@ -101,3 +101,11 @@ export const learnerMSE = (learner: MachineLearning): [number, number[]] => {
     
     return [features, target];
 }
+
+/**
+ * Returns all the features and targets for validating an ML model
+ * @returns the features and the targets from 'valid.csv'
+ */
+export const validFeatsTargs = (): [number[][], number[]] => {
+    return allFeatsTargs(readSpreadSheet(dataPaths.valid));
+}

@@ -42,7 +42,9 @@ export class NeuralNet extends MachineLearning {
             tf.tensor(features),
             tf.tensor(targets),
             {
-                verbose: 0
+                epochs: 4, 
+                batchSize: 64,
+                verbose: 0,
             }
         );
     }

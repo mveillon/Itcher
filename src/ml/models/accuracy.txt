@@ -9,3 +9,6 @@ Always Mean:
 
 Neural Net:
     mse ~ 0.05
+
+KNNBall:
+    mse ~ 0.06
