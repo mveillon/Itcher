@@ -63,8 +63,10 @@ export const learnerMSE = (learner: MachineLearning): [number, number[]] => {
 
     const aid = parseInt(play['ab_id']);
     let result = play['code'];
-    let event = idToEvent.get(aid);
-    if (isNaN(aid)) {
+    let event = idToEvent.get(aid);    
+    const pitch = pitchAbbreviations[play['pitch_type']];
+
+    if (isNaN(aid) || typeof pitch === 'undefined') {
         return [[], 0];
     } 
     if (typeof result === 'undefined') {
@@ -73,7 +75,7 @@ export const learnerMSE = (learner: MachineLearning): [number, number[]] => {
     if (typeof event === 'undefined') {
         throw new Error(`Undefined event with result ${result} and aid ${aid}`);
     }
-
+    
     state.pitcher = aidToPitcher(aid, allPitchers);    
     if (typeof state.pitcher === 'undefined') {
         return [[], 0];
@@ -94,7 +96,6 @@ export const learnerMSE = (learner: MachineLearning): [number, number[]] => {
     state.strikes = parseInt(play['s_count']);
     state.outs = parseInt(play['outs']);
 
-    const pitch = pitchAbbreviations[play['pitch_type']];
     result = getPlayType(result, event);
     const target = rewards(result);
     const features = getFeature(pitch);

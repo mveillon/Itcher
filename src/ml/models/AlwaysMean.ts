@@ -24,3 +24,11 @@ export class AlwaysMean extends MachineLearning {
         return res;
     }
 }
+
+/**
+ * Factory function for a default AlwaysMean
+ * @returns default always mean
+ */
+export const alwaysMean = (): AlwaysMean => {
+    return new AlwaysMean();
+}

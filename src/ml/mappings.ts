@@ -35,8 +35,15 @@ export const stateToInd = (theState: GameState): number => {
  */
 export const getFeature = (pitch: string): number[] => {
     let pType: number[] = [];
+    let found = false;
     for (const p in pitchAbbreviations) {
-        pType.push(+(pitchAbbreviations[p] === pitch));
+        const toPush = pitchAbbreviations[p] === pitch;
+        pType.push(+toPush);
+        found ||= toPush;
+    }
+
+    if (!found) {
+        throw new Error(`Unexpected pitch type ${pitch}`);
     }
 
     let freq = state.pitcher.pitches[pitch];

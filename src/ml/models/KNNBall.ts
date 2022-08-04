@@ -36,3 +36,11 @@ export class KNNBall extends KNN {
         );
     }
 }
+
+/**
+ * Factory function for a default KNNBall
+ * @returns default K-Nearest Neighbrs with Ball Tree
+ */
+ export const knnBall = (): KNNBall => {
+    return new KNNBall(8);
+}

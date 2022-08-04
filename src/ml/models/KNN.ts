@@ -31,7 +31,11 @@ export class KNN extends MachineLearning {
         if (_tree instanceof BinaryTree<number[]>) {
             this.tree = _tree;
         } else {
-            throw new Error(`Features too small: ${this.features}`);
+            this.tree = new BinaryTree<number[]>(
+                inds,
+                [],
+                (val) => true
+            );
         }
     }
 
@@ -71,4 +75,13 @@ export class KNN extends MachineLearning {
             (val: number[]): boolean => val[splitDim] < medDim
         );
     }
+}
+
+
+/**
+ * Factory function for a default KNN
+ * @returns default K-Nearest Neighbors
+ */
+ export const knn = (): KNN => {
+    return new KNN(8);
 }

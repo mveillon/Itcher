@@ -38,6 +38,7 @@ export class NeuralNet extends MachineLearning {
     }
 
     async fit(features: number[][], targets: number[]) {
+        if (features.length === 0) return;
         await this.net.fit(
             tf.tensor(features),
             tf.tensor(targets),
@@ -50,6 +51,8 @@ export class NeuralNet extends MachineLearning {
     }
 
     predict(features: number[][]): number[] {
+        if (features.length === 0) return [];
+        
         const preds = this.net.predict(
             tf.tensor(features), {
                 verbose: false
@@ -57,4 +60,13 @@ export class NeuralNet extends MachineLearning {
         const res = (preds as tf.Tensor).arraySync();
         return (res as number[][]).map(row => row[0]);
     }
+}
+
+/**
+ * Factory function for a default NeuralNet
+ * @param numInputs the number of inputs to be fed to the first layer. Default is 4
+ * @returns default neural net
+ */
+ export const neuralNet = (numInputs: number = 4): NeuralNet => {
+    return new NeuralNet(numInputs, 32, 128, 64, 1);
 }

@@ -12,3 +12,18 @@ Neural Net:
 
 KNNBall:
     mse ~ 0.06
+
+Managed KNN:
+    mse ~ 0.06
+
+Managed Regression:
+    mse ~ 0.05
+
+Managed Always Mean:
+    mse == 0.05
+
+Managed Neural Net:
+    mse ~ 0.05
+
+Managed KNNBall:
+    mse ~ 0.05

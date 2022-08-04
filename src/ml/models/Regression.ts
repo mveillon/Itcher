@@ -16,6 +16,7 @@ export class Regression extends MachineLearning {
     }
 
     fit(features: number[][], targets: number[]): void {
+        if (features.length === 0) return;
         const featMat = new Matrix(features);
         const tarMat = Matrix.columnVector(targets);
         const dims = [
@@ -50,6 +51,7 @@ export class Regression extends MachineLearning {
         if (!(this.w instanceof Matrix)) {
             throw new Error(`Cannot predict before fitting!`);
         }
+        if (features.length === 0) return [];
 
         const featMat = new Matrix(features);
         const dims = [features.length, features[0].length];
@@ -80,4 +82,12 @@ export const matToArray = (mat: Matrix): number[] => {
         res.push(mat.get(i, 0));
     }
     return res;
+}
+
+/**
+ * Factory function for a default Regression
+ * @returns default regression model
+ */
+export const regression = (): Regression => {
+    return new Regression();
 }
