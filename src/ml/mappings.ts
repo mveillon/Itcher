@@ -1,6 +1,5 @@
 import { GameState, state } from "../baseballLogic/GameState.js";
 import { dot, allPitchTypes } from "../utils/utilities.js";
-import { pitchAbbreviations } from "./parseData.js";
 
 const maxes = [
     4, // max number of balls
@@ -34,26 +33,14 @@ export const stateToInd = (theState: GameState): number => {
  * @returns the corresponding feature array
  */
 export const getFeature = (pitch: string): number[] => {
-    let pType: number[] = [];
-    let found = false;
-    for (const p in pitchAbbreviations) {
-        const toPush = pitchAbbreviations[p] === pitch;
-        pType.push(+toPush);
-        found ||= toPush;
-    }
-
-    if (!found) {
-        throw new Error(`Unexpected pitch type ${pitch}`);
-    }
-
-    let freq = state.pitcher.pitches[pitch];
-    if (typeof freq === 'undefined') freq = 0.025;
+    let pitchO = state.pitcher.pitches[pitch];
     return [
         state.balls,
         state.strikes,
         Number(state.pitcherPlatoon()),
-        freq,
-        ...pType
+        pitchO.timesThrown,
+        pitchO.spinRate,
+        pitchO.spinDirection,
     ];
 }
 

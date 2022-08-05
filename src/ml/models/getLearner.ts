@@ -5,7 +5,6 @@ import { regression } from "./Regression.js";
 import { alwaysMean } from "./alwaysMean.js";
 import { knnBall } from "./KNNBall.js";
 import { neuralNet } from "./NeuralNet.js";
-import { ModelManager } from "./ModelManager.js";
 
 /**
  * Trains the machine learning network that will predict
@@ -17,14 +16,8 @@ export const getLearner = async (): Promise<MachineLearning> => {
     // let res = knn();
     // let res = regression();
     // let res = alwaysMean();
-    // let res = neuralNet(20);
-    // let res = knnBall();
-
-    // let res = new ModelManager(knn);
-    // let res = new ModelManager(regression);
-    // let res = new ModelManager(alwaysMean);
-    // let res = new ModelManager(neuralNet);
-    let res = new ModelManager(knnBall);
+    // let res = neuralNet();
+    let res = knnBall();
 
     await trainLearner(res);
     return res;

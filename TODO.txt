@@ -1,5 +1,7 @@
 - better accuracy, possibly with different models
 
+- change ML input to include spin rate and spin direction
+
 - write index.html
 
 - add installation and running instructions to README

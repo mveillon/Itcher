@@ -1,0 +1,14 @@
+KNN: 
+    mse ~ 0.057
+
+Regression:
+    mse === 0.048
+
+Always Mean:
+    mse === 0.048
+
+Neural Net:
+    mse ~ 0.049
+
+KNNBall:
+    mse ~ 0.055

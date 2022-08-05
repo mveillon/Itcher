@@ -1,14 +1,15 @@
 import { pitcherPath, readJSON } from "../utils/files.js";
+import { Pitch, pitchJSON } from "./Pitch.js";
 
 export type pitcherJSON = {
     name: string,
-    pitches: { [key: string]: number },
+    pitches: { [key: string]: pitchJSON },
     hand: string
 };
 
 export class Pitcher {
     name: string;
-    pitches: { [key: string]: number }
+    pitches: { [key: string]: Pitch }
     hand: string;
 
     /**
@@ -31,9 +32,7 @@ export class Pitcher {
         let res = new Pitcher(obj.name, obj.hand);
 
         for (const pitch in obj.pitches) {
-            if (obj.pitches[pitch] > 0.05) {
-                res.pitches[pitch] = obj.pitches[pitch];
-            }
+            res.pitches[pitch] = Pitch.fromObj(obj.pitches[pitch]);
         }
         return res;
     }

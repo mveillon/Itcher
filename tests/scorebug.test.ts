@@ -139,7 +139,7 @@ test('change count', () => {
 test('change pitcher', () => {
     resetState(false);
     const oldName = state.pitcher.name;
-    const newName = 'Justin Verlander';
+    const newName = 'Felix Hernandez';
     bug.changePitcher(newName);
     expect(state.pitcher.name).toBe(newName);
     expect(state.pitcher.hand).toBe('R');

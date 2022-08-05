@@ -20,5 +20,5 @@ def plot_accuracy(learner_name: str):
     plt.savefig(''.join((root, 'plots/', learner_name, '.png')))
 
 if __name__ == '__main__':
-    name = 'managed_knnBall'
+    name = 'KNNBall'
     plot_accuracy(name)

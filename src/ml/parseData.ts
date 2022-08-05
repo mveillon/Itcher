@@ -1,4 +1,5 @@
 import { readSpreadSheet, dataPaths, pitcherPath, writeJSON } from "../utils/files.js";
+import { Pitch } from "../baseballLogic/Pitch.js";
 import { Pitcher } from "../baseballLogic/Pitcher.js";
 import { state } from "../baseballLogic/GameState.js";
 
@@ -45,7 +46,7 @@ export const getPlayType = (result: string, event: string): string => {
         return 'kk';
     } else if (
         (result === 'o' || result === 'h') && 
-        (event === 'Grounded Into DP' || event.includes('Double Play'))) {
+        (event.includes('DP') || event.includes('Double Play'))) {
         return 'dp';
     } else if (result === 'h') {
         if (outTypes.has(event)) {
@@ -127,9 +128,16 @@ export const findAllPitchers = () => {
         const pitchName = pitchAbbreviations[p['pitch_type']];
         if (typeof pitchName !== 'undefined') {
             if (!(pitchName in pitchers[playerName].pitches)) {
-                pitchers[playerName].pitches[pitchName] = 0;
+                pitchers[playerName].pitches[pitchName] = new Pitch(pitchName);
             }
-            pitchers[playerName].pitches[pitchName]++;
+            const sRate = parseInt(p['spin_rate']);
+            const sDirec = parseInt(p['spin_dir']);
+            if (isNaN(sRate) || isNaN(sDirec)) continue;
+
+            const pitchObj = pitchers[playerName].pitches[pitchName];
+            pitchObj.timesThrown += 1;
+            pitchObj.spinRate += sRate;
+            pitchObj.spinDirection += sDirec;
         }
     }
     pitches = undefined;
@@ -137,11 +145,14 @@ export const findAllPitchers = () => {
     for (const player in pitchers) {
         let total = 0;
         for (const p in pitchers[player].pitches) {
-            total += pitchers[player].pitches[p];
+            const pitchO = pitchers[player].pitches[p];
+            total += pitchO.timesThrown;
+            pitchO.spinRate /= pitchO.timesThrown;
+            pitchO.spinDirection /= pitchO.spinDirection;
         }
 
         for (const p in pitchers[player].pitches) {
-            pitchers[player].pitches[p] /= total;
+            pitchers[player].pitches[p].timesThrown /= total;
         }
     }
 

@@ -9,7 +9,7 @@ test('next pitch', async () => {
     const learner = await getLearner();
     resetState(false);
     state.lineup = ['R'];
-    const pitcher = readAllPitchers()['Justin Verlander'];
+    const pitcher = readAllPitchers()['Felix Hernandez'];
     state.pitcher = pitcher;
     for (let b = 0; b < 4; b++) {
         for (let s = 0; s < 3; s++) {

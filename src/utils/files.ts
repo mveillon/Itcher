@@ -79,8 +79,8 @@ export const pitcherPath = "./src/baseballLogic/pitchers.json";
 
 const dataRoot = "./src/ml/data/";
 export const dataPaths: { [key: string]: string } = {
-    atBats: dataRoot + "2019_atbats.ignore.csv",
-    pitches: dataRoot + "2019_pitches.ignore.csv",
+    atBats: dataRoot + "atbats.ignore.csv",
+    pitches: dataRoot + "pitches_reduced.ignore.csv",
     playerNames: dataRoot + "player_names.ignore.csv",
     train: dataRoot + "train.csv",
     valid: dataRoot + "valid.csv",

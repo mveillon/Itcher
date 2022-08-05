@@ -4,7 +4,9 @@ from typing import Tuple, List
 
 ROOT_DIR = 'src/ml/data/'
 
-# shape of 2019_pitches.ignore.csv: (728790, 40)
+# pitches.ignore.csv shape is (2_867_154, 40)
+# pitches_reduced.csv is a scaled down version for testing
+#   shape is only (100_000, 40)
 
 def get_csv(path: str) -> np.ndarray:
     """Reads the csv at path and returns it."""
@@ -19,6 +21,7 @@ def split(path: str, splits: List[float]) -> Tuple[np.ndarray, np.ndarray, np.nd
     """Splits the csv at path into train set, validation set, and testing set."""
     assert np.isclose(sum(splits), 1), 'Splits must add up to 1!'
     all_data = get_csv(path)
+    print(all_data.shape)
 
     np.random.shuffle(all_data)
     train_end = round(all_data.shape[0] * splits[0])
@@ -30,10 +33,11 @@ def split(path: str, splits: List[float]) -> Tuple[np.ndarray, np.ndarray, np.nd
     return train_set, valid_set, test_set
 
 def main(splits: List[float] = [0.5, 0.3, 0.2]):
-    """Splits 2019_pitches.ignore.csv and saves the output files"""
-    pth = ROOT_DIR + '2019_pitches.ignore.csv'
+    """Splits pitches.ignore.csv and saves the output files"""
+    pth = ROOT_DIR + 'pitches_reduced.ignore.csv'
     train, valid, test = split(pth, splits)
     head = get_header(pth)
+    print('Split complete')
     sets = {
         'train.csv': train,
         'valid.csv': valid,
@@ -49,6 +53,7 @@ def main(splits: List[float] = [0.5, 0.3, 0.2]):
             header = head,
             comments = ''
         )
+        print(path + ' writing complete')
 
 if __name__ == '__main__':
     main()
