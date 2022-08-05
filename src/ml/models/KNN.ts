@@ -75,6 +75,18 @@ export class KNN extends MachineLearning {
             (val: number[]): boolean => val[splitDim] < medDim
         );
     }
+
+    static fromObj(obj: { [key: string]: any }): KNN {
+        throw new Error(
+            'KNN saving and loading currently not supported due to difficulty of converting functions to strings and back.'
+        );
+    }
+
+    toObj(): { [key: string]: any } {
+        throw new Error(
+            'KNN saving and loading currently not supported due to difficulty of converting functions to strings and back.'
+        );
+    }
 }
 
 

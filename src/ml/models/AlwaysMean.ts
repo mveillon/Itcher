@@ -1,4 +1,5 @@
 import { MachineLearning } from "./MachineLearning.js";
+import { readJSON, writeJSON } from "../../utils/files.js";
 
 export class AlwaysMean extends MachineLearning {
     mean: number;
@@ -21,6 +22,16 @@ export class AlwaysMean extends MachineLearning {
         for (let i = 0; i < features.length; i++) {
             res.push(this.mean);
         }
+        return res;
+    }
+
+    toObj(): { [key: string]: any } {
+        return { mean: this.mean };
+    }
+
+    static fromObj(obj: { [key: string]: any }): AlwaysMean {
+        let res = new AlwaysMean();
+        res.mean = obj['mean'];
         return res;
     }
 }

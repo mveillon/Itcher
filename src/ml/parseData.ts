@@ -145,7 +145,7 @@ export const findAllPitchers = () => {
         }
     }
 
-    writeJSON(pitchers, pitcherPath);    
+    writeJSON(pitcherPath, pitchers);    
 }
 
 export const pitchAbbreviations: { [key: string]: string } = {

@@ -18,6 +18,9 @@ test('right mean', () => {
     for (let i = 0; i < preds.length; i++) {
         expect(preds[i]).toBeCloseTo(5);
     }
+
+    const backAgain = AlwaysMean.fromObj(aMean.toObj());
+    expect(backAgain.mean).toBe(aMean.mean);
 })
 
 test('overall sensibility', async () => {

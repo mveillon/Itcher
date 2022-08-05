@@ -52,13 +52,21 @@ export class NeuralNet extends MachineLearning {
 
     predict(features: number[][]): number[] {
         if (features.length === 0) return [];
-        
+
         const preds = this.net.predict(
             tf.tensor(features), {
                 verbose: false
             });
         const res = (preds as tf.Tensor).arraySync();
         return (res as number[][]).map(row => row[0]);
+    }
+
+    static fromObj(obj: { [key: string]: any; }): MachineLearning {
+        throw new Error('Neural net saving and loading not supported');
+    }
+
+    toObj(): { [key: string]: any; } {
+        throw new Error('Neural net saving and loading not supported');
     }
 }
 

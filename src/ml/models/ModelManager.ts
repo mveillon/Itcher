@@ -1,20 +1,25 @@
 import { MachineLearning } from "./MachineLearning.js";
 import { pitchAbbreviations } from "../parseData.js";
+import { readJSON } from "../../utils/files.js";
 
 export class ModelManager extends MachineLearning {
-    models: MachineLearning[];
-    numPitches: number;
+    private models: MachineLearning[];
+    private numPitches: number;
 
     /**
      * Manages a different ML model for each pitch type
-     * @param modelGen a function that creates an untrained ML model
+     * @param models either a function that creates an untrained ML model or a precreated list of untrained models
      */
-    constructor(modelGen: () => MachineLearning) {
+    constructor(models: (() => MachineLearning) | MachineLearning[]) {
         super();
-        this.models = [];
         this.numPitches = Object.keys(pitchAbbreviations).length;
-        for (let i = 0; i < this.numPitches; i++) {
-            this.models.push(modelGen());
+        if (typeof models === 'function') {
+            this.models = [];
+            for (let i = 0; i < this.numPitches; i++) {
+                this.models.push(models());
+            }
+        } else {
+            this.models = models;
         }
     }
 
@@ -58,7 +63,7 @@ export class ModelManager extends MachineLearning {
     /**
      * Returns the index of the first nonzero value in arr
      * @param arr the array to look at
-     * @start where to start looking
+     * @param start where to start looking
      * @returns the index of the first nonzero
      */
     private firstOne(arr: number[], start: number): number {
@@ -67,5 +72,44 @@ export class ModelManager extends MachineLearning {
         
         return i - start;
     }
-}
 
+    static fromObj(obj: { [key: string]: any; }): MachineLearning {
+        throw new Error('Model Manager clients must use the static readMM method instead!');
+    }
+
+    /**
+     * Reads the list of models from path, using the converter to read each model
+     * @param path the location of the model
+     * @param converter how to read each child model. Typically this is the relevant 
+     * class' static fromObj method
+     */
+    static readMM(path: string, converter: (obj: { [key: string]: any}) => MachineLearning): ModelManager {
+        return this.fromObjMM(readJSON(path), converter);
+    }
+
+    /**
+     * Converts the object from the JSON file to a Model Manager
+     * The object is assumed to have been saved by the toObj method of ModelManager
+     * @param obj the object as read from the JSON file
+     * @param converter how to read each child model. Typically this is the relevant 
+     * class' static fromObj method
+     */
+    static fromObjMM(obj: { [key: string]: any }, converter: (obj: { [key: string]: any }) => MachineLearning): ModelManager {
+        let models: MachineLearning[] = [];
+        for (const m of obj['models']) {
+            models.push(converter(m));
+        }
+        return new ModelManager(models);
+    }
+
+    toObj(): { [key: string]: any } {
+        let res: { [key: string]: any } = {
+            models: []
+        };
+        for (const model of this.models) {
+            res.models.push(model.toObj());
+        }
+
+        return res;
+    }
+}

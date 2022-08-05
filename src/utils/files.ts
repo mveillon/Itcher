@@ -71,7 +71,7 @@ export type sheet = sheetRow[];
  * @param obj the object to save as a json
  * @param path where to save the data to
  */
-export const writeJSON = (obj: { [key: string]: any }, path: string) => {
+export const writeJSON = (path: string, obj: { [key: string]: any }) => {
     writeFile(path, JSON.stringify(obj));
 }
 

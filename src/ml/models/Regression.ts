@@ -69,6 +69,19 @@ export class Regression extends MachineLearning {
 
         return matToArray(preds);
     }
+
+    static fromObj(obj: { [key: string]: any; }): Regression {
+        let res = new Regression(obj['degree']);
+        res.w = obj['w'];
+        return res;
+    }
+
+    toObj(): { [key: string]: any; } {
+        return {
+            degree: this.degree,
+            w: this.w
+        };
+    }
 }
 
 /**

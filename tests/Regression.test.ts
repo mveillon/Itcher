@@ -17,6 +17,10 @@ test('Regression', () => {
     for (let i = 0; i < preds.length; i++) {
         expect(preds[i]).toBeCloseTo(y[i]);
     }
+
+    const backAgain = Regression.fromObj(reg.toObj());
+    expect(backAgain.degree).toBe(reg.degree);
+    expect(backAgain.w).toEqual(reg.w);
 });
 
 test('overall sensibility', async () => {

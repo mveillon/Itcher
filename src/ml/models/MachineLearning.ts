@@ -1,4 +1,4 @@
-import { writeJSON } from "../../utils/files.js";
+import { readJSON, writeJSON } from "../../utils/files";
 
 export abstract class MachineLearning {
     /**
@@ -26,15 +26,32 @@ export abstract class MachineLearning {
      * @returns the pre-trained model
      */
     static read(path: string): MachineLearning {
+        return this.fromObj(readJSON(path));
+    }
+
+    /**
+     * Converts an object from a JSON file into an instance of this class
+     * The object is assumed to have been saved by the toObj method of this class
+     * @param obj the JSON object
+     * @returns the machine learning model
+     */
+    static fromObj(obj: { [key: string]: any }): MachineLearning {
         throw new Error('Calling method of abstract class');
     }
 
     /**
-     * Saves the pre-trained model to the given path
+     * Converts an instance of this class to a object that can be saved to a JSON
+     * @returns a JSON object
+     */
+    abstract toObj(): { [key: string]: any };
+
+    /**
+     * Writes the machine learning model to the given path
+     * Allows for more efficient creation later on than training
      * @param path the location to save to
      */
     write(path: string) {
-        writeJSON(this, path);
+        writeJSON(path, this.toObj());
     }
 }
 
