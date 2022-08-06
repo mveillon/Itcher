@@ -1,4 +1,4 @@
-import { KNN } from "../src/ml/models/KNN";
+import { KNNkd } from "../src/ml/models/KNNkd";
 import { trainLearner } from "../src/ml/trainTest";
 import { checkModel, defaultTimeout, training } from "./checkModel";
 import { BinaryTree } from "../src/utils/BinaryTree";
@@ -13,7 +13,7 @@ test('fake data', () => {
         targs.push(i);
     }
 
-    let knn = new KNN(1);
+    let knn = new KNNkd(1);
     knn.fit(feats, targs);
 
     let valid: number[][] = [
@@ -35,14 +35,14 @@ test('fake data', () => {
 
     expect(mse(knn.predict(valid), actual)).toBeLessThan(1);
 
-    let knn2 = new KNN(2);
+    let knn2 = new KNNkd(2);
     knn2.fit(feats, targs);
     expect(mse(knn2.predict(valid), actual)).toBeLessThan(1);
 });
 
 test('train learner', () => {
     if (training) {
-        let knn = new KNN(8);
+        let knn = new KNNkd(8);
         trainLearner(knn);
         expect(knn.k).toBe(8);
         expect(typeof knn.features).not.toBe('undefined');
@@ -66,5 +66,5 @@ test('train learner', () => {
 });
 
 test('overall sensibility', async () => {
-    await checkModel(new KNN(8));
+    await checkModel(new KNNkd(8));
 });

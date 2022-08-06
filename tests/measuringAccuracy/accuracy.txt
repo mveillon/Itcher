@@ -1,14 +1,32 @@
-KNN: 
+KNNkd: 
     mse ~ 0.057
 
 Regression:
-    mse === 0.048
+    mse ~ 0.048
 
 Always Mean:
-    mse === 0.048
+    mse ~ 0.048
 
 Neural Net:
     mse ~ 0.049
 
 KNNBall:
     mse ~ 0.055
+
+KNNkd Ensemble:
+    mse ~ 0.05
+
+Regression Ensemble:
+    mse ~ 0.048
+
+Always Mean Ensemble:
+    mse ~ 0.048
+
+Neural Net Ensemble:
+    mse ~ 0.049
+
+KNNBall Ensemble:
+    mse ~ 0.049
+
+Combined Ensemble:
+    mse ~ 0.049

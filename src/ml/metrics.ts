@@ -48,3 +48,26 @@ export const squaredMag = (x: number[]): number => {
     return x.reduce((prev, n) => prev + Math.pow(n, 2), 0);
 }
 
+/**
+ * Returns the average of an array of numbers
+ * @param x the array to average
+ * @returns the mean of x
+ */
+export const average = (x: number[]): number => {
+    return x.reduce((a, b) => a + b, 0) / x.length;
+}
+
+/**
+ * Returns the dot product of x and y
+ * @param x the first vector
+ * @param y the second vector
+ * @returns the dot product
+ */
+ export const dot = (x: number[], y: number[]): number => {
+    let res = 0;
+    for (let i = 0; i < Math.min(x.length, y.length); i++) {
+        res += x[i] * y[i];
+    }
+    return res;
+}
+

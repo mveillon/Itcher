@@ -1,9 +1,10 @@
 import { Regression } from "../src/ml/models/Regression";
 import { checkModel, defaultTimeout } from "./checkModel";
+import { upTo } from "../src/utils/utilities";
 
 jest.setTimeout(defaultTimeout);
 test('Regression', () => {
-    const x: number[][] = [...Array(20).keys()].map(n => [n]);
+    const x: number[][] = upTo(20).map(n => [n]);
     const y: number[] = x.map(n => 5 + 3 * n[0] + 4 * Math.pow(n[0], 2));
 
     let reg = new Regression(2);

@@ -1,18 +1,10 @@
-import { dot } from "../src/utils/utilities";
+import { upTo } from "../src/utils/utilities";
 
-test('dot', () => {
-    expect(dot(
-        [1, 2, 3, 4],
-        [5, 6, 7, 8]
-    )).toBe(70);
-
-    expect(dot(
-        [1],
-        [2, 3, 4]
-    )).toBe(2);
-
-    expect(dot(
-        [2, 3, 4],
-        [1]
-    )).toBe(2);
+test('up to', () => {
+    expect(upTo(0)).toEqual([]);
+    const ten = upTo(10);
+    expect(ten.length).toBe(10);
+    for (let i = 0; i < 10; i++) {
+        expect(ten[i]).toBe(i);
+    }
 });

@@ -21,20 +21,6 @@ export const allPitchTypes = [
     'unknown'
 ];
 
-/**
- * Returns the dot product of x and y
- * @param x the first vector
- * @param y the second vector
- * @returns the dot product
- */
-export const dot = (x: number[], y: number[]): number => {
-    let res = 0;
-    for (let i = 0; i < Math.min(x.length, y.length); i++) {
-        res += x[i] * y[i];
-    }
-    return res;
-}
-
 export let $: (id: string) => HTMLElement;
 if (usingNode()) {
     $ = (id: string): HTMLElement => {
@@ -44,4 +30,13 @@ if (usingNode()) {
     $ = (id: string): HTMLElement => {
         return document.getElementById(id);
     }
+}
+
+/**
+ * Returns a sorted array with every int in the range [0, n) inclusive
+ * @param n 1 + the max number in the array
+ * @returns an array with every int up to n
+ */
+export const upTo = (n: number): number[] => {
+    return [...Array(n).keys()];
 }

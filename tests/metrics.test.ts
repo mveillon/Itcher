@@ -1,4 +1,4 @@
-import { mse, squareDistance, manhattanDistance, squaredMag } from "../src/ml/metrics";
+import { mse, squareDistance, manhattanDistance, squaredMag, dot } from "../src/ml/metrics";
 
 test('mse', () => {
     expect(mse([1, 1, 1], [1, 1, 1])).toBe(0);
@@ -32,3 +32,20 @@ test('magnitude', () => {
     expect(squaredMag([1, 2, 3, 4])).toBe(30);
     expect(squaredMag([])).toBe(0);
 })
+
+test('dot', () => {
+    expect(dot(
+        [1, 2, 3, 4],
+        [5, 6, 7, 8]
+    )).toBe(70);
+
+    expect(dot(
+        [1],
+        [2, 3, 4]
+    )).toBe(2);
+
+    expect(dot(
+        [2, 3, 4],
+        [1]
+    )).toBe(2);
+});

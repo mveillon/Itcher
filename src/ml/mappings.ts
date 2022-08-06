@@ -1,5 +1,6 @@
 import { GameState, state } from "../baseballLogic/GameState.js";
-import { dot, allPitchTypes } from "../utils/utilities.js";
+import { allPitchTypes } from "../utils/utilities.js";
+import { dot } from "./metrics.js";
 
 const maxes = [
     4, // max number of balls

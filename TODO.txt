@@ -1,6 +1,8 @@
 - better accuracy, possibly with different models
 
-- change ML input to include spin rate and spin direction
+- Ensemble class
+
+- Automatically find best hyperparameters
 
 - write index.html
 

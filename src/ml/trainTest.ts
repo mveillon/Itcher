@@ -110,3 +110,11 @@ export const learnerMSE = (learner: MachineLearning): [number, number[]] => {
 export const validFeatsTargs = (): [number[][], number[]] => {
     return allFeatsTargs(readSpreadSheet(dataPaths.valid));
 }
+
+/**
+ * Returns all the features and targets for training an ML model
+ * @returns the features and targets from 'train.csv'
+ */
+export const trainFeatsTargs = (): [number[][], number[]] => {
+    return allFeatsTargs(readSpreadSheet(dataPaths.train));
+}

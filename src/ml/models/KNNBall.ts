@@ -4,11 +4,10 @@ import { squareDistance, squaredMag } from "../metrics.js";
 
 export class KNNBall extends KNN {
     /**
-     * Same API as KNN but uses a Ball Tree instead of a KD tree.
-     * Slower than KNN but more accurate with higher-dimensionality features
+     * Uses a Ball Tree to organize features
      */
 
-    protected override buildTree(inds: number[]): BinaryTree<number[]> | number[] {
+    protected buildTree(inds: number[]): BinaryTree<number[]> | number[] {
         if (inds.length <= this.k) return inds;
 
         /* Too expensive to find the two furthest points so we use a heuristic */ 
