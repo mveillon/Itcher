@@ -83,9 +83,11 @@ export class DecisionTree extends MachineLearning {
             const med = features[inds[Math.floor(inds.length / 2)]][i];
 
             const funcs: splitFunc[] = [
-                (arr) => arr[i] === med,
-                (arr) => arr[i] < med,
+                (arr) => arr[i] < med
             ];
+            if (Number.isInteger(features[0][i])) {
+                funcs.push(arr => arr[i] === med);
+            }
 
             for (const f of funcs) {
                 const [left, right] = this.split(features, f);
@@ -165,3 +167,11 @@ export class DecisionTree extends MachineLearning {
 }
 
 type splitFunc = (arr: number[]) => boolean;
+
+/**
+ * Factory function for a default DecisionTree
+ * @returns default decision tree
+ */
+export const decisionTree = (): DecisionTree => {
+    return new DecisionTree();
+}

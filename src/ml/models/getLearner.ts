@@ -14,10 +14,10 @@ import { Ensemble } from "./Ensemble.js";
  * @returns a machine learning model for selecting pitches
  */
 export const getLearner = async (): Promise<MachineLearning> => {
-    // let res = knnKD();
+    let res = knnKD();
     // let res = regression();
     // let res = alwaysMean();
-    let res = neuralNet();
+    // let res = neuralNet();
     // let res = knnBall();
 
     const numChildren = 8;

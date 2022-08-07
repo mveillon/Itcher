@@ -1,7 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from typing import List
 
 root = "./tests/measuringAccuracy/"
+
+def mse(x: np.ndarray, y: np.ndarray) -> float:
+    """Returns the mean squared error of x and y."""
+    total = 0
+    smaller = min(x.shape[0], y.shape[0])
+    for i in range(smaller):
+        total += (x[i] - y[i]) ** 2
+    return total / smaller
 
 def txt_to_np(path: str) -> np.ndarray:
     """Reads the text file and converts it to a numpy array."""
@@ -9,10 +18,12 @@ def txt_to_np(path: str) -> np.ndarray:
         line = next(iter(f)).split(',')
         return np.fromiter(map(float, line), dtype = float, count = len(line))
 
-def plot_accuracy(learner_name: str):
+def plot_accuracy(learner_name: str) -> str:
     """Plots the accuracy and saves it to a path whose filename includes learner_name."""
     targs = txt_to_np(root + 'targs.txt')
-    preds = txt_to_np(root + 'preds.txt')
+    preds = txt_to_np(f'{root}preds/{learner_name}_preds.txt')
+
+    err = mse(targs, preds)
 
     plt.clf()
     plt.title('Predicted run value vs actual')
@@ -21,6 +32,32 @@ def plot_accuracy(learner_name: str):
     plt.scatter(targs, preds)
     plt.savefig(''.join((root, 'plots/', learner_name, '.png')))
 
+    return f'{learner_name}:\n\tmse = {err}'
+
+def plot_all():
+    names = [
+        'AlwaysMean',
+        # 'DecisionTree',
+        'KNNBall',
+        'KNNkd',
+        'NeuralNet',
+        'Regression',
+
+        'EnsembleAlwaysMean',
+        # 'EnsembleDecisionTree',
+        'EnsembleKNNBall',
+        'EnsembleKNNkd',
+        'EnsembleNeuralNet',
+        'EnsembleRegression',
+    ]
+
+    err_strs: List[str] = []
+    for name in names:
+        print(f'Plotting {name}...')
+        err_strs.append(plot_accuracy(name))
+
+    with open(root + 'accuracy.txt', 'w') as acc:
+        acc.write('\n\n'.join(err_strs))
+
 if __name__ == '__main__':
-    name = 'neuralNet'
-    plot_accuracy(name)
+    plot_all()

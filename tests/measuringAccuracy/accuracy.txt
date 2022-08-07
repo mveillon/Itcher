@@ -1,32 +1,29 @@
-KNNkd: 
-    mse ~ 0.057
-
-Regression:
-    mse ~ 0.048
-
-Always Mean:
-    mse ~ 0.048
-
-Neural Net:
-    mse ~ 0.049
+AlwaysMean:
+	mse = 0.05048090383087601
 
 KNNBall:
-    mse ~ 0.055
+	mse = 0.05052790508027844
 
-KNNkd Ensemble:
-    mse ~ 0.05
+KNNkd:
+	mse = 0.05042609403810468
 
-Regression Ensemble:
-    mse ~ 0.048
+NeuralNet:
+	mse = 0.0508259103932007
 
-Always Mean Ensemble:
-    mse ~ 0.048
+Regression:
+	mse = 0.04964041316821821
 
-Neural Net Ensemble:
-    mse ~ 0.049
+EnsembleAlwaysMean:
+	mse = 0.05048090382991977
 
-KNNBall Ensemble:
-    mse ~ 0.049
+EnsembleKNNBall:
+	mse = 0.050502516679933884
 
-Combined Ensemble:
-    mse ~ 0.049
+EnsembleKNNkd:
+	mse = 0.05000121390346527
+
+EnsembleNeuralNet:
+	mse = 0.6081922871335539
+
+EnsembleRegression:
+	mse = 0.049640531389855726

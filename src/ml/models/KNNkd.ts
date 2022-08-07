@@ -31,5 +31,5 @@ export class KNNkd extends KNN {
  * @returns default K-Nearest Neighbors with KD tree
  */
  export const knnKD = (): KNNkd => {
-    return new KNNkd(14);
+    return new KNNkd(500);
 }

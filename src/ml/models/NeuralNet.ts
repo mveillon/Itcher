@@ -1,4 +1,5 @@
 import { MachineLearning } from "./MachineLearning.js";
+import { numAttributes } from "../mappings.js";
 import * as tf from "@tensorflow/tfjs-node";
 
 export class NeuralNet extends MachineLearning {
@@ -76,9 +77,9 @@ export class NeuralNet extends MachineLearning {
 
 /**
  * Factory function for a default NeuralNet
- * @param numInputs the number of inputs to be fed to the first layer. Default is 6
+ * @param numInputs the number of inputs to be fed to the first layer
  * @returns default neural net
  */
- export const neuralNet = (numInputs: number = 6): NeuralNet => {
+ export const neuralNet = (numInputs: number = numAttributes()): NeuralNet => {
     return new NeuralNet(numInputs, 64, 16, 16, 1);
 }

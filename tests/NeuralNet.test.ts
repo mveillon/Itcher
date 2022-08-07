@@ -2,10 +2,11 @@ import { NeuralNet } from "../src/ml/models/NeuralNet";
 import { checkModel, defaultTimeout } from "./checkModel";
 import { mse } from "../src/ml/metrics";
 import { trainFeatsTargs, validFeatsTargs } from "../src/ml/trainTest";
+import { numAttributes } from "../src/ml/mappings";
 jest.setTimeout(defaultTimeout);
 
 test('overall sensibility', async () => {
-    await checkModel(new NeuralNet(6, 32, 128, 1));
+    await checkModel(new NeuralNet(numAttributes(), 32, 128, 1));
 });
 
 const searching = false;
@@ -20,7 +21,7 @@ test('best hypers', async () => {
         for (let numHidden = 1; numHidden < 4; numHidden++) {
             let layers = getLayerSizes(numHidden);
             for (const sizes of layers) {
-                let net = new NeuralNet(...([6].concat(sizes, [1])));
+                let net = new NeuralNet(...([numAttributes()].concat(sizes, [1])));
                 await net.fit(trainFeats, trainTargs);
                 const preds = net.predict(validFeats);
                 const err = mse(preds, validTargs);                    

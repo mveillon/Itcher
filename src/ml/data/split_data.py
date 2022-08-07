@@ -25,7 +25,7 @@ def split(path: str, splits: List[float]) -> Tuple[np.ndarray, np.ndarray, np.nd
     """Splits the csv at path into train set, validation set, and testing set."""
     assert np.isclose(sum(splits), 1), 'Splits must add up to 1!'
     all_data = get_csv(path)
-    print(all_data.shape)
+    print(f'Shape of all data: {all_data.shape}')
 
     np.random.shuffle(all_data)
     train_end = round(all_data.shape[0] * splits[0])
@@ -57,7 +57,7 @@ def main(splits: List[float] = [0.5, 0.3, 0.2]):
             header = head,
             comments = ''
         )
-        print(path + ' writing complete')
+        print(path + f' writing complete: {sets[path].shape}')
 
 if __name__ == '__main__':
     main()

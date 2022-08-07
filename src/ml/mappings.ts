@@ -27,6 +27,13 @@ export const stateToInd = (theState: GameState): number => {
     ];
     return dot(cumulative, factors);
 }
+/**
+ * The total number of attributes in each feature
+ * @returns the width of the features array
+ */
+export const numAttributes = (): number => {
+    return 7;
+}
 
 /**
  * Returns a feature array for the given state
@@ -35,13 +42,15 @@ export const stateToInd = (theState: GameState): number => {
  */
 export const getFeature = (pitch: string): number[] => {
     let pitchO = state.pitcher.pitches[pitch];
+    const radDirec = pitchO.spinDirection * Math.PI / 360;
     return [
         state.balls,
         state.strikes,
-        Number(state.pitcherPlatoon()),
+        +state.pitcherPlatoon(),
         pitchO.timesThrown,
         pitchO.spinRate,
-        pitchO.spinDirection,
+        Math.sin(radDirec),
+        Math.cos(radDirec),
     ];
 }
 

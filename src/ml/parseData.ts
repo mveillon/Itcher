@@ -130,8 +130,8 @@ export const findAllPitchers = () => {
             if (!(pitchName in pitchers[playerName].pitches)) {
                 pitchers[playerName].pitches[pitchName] = new Pitch(pitchName);
             }
-            const sRate = parseInt(p['spin_rate']);
-            const sDirec = parseInt(p['spin_dir']);
+            const sRate = parseFloat(p['spin_rate']);
+            const sDirec = parseFloat(p['spin_dir']);
             if (isNaN(sRate) || isNaN(sDirec)) continue;
 
             const pitchObj = pitchers[playerName].pitches[pitchName];
