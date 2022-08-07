@@ -16,7 +16,7 @@ export class NeuralNet extends MachineLearning {
             );
         }
         this.net = tf.sequential();
-        const active = 'relu';
+        const active = 'linear';
         this.net.add(tf.layers.dense({
             inputShape: [layerSizes[0]],
             units: layerSizes[1],
@@ -27,13 +27,13 @@ export class NeuralNet extends MachineLearning {
             this.net.add(tf.layers.dense({
                 units: layerSizes[i],
                 activation: active
-            }))
+            }));
         }
 
         this.net.compile({
-            optimizer: 'sgd',
+            optimizer: tf.train.adam(),
             loss: tf.losses.meanSquaredError,
-            metrics: [tf.metrics.meanSquaredError]
+            metrics: [tf.metrics.meanAbsoluteError]
         });
     }
 
@@ -43,7 +43,8 @@ export class NeuralNet extends MachineLearning {
             tf.tensor(features),
             tf.tensor(targets),
             {
-                epochs: 4, 
+                shuffle: true,
+                epochs: 30, 
                 batchSize: 64,
                 verbose: 0,
             }
@@ -54,18 +55,21 @@ export class NeuralNet extends MachineLearning {
         if (features.length === 0) return [];
 
         const preds = this.net.predict(
-            tf.tensor(features), {
+            tf.tensor(features), 
+            {
                 verbose: false
-            });
+            }
+        );
+
         const res = (preds as tf.Tensor).arraySync();
         return (res as number[][]).map(row => row[0]);
     }
 
-    static fromObj(obj: { [key: string]: any; }): MachineLearning {
+    static fromObj(obj: { [key: string]: any }): MachineLearning {
         throw new Error('Neural net saving and loading not supported');
     }
 
-    toObj(): { [key: string]: any; } {
+    toObj(): { [key: string]: any } {
         throw new Error('Neural net saving and loading not supported');
     }
 }
@@ -76,5 +80,5 @@ export class NeuralNet extends MachineLearning {
  * @returns default neural net
  */
  export const neuralNet = (numInputs: number = 6): NeuralNet => {
-    return new NeuralNet(numInputs, 32, 128, 64, 1);
+    return new NeuralNet(numInputs, 64, 16, 16, 1);
 }

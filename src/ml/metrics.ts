@@ -54,7 +54,7 @@ export const squaredMag = (x: number[]): number => {
  * @returns the mean of x
  */
 export const average = (x: number[]): number => {
-    return x.reduce((a, b) => a + b, 0) / x.length;
+    return avgVar(x)[0];
 }
 
 /**
@@ -69,5 +69,30 @@ export const average = (x: number[]): number => {
         res += x[i] * y[i];
     }
     return res;
+}
+
+/**
+ * Finds the average and the variance of x
+ * @param x the array to measure
+ * @returns the average and variance of x
+ */
+export const avgVar = (x: number[]): [number, number] => {
+    const mean = x.reduce((a, b) => a + b, 0) / x.length;
+    
+    let total = 0;
+    for (const n of x) {
+        total += Math.pow(n - mean, 2) / x.length;
+    }
+
+    return [mean, total];
+}
+
+/**
+ * Finds the variance of x
+ * @param x the array to measure
+ * @returns the variance of x
+ */
+export const variance = (x: number[]): number => {
+    return avgVar(x)[1];
 }
 

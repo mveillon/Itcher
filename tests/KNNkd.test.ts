@@ -3,6 +3,7 @@ import { trainLearner } from "../src/ml/trainTest";
 import { checkModel, defaultTimeout, training } from "./checkModel";
 import { BinaryTree } from "../src/utils/BinaryTree";
 import { mse } from "../src/ml/metrics";
+import { trainFeatsTargs, validFeatsTargs } from "../src/ml/trainTest";
 jest.setTimeout(defaultTimeout)
 
 test('fake data', () => {
@@ -40,10 +41,10 @@ test('fake data', () => {
     expect(mse(knn2.predict(valid), actual)).toBeLessThan(1);
 });
 
-test('train learner', () => {
+test('train learner', async () => {
     if (training) {
         let knn = new KNNkd(8);
-        trainLearner(knn);
+        await trainLearner(knn);
         expect(knn.k).toBe(8);
         expect(typeof knn.features).not.toBe('undefined');
         expect(typeof knn.targets).not.toBe('undefined');
@@ -67,4 +68,28 @@ test('train learner', () => {
 
 test('overall sensibility', async () => {
     await checkModel(new KNNkd(8));
+});
+
+const searching = false;
+test ('best hypers', async () => {
+    if (searching) {
+        // k = 14 => 0.053
+        const [trainFeats, trainTargs] = trainFeatsTargs();
+        const [validFeats, validTargs] = validFeatsTargs();
+
+        const errs: number[] = [];  
+        for (let k = 2; k < 15; k++) {
+            let knn = new KNNkd(k);
+            await knn.fit(trainFeats, trainTargs);
+            const err = mse(knn.predict(validFeats), validTargs);
+            errs.push(err);
+        }
+
+        let best = 0;
+        for (let i = 0; i < errs.length; i++) {
+            if (errs[i] < errs[best]) best = i;
+        }
+
+        console.log(`KNNkd: k = ${best + 2} => ${errs[best]}`);
+    }
 });

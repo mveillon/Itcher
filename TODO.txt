@@ -1,9 +1,5 @@
 - better accuracy, possibly with different models
 
-- Ensemble class
-
-- Automatically find best hyperparameters
-
 - write index.html
 
 - add installation and running instructions to README

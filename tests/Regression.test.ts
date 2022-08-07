@@ -1,6 +1,8 @@
 import { Regression } from "../src/ml/models/Regression";
 import { checkModel, defaultTimeout } from "./checkModel";
 import { upTo } from "../src/utils/utilities";
+import { trainFeatsTargs, validFeatsTargs } from "../src/ml/trainTest";
+import { mse } from "../src/ml/metrics";
 
 jest.setTimeout(defaultTimeout);
 test('Regression', () => {
@@ -26,4 +28,28 @@ test('Regression', () => {
 
 test('overall sensibility', async () => {
     await checkModel(new Regression(2));
-})
+});
+
+const searching = false;
+test('best hypers', async () => {
+    // d = 2 => 0.048
+    if (searching) {
+        const [trainFeats, trainTargs] = trainFeatsTargs();
+        const [validFeats, validTargs] = validFeatsTargs();
+
+        const errs: number[] = [];  
+        for (let d = 2; d < 15; d++) {
+            let knn = new Regression(d);
+            await knn.fit(trainFeats, trainTargs);
+            const err = mse(knn.predict(validFeats), validTargs);
+            errs.push(err);
+        }
+
+        let best = 0;
+        for (let i = 0; i < errs.length; i++) {
+            if (errs[i] < errs[best]) best = i;
+        }
+
+        console.log(`Regression: d = ${best + 2} => ${errs[best]}`);
+    }
+});

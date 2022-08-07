@@ -4,9 +4,13 @@ from typing import Tuple, List
 
 ROOT_DIR = 'src/ml/data/'
 
-# pitches.ignore.csv shape is (2_867_154, 40)
-# pitches_reduced.csv is a scaled down version for testing
-#   shape is only (100_000, 40)
+"""
+pitches.ignore.csv shape is (2_867_154, 40)
+pitches_reduced.csv is a scaled down version for testing
+  shape is only (300_000, 40)
+pitches reduced generated with the following Unix command
+`> head -300001 src/allData/pitches.ignore.csv > src/ml/data/pitches_reduced.ignore.csv`
+"""
 
 def get_csv(path: str) -> np.ndarray:
     """Reads the csv at path and returns it."""

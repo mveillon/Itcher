@@ -41,5 +41,5 @@ export class KNNBall extends KNN {
  * @returns default K-Nearest Neighbrs with Ball Tree
  */
  export const knnBall = (): KNNBall => {
-    return new KNNBall(8);
+    return new KNNBall(14);
 }

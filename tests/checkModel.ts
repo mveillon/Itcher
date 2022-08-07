@@ -1,8 +1,7 @@
 import { MachineLearning } from "../src/ml/models/MachineLearning";
 import { trainLearner, learnerMSE } from "../src/ml/trainTest";
 
-
-export const defaultTimeout = 1200 * 10_000;
+export const defaultTimeout = 2_147_483_647;
 export const training = true;
 
 export const checkModel = async (model: MachineLearning) => {

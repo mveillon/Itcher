@@ -17,7 +17,7 @@ export const getLearner = async (): Promise<MachineLearning> => {
     // let res = knnKD();
     // let res = regression();
     // let res = alwaysMean();
-    // let res = neuralNet();
+    let res = neuralNet();
     // let res = knnBall();
 
     const numChildren = 8;
@@ -26,12 +26,12 @@ export const getLearner = async (): Promise<MachineLearning> => {
     // let res = new Ensemble(alwaysMean, numChildren);
     // let res = new Ensemble(neuralNet, numChildren);
     // let res = new Ensemble(knnBall, numChildren);
-    let res = new Ensemble([
-        knnKD(),
-        regression(),
-        neuralNet(),
-        knnBall(),
-    ]);
+    // let res = new Ensemble([
+    //     knnKD(),
+    //     regression(),
+    //     neuralNet(),
+    //     knnBall(),
+    // ]);
 
     await trainLearner(res);
     return res;
