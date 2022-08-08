@@ -1,36 +1,36 @@
 import { MachineLearning } from "./MachineLearning.js";
 import { BinaryTree } from "../../utils/BinaryTree.js";
-import { average } from "../metrics.js"
+import { average } from "../calculations.js"
 
 export abstract class KNN extends MachineLearning {
-    features: number[][];
-    targets: number[];
-    k: number;
-    tree: BinaryTree<number[]>;
+    protected _features: number[][];
+    protected _targets: number[];
+    protected _k: number;
+    protected _tree: BinaryTree<number[]>;
 
     /**
      * Aggregates predictions from the k nearest neighbors to
      * each of the features of the testing set.
-     * @param _k how many neighbors to consider
+     * @param k how many neighbors to consider
      */
-    constructor(_k: number) {
+    constructor(k: number) {
         super()
-        this.k = _k;
-        this.features = undefined;
-        this.targets = undefined;
-        this.tree = undefined;
+        this._k = k;
+        this._features = undefined;
+        this._targets = undefined;
+        this._tree = undefined;
     }
 
     fit(features: number[][], targets: number[]): void {
-        this.features = features;
-        this.targets = targets;
+        this._features = features;
+        this._targets = targets;
 
-        let inds: number[] = [...new Array(this.features.length).keys()]
+        let inds: number[] = [...new Array(this._features.length).keys()]
         const _tree = this.buildTree(inds);
         if (_tree instanceof BinaryTree<number[]>) {
-            this.tree = _tree;
+            this._tree = _tree;
         } else {
-            this.tree = new BinaryTree<number[]>(
+            this._tree = new BinaryTree<number[]>(
                 inds,
                 [],
                 (val) => true
@@ -40,9 +40,9 @@ export abstract class KNN extends MachineLearning {
 
     predict(features: number[][]): number[] {
         let preds: number[] = [];
-        const m = (ind: number): number => this.targets[ind];
+        const m = (ind: number): number => this._targets[ind];
         for (const f of features) {
-            const inds = this.tree.traverse(f);
+            const inds = this._tree.traverse(f);
             const targs = inds.map(m);
             preds.push(average(targs));
         }

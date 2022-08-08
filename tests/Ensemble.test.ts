@@ -1,11 +1,16 @@
 import { Ensemble } from "../src/ml/models/Ensemble";
 import { checkModel, defaultTimeout } from "./checkModel";
-import { regression, Regression } from "../src/ml/models/Regression";
-import { knnKD, KNNkd } from "../src/ml/models/KNNkd";
+import { KNNkd } from "../src/ml/models/KNNkd";
+import { Regression } from "../src/ml/models/Regression";
+import { EnsembleFriend, kdFriend, RegressionFriend } from "./friends";
 
 jest.setTimeout(defaultTimeout);
 test('Ensemble', async () => {
-    const mod = new Ensemble(knnKD, 4);
+    const mod = new EnsembleFriend(() => new kdFriend(2), 4);
+    for (let i = 0; i < 4; i++) {
+        expect(mod.models[i] instanceof kdFriend).toBe(true);
+    }
+    
     const feats = [
         [1, 2, 3], 
         [4, 5, 6], 
@@ -24,8 +29,8 @@ test('Ensemble', async () => {
     await mod.fit(feats, targs);
 
     for (let i = 0; i < 3; i++) {
-        expect(feats.includes((mod.models[i] as KNNkd).features[0])).toEqual(true);
-        expect(targs.includes((mod.models[i] as KNNkd).targets[0])).toEqual(true);
+        expect(feats.includes((mod.models[i] as kdFriend).features[0])).toEqual(true);
+        expect(targs.includes((mod.models[i] as kdFriend).targets[0])).toEqual(true);
     }
 
     const preds = mod.predict(feats);
@@ -37,7 +42,7 @@ test('Ensemble', async () => {
 });
 
 test('read/write', async () => {
-    const mod = new Ensemble(regression, 5);
+    const mod = new EnsembleFriend(() => new RegressionFriend(2), 5);
     await mod.fit(
         [
             [1, 2, 3], 
@@ -54,10 +59,16 @@ test('read/write', async () => {
             5
         ]
     );
-    const backAgain = Ensemble.fromObjEnsemble(mod.toObj(), Regression.fromObj);
+    const ens = Ensemble.fromObjEnsemble(mod.toObj(), RegressionFriend.fromObj);
+    const backAgain = EnsembleFriend.fromEnsemble(
+        ens,
+        (obj) => RegressionFriend.fromRegression(Regression.fromObj(obj))
+    );
     for (let i = 0; i < mod.models.length; i++) {
-        expect((backAgain.models[i] as Regression).degree).toBe((mod.models[i] as Regression).degree);
-        expect((backAgain.models[i] as Regression).w).toEqual((mod.models[i] as Regression).w);
+        const friend1 = backAgain.models[i] as RegressionFriend;
+        const friend2 = mod.models[i] as RegressionFriend;
+        expect(friend1.degree).toBe(friend2.degree);
+        expect(friend1.w).toEqual(friend2.w);
     }
 });
 

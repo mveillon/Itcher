@@ -1,41 +1,41 @@
 import { BinaryTree } from "../../utils/BinaryTree.js";
 import { MachineLearning } from "./MachineLearning.js";
-import { avgVar, variance, average } from "../metrics.js";
+import { avgVar, variance, average } from "../calculations.js";
 import { upTo } from "../../utils/utilities.js";
 
 export class DecisionTree extends MachineLearning {
-    tree: BinaryTree<number[]>;
-    minCV: number;
-    minBranchSize: number;
+    protected _tree: BinaryTree<number[]>;
+    protected _minCV: number;
+    protected _minBranchSize: number;
 
     /**
      * A decision tree that splits each feature based on a selected attribute
-     * @param _minCV the minimum coefficient of variance to use before 
+     * @param minCV the minimum coefficient of variance to use before 
      * stopping splitting
-     * @param _minBranchSize the minimum length of features in each branch.
+     * @param minBranchSize the minimum length of features in each branch.
      * In practice this will end up equaling:
      * `max(_minBranchSize, log2(trainTargs.length) / trainFeatures[0].length)`
      */
-    constructor(_minCV: number = 0.1, _minBranchSize: number = 8) {
+    constructor(minCV: number = 0.1, minBranchSize: number = 8) {
         super();
-        this.tree = undefined;
-        this.minCV = _minCV;
-        this.minBranchSize = _minBranchSize;
+        this._tree = undefined;
+        this._minCV = minCV;
+        this._minBranchSize = minBranchSize;
     }
 
     fit(features: number[][], targets: number[]): void {
         if (features.length === 0) return;
 
-        const _tree = this.buildTree(
+        const tempTree = this.buildTree(
             features, 
             targets, 
             new Set<number>(upTo(features[0].length)),
         );
 
-        if (_tree instanceof BinaryTree) {
-            this.tree = _tree;
+        if (tempTree instanceof BinaryTree) {
+            this._tree = tempTree;
         } else {
-            this.tree = new BinaryTree<number[]>(
+            this._tree = new BinaryTree<number[]>(
                 targets,
                 [],
                 (arr) => true
@@ -46,7 +46,7 @@ export class DecisionTree extends MachineLearning {
     predict(features: number[][]): number[] {
         let res: number[] = [];
         for (const f of features) {
-            const leaf = this.tree.traverse(f);
+            const leaf = this._tree.traverse(f);
             res.push(average(leaf));
         }
 
@@ -65,8 +65,8 @@ export class DecisionTree extends MachineLearning {
         remainingAttrs: Set<number>,
     ): BinaryTree<number[]> | number[] {
         if (
-            this.cv(targets) < this.minCV || 
-            features.length <= this.minBranchSize ||
+            this.cv(targets) < this._minCV || 
+            features.length <= this._minBranchSize ||
             remainingAttrs.size === 0
         ) {
             return targets;

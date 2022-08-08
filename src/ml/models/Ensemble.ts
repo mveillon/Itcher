@@ -4,41 +4,41 @@ import { readJSON } from "../../utils/files.js";
 import { upTo } from "../../utils/utilities.js";
 
 export class Ensemble extends MachineLearning {
-    models: MachineLearning[];
+    protected _models: MachineLearning[];
 
     /**
      * A model that combines the predictions of several different models to make its predictions
-     * @param _models either a function that generates a new untrained ML model or a list of untrained models
+     * @param models either a function that generates a new untrained ML model or a list of untrained models
      * @param numModels how many models to use. Not necessary if _models is an array
      */
     constructor(
-        _models: (() => MachineLearning) | MachineLearning[], 
+        models: (() => MachineLearning) | MachineLearning[], 
         numModels?: number
     ) {
         super();
-        if (typeof _models === 'function') {
+        if (typeof models === 'function') {
             if (typeof numModels === 'undefined') {
                 throw new Error('numModels must be specified when constructor is passed a generator function');
             }
 
-            this.models = [];
+            this._models = [];
             for (let i = 0; i < numModels; i++) {
-                this.models.push(_models());
+                this._models.push(models());
             }
 
         } else {
-            this.models = _models;
+            this._models = models;
         }
     }
 
     async fit(features: number[][], targets: number[]) {
         const inds: number[] = upTo(features.length);
         shuffle(inds);
-        const perModel = Math.floor(inds.length / this.models.length);
+        const perModel = Math.floor(inds.length / this._models.length);
 
-        for (let m = 0; m < this.models.length; m++) {
+        for (let m = 0; m < this._models.length; m++) {
             const start = m * perModel;
-            const end = m === this.models.length - 1 ? inds.length : start + perModel;
+            const end = m === this._models.length - 1 ? inds.length : start + perModel;
             let featureCut: number[][] = [];
             let targetCut: number[] = [];
             for (let i = start; i < end; i++) {
@@ -46,12 +46,12 @@ export class Ensemble extends MachineLearning {
                 targetCut.push(targets[inds[i]]);
             }
 
-            await this.models[m].fit(featureCut, targetCut);
+            await this._models[m].fit(featureCut, targetCut);
         }
     }
 
     predict(features: number[][]): number[] {
-        const preds2d = this.models.map((m) => m.predict(features));
+        const preds2d = this._models.map((m) => m.predict(features));
         let agg: number[] = [];
         for (let i = 0; i < features.length; i++) {
             agg.push(0);
@@ -59,7 +59,7 @@ export class Ensemble extends MachineLearning {
 
         for (let i = 0; i < preds2d.length; i++) {
             for (let j = 0; j < features.length; j++) {
-                agg[j] += preds2d[i][j] / this.models.length;
+                agg[j] += preds2d[i][j] / this._models.length;
             }
         }
 
@@ -92,7 +92,7 @@ export class Ensemble extends MachineLearning {
 
     toObj(): { [key: string]: any } {
         const objs: { [key: string]: any }[] = [];
-        for (const m of this.models) {
+        for (const m of this._models) {
             objs.push(m.toObj());
         }
         return { models: objs };

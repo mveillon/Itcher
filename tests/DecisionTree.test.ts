@@ -1,8 +1,10 @@
 import { checkModel, defaultTimeout } from "./checkModel";
 import { DecisionTree } from "../src/ml/models/DecisionTree";
+import { TreeFriend } from "./friends";
 
-test('decision tree', () => {
-    let dt = new DecisionTree(undefined, 1);
+jest.setTimeout(defaultTimeout);
+test('decision tree', async () => {
+    let dt = new TreeFriend(undefined, 1);
     expect(dt.minCV).toBe(0.1);
     expect(dt.minBranchSize).toBe(1);
 
@@ -14,7 +16,7 @@ test('decision tree', () => {
     ];
     const targs = [0, 0, 1, 1];
 
-    dt.fit(feats, targs);
+    await dt.fit(feats, targs);
     expect(typeof dt.tree).not.toBe('undefined');
 
     expect(Array.isArray(dt.tree.left)).toBe(true);
@@ -25,7 +27,6 @@ test('decision tree', () => {
     }
 });
 
-jest.setTimeout(defaultTimeout);
 test('overall sensibility', async () => {
     await checkModel(new DecisionTree());
 })

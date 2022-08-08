@@ -9,10 +9,16 @@ const NeuralNet = require("../../dist/ml/models/NeuralNet");
 const Regression = require("../../dist/ml/models/Regression");
 
 const fs = require('fs');
+const { performance } = require('perf_hooks');
 
-`tsc; node tests/measuringAccuracy/learnerAcc.js; python3 tests/measuringAccuracy/learnerAcc.py`
+/**
+ * Saves the predictions of every ML model available. 
+ * To run this code with the Python:
+ * `> tsc; node tests/measuringAccuracy/learnerAcc.js; python3 tests/measuringAccuracy/learnerAcc.py`
+ */
+const learnerPreds = async () => {
+    const startTime = performance.now();
 
-const learnerAcc = async () => {
     const numChildren = 4;
 
     const learners = {
@@ -39,7 +45,7 @@ const learnerAcc = async () => {
 
     for (const learnerName in learners) {
         let learner = learners[learnerName];
-        
+
         console.log(`Measuring ${learnerName}...\n\tTraining...`);
         await learner.fit(trainFeats, trainTargs);
 
@@ -52,7 +58,10 @@ const learnerAcc = async () => {
             err
         );
     }
+
+    const endTime = performance.now();
+    console.log(`\nFinished in ${(endTime - startTime) / 1000} seconds\n`);
     // then go to Python for plots
 }
 
-learnerAcc();
+learnerPreds();

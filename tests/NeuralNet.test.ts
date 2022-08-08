@@ -1,6 +1,6 @@
 import { NeuralNet } from "../src/ml/models/NeuralNet";
 import { checkModel, defaultTimeout } from "./checkModel";
-import { mse } from "../src/ml/metrics";
+import { mse } from "../src/ml/calculations";
 import { trainFeatsTargs, validFeatsTargs } from "../src/ml/trainTest";
 import { numAttributes } from "../src/ml/mappings";
 jest.setTimeout(defaultTimeout);

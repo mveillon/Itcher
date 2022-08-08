@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import List
+from os import listdir
 
 root = "./tests/measuringAccuracy/"
 
@@ -30,26 +31,16 @@ def plot_accuracy(learner_name: str) -> str:
     plt.xlabel('Actual run value')
     plt.ylabel('Predicted run value')
     plt.scatter(targs, preds)
-    plt.savefig(''.join((root, 'plots/', learner_name, '.png')))
+    plt.savefig(f'{root}plots/{learner_name}.png')
 
     return f'{learner_name}:\n\tmse = {err}'
 
 def plot_all():
-    names = [
-        'AlwaysMean',
-        # 'DecisionTree',
-        'KNNBall',
-        'KNNkd',
-        'NeuralNet',
-        'Regression',
-
-        'EnsembleAlwaysMean',
-        # 'EnsembleDecisionTree',
-        'EnsembleKNNBall',
-        'EnsembleKNNkd',
-        'EnsembleNeuralNet',
-        'EnsembleRegression',
-    ]
+    """Plots every learner's predictions and saves their accuracies."""
+    files = listdir(root + 'preds/')
+    names = []
+    for f in files:
+        names.append(f.split('_')[0])
 
     err_strs: List[str] = []
     for name in names:

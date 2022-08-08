@@ -8,15 +8,15 @@ export class KNNkd extends KNN {
      */
 
     protected buildTree(inds: number[]): BinaryTree<number[]> | number[] {
-        if (inds.length <= this.k) return inds;
+        if (inds.length <= this._k) return inds;
 
-        const splitDim = randInt(this.features[0].length);
-        inds.sort((a, b) => this.features[a][splitDim] - this.features[b][splitDim]);
+        const splitDim = randInt(this._features[0].length);
+        inds.sort((a, b) => this._features[a][splitDim] - this._features[b][splitDim]);
 
         const med = Math.ceil(inds.length / 2);
         let left: number[] = inds.slice(0, med);
         let right: number[] = inds.slice(med, inds.length);
-        const medDim = this.features[inds[med]][splitDim];
+        const medDim = this._features[inds[med]][splitDim];
 
         return new BinaryTree<number[]>(
             this.buildTree(left),

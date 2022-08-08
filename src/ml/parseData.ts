@@ -148,7 +148,7 @@ export const findAllPitchers = () => {
             const pitchO = pitchers[player].pitches[p];
             total += pitchO.timesThrown;
             pitchO.spinRate /= pitchO.timesThrown;
-            pitchO.spinDirection /= pitchO.spinDirection;
+            pitchO.spinDirection /= pitchO.timesThrown;
         }
 
         for (const p in pitchers[player].pitches) {

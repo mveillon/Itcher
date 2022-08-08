@@ -1,6 +1,6 @@
-import { GameState, state } from "../baseballLogic/GameState.js";
+import { GameState } from "../baseballLogic/GameState.js";
 import { allPitchTypes } from "../utils/utilities.js";
-import { dot } from "./metrics.js";
+import { dot, sigmoid } from "./calculations.js";
 
 const maxes = [
     4, // max number of balls
@@ -38,12 +38,13 @@ export const numAttributes = (): number => {
 /**
  * Returns a feature array for the given state
  * @param pitch what pitch is being thrown
+ * @param state the current game state
  * @returns the corresponding feature array
  */
-export const getFeature = (pitch: string): number[] => {
+export const getFeature = (pitch: string, state: GameState): number[] => {
     let pitchO = state.pitcher.pitches[pitch];
     const radDirec = pitchO.spinDirection * Math.PI / 360;
-    return [
+    const res = [
         state.balls,
         state.strikes,
         +state.pitcherPlatoon(),
@@ -52,6 +53,7 @@ export const getFeature = (pitch: string): number[] => {
         Math.sin(radDirec),
         Math.cos(radDirec),
     ];
+    return res.map(sigmoid);
 }
 
 /**
@@ -60,8 +62,9 @@ export const getFeature = (pitch: string): number[] => {
  */
 export const pitchToInd = (): { [key: string]: number } => {
     let res: { [key: string]: number } = {};
-    for (let i = 0; i < allPitchTypes.length; i++) {
-        res[allPitchTypes[i]] = i;
+    const pitchTypes = allPitchTypes();
+    for (let i = 0; i < pitchTypes.length; i++) {
+        res[pitchTypes[i]] = i;
     }
     return res;
 }

@@ -3,12 +3,13 @@ import { KNNBall } from "../src/ml/models/KNNBall";
 import { trainLearner } from "../src/ml/trainTest";
 import { BinaryTree } from "../src/utils/BinaryTree";
 import { trainFeatsTargs, validFeatsTargs } from "../src/ml/trainTest";
-import { mse } from "../src/ml/metrics";
+import { mse } from "../src/ml/calculations";
+import { BallFriend } from "./friends";
 
 jest.setTimeout(defaultTimeout);
 test('train learner', async () => {
     if (training) {
-        let knn = new KNNBall(8);
+        let knn = new BallFriend(8);
         await trainLearner(knn);
         expect(knn.k).toBe(8);
         expect(typeof knn.features).not.toBe('undefined');
@@ -19,7 +20,7 @@ test('train learner', async () => {
         expect(knn.tree.right instanceof BinaryTree<number[][]>).toBe(true);
 
         expect(knn.features.length).toBeGreaterThan(10000);
-        expect(knn.features[0].length).toBe(6);
+        expect(knn.features[0].length).toBe(7);
         expect(knn.targets.length).toBe(knn.features.length);
 
         const minReward = Math.min(-2);

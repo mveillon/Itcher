@@ -1,4 +1,5 @@
-import { mse, squareDistance, manhattanDistance, squaredMag, dot } from "../src/ml/metrics";
+import { mse, squareDistance, manhattanDistance, squaredMag, dot, average, variance, sigmoid } from "../src/ml/calculations";
+import { upTo } from "../src/utils/utilities";
 
 test('mse', () => {
     expect(mse([1, 1, 1], [1, 1, 1])).toBe(0);
@@ -48,4 +49,23 @@ test('dot', () => {
         [2, 3, 4],
         [1]
     )).toBe(2);
+});
+
+test('average', () => {
+    expect(average([1, 2, 3, 4, 5])).toBe(3);
+    expect(average([-3, -2, -1, 0, 1, 2, 3])).toBe(0);
+});
+
+test('variance', () => {
+    expect(variance([1, 1, 1, 1])).toBe(0);
+    expect(variance([0, 1, 1, 2])).toBeCloseTo(0.5);
+});
+
+test('sigmoid', () => {
+    const s = upTo(100).map(sigmoid);
+    for (let i = 1; i < s.length; i++) {
+        expect(s[i]).toBeGreaterThanOrEqual(0);
+        expect(s[i]).toBeLessThanOrEqual(1);
+        expect(s[i]).toBeGreaterThanOrEqual(s[i - 1]);
+    }
 });

@@ -3,23 +3,25 @@ import { usingNode } from "./usingNode.js";
 /**
  * All of the pitch types that this code recognizes
  */
-export const allPitchTypes = [
-    '4-seam',
-    '2-seam',
-    'cutter',
-    'sinker',
-    'curveball',
-    'slider',
-    'knuckle-curve',
-    'changeup',
-    'splitter',
-    'eephus',
-    'pitchout',
-    'intentional ball',
-    'knuckleball',
-    'screwball',
-    'unknown'
-];
+export const allPitchTypes = (): string[] => {
+    return [
+        '4-seam',
+        '2-seam',
+        'cutter',
+        'sinker',
+        'curveball',
+        'slider',
+        'knuckle-curve',
+        'changeup',
+        'splitter',
+        'eephus',
+        'pitchout',
+        'intentional ball',
+        'knuckleball',
+        'screwball',
+        'unknown'
+    ];
+}
 
 export let $: (id: string) => HTMLElement;
 if (usingNode()) {

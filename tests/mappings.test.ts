@@ -1,5 +1,7 @@
 import { GameState } from "../src/baseballLogic/GameState";
-import { stateToInd, pitchToInd, numStates, numActions } from "../src/ml/mappings";
+import { stateToInd, pitchToInd, numStates, numActions, numAttributes, getFeature } from "../src/ml/mappings";
+import { randInt } from "../src/utils/random";
+import { readAllPitchers } from "../src/baseballLogic/Pitcher";
 
 test('state to ind', () => {
     let used = new Set<number>();
@@ -31,3 +33,24 @@ test('pitch to ind', () => {
     }
 });
 
+test('getFeature', () => {
+    const pitcher = readAllPitchers()['Felix Hernandez']
+    for (let i = 0; i < 50; i++) {
+        let state = new GameState();
+        state.balls = randInt(4);
+        state.strikes = randInt(3);
+        state.outs = randInt(2);
+        state.lineup = ['L', 'R'];
+        state.pitcher = pitcher;
+        state.lineSpot = randInt(state.lineup.length);
+
+        for (const pitch in state.pitcher.pitches) {
+            const feat = getFeature(pitch, state);
+            expect(feat.length).toBe(numAttributes());
+            for (const attr of feat) {
+                expect(attr).toBeLessThanOrEqual(1);
+                expect(attr).toBeGreaterThanOrEqual(0);
+            }
+        }
+    }
+});

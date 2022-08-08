@@ -2,8 +2,8 @@ import { MachineLearning } from "./MachineLearning.js";
 import { Matrix, inverse } from "../../../node_modules/ml-matrix/matrix.js";
 
 export class Regression extends MachineLearning {
-    degree: number;
-    w: Matrix;
+    protected _degree: number;
+    protected _w: Matrix;
 
     /**
      * Finds a line of best fit of nth degree to make predictions
@@ -11,8 +11,8 @@ export class Regression extends MachineLearning {
      */
     constructor(_degree: number = 2) {
         super();
-        this.degree = _degree;
-        this.w = undefined;
+        this._degree = _degree;
+        this._w = undefined;
     }
 
     fit(features: number[][], targets: number[]): void {
@@ -24,12 +24,12 @@ export class Regression extends MachineLearning {
             features[0].length
         ];
 
-        let zs = Matrix.ones(dims[0], dims[1] * this.degree + 1);
+        let zs = Matrix.ones(dims[0], dims[1] * this._degree + 1);
         for (let i = 0; i < dims[0]; i++) {
             for (let j = 0; j < dims[1]; j++) {
                 const point = featMat.get(i, j);
-                for (let d = 1; d < this.degree + 1; d++) {
-                    zs.set(i, j * this.degree + d, Math.pow(point, d));
+                for (let d = 1; d < this._degree + 1; d++) {
+                    zs.set(i, j * this._degree + d, Math.pow(point, d));
                 }
             }
         }
@@ -44,24 +44,24 @@ export class Regression extends MachineLearning {
         } catch (e) {
             inv = inverse(left, true);
         }
-        this.w = inv.mmul(zsT.mmul(tarMat));
+        this._w = inv.mmul(zsT.mmul(tarMat));
     }
 
     predict(features: number[][]): number[] {
-        if (!(this.w instanceof Matrix)) {
+        if (!(this._w instanceof Matrix)) {
             throw new Error(`Cannot predict before fitting!`);
         }
         if (features.length === 0) return [];
 
         const featMat = new Matrix(features);
         const dims = [features.length, features[0].length];
-        let preds = Matrix.mul(Matrix.ones(dims[0], 1), this.w.get(0, 0));
+        let preds = Matrix.mul(Matrix.ones(dims[0], 1), this._w.get(0, 0));
 
         for (let i = 0; i < dims[0]; i++) {
             for (let j = 0; j < dims[1]; j++) {
                 const point = featMat.get(i, j);
-                for (let d = 1; d < this.degree + 1; d++) {
-                    const toAdd = this.w.get(j * this.degree + d, 0) * Math.pow(point, d);
+                for (let d = 1; d < this._degree + 1; d++) {
+                    const toAdd = this._w.get(j * this._degree + d, 0) * Math.pow(point, d);
                     preds.set(i, 0, preds.get(i, 0) + toAdd);
                 }
             }
@@ -72,14 +72,14 @@ export class Regression extends MachineLearning {
 
     static fromObj(obj: { [key: string]: any; }): Regression {
         let res = new Regression(obj['degree']);
-        res.w = obj['w'];
+        res._w = obj['w'];
         return res;
     }
 
     toObj(): { [key: string]: any; } {
         return {
-            degree: this.degree,
-            w: this.w
+            degree: this._degree,
+            w: this._w
         };
     }
 }

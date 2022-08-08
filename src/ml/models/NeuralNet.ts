@@ -3,7 +3,7 @@ import { numAttributes } from "../mappings.js";
 import * as tf from "@tensorflow/tfjs-node";
 
 export class NeuralNet extends MachineLearning {
-    private net: tf.Sequential;
+    private _net: tf.Sequential;
 
     /**
      * A deep learning neural network
@@ -16,22 +16,22 @@ export class NeuralNet extends MachineLearning {
                 `Layer sizes need to have at least 2 numbers: ${layerSizes}`
             );
         }
-        this.net = tf.sequential();
+        this._net = tf.sequential();
         const active = 'linear';
-        this.net.add(tf.layers.dense({
+        this._net.add(tf.layers.dense({
             inputShape: [layerSizes[0]],
             units: layerSizes[1],
             activation: active
         }));
 
         for (let i = 2; i < layerSizes.length; i++) {
-            this.net.add(tf.layers.dense({
+            this._net.add(tf.layers.dense({
                 units: layerSizes[i],
                 activation: active
             }));
         }
 
-        this.net.compile({
+        this._net.compile({
             optimizer: tf.train.adam(),
             loss: tf.losses.meanSquaredError,
             metrics: [tf.metrics.meanAbsoluteError]
@@ -40,7 +40,7 @@ export class NeuralNet extends MachineLearning {
 
     async fit(features: number[][], targets: number[]) {
         if (features.length === 0) return;
-        await this.net.fit(
+        await this._net.fit(
             tf.tensor(features),
             tf.tensor(targets),
             {
@@ -55,7 +55,7 @@ export class NeuralNet extends MachineLearning {
     predict(features: number[][]): number[] {
         if (features.length === 0) return [];
 
-        const preds = this.net.predict(
+        const preds = this._net.predict(
             tf.tensor(features), 
             {
                 verbose: false

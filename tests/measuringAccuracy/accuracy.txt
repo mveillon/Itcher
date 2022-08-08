@@ -1,29 +1,29 @@
-AlwaysMean:
-	mse = 0.05048090383087601
-
-KNNBall:
-	mse = 0.05052790508027844
-
-KNNkd:
-	mse = 0.05042609403810468
-
-NeuralNet:
-	mse = 0.0508259103932007
+EnsembleNeuralNet:
+	mse = 0.04460903637304691
 
 Regression:
-	mse = 0.04964041316821821
+	mse = 0.04459742576384757
 
-EnsembleAlwaysMean:
-	mse = 0.05048090382991977
+KNNBall:
+	mse = 0.04472819292160595
 
-EnsembleKNNBall:
-	mse = 0.050502516679933884
+AlwaysMean:
+	mse = 0.04460718377521539
 
-EnsembleKNNkd:
-	mse = 0.05000121390346527
-
-EnsembleNeuralNet:
-	mse = 0.6081922871335539
+NeuralNet:
+	mse = 0.044610167618393176
 
 EnsembleRegression:
-	mse = 0.049640531389855726
+	mse = 0.0445972588367241
+
+EnsembleKNNBall:
+	mse = 0.04462110781894406
+
+EnsembleAlwaysMean:
+	mse = 0.04460718377198528
+
+EnsembleKNNkd:
+	mse = 0.04465192706089247
+
+KNNkd:
+	mse = 0.0447407917974167

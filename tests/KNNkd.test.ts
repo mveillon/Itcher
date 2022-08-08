@@ -2,11 +2,13 @@ import { KNNkd } from "../src/ml/models/KNNkd";
 import { trainLearner } from "../src/ml/trainTest";
 import { checkModel, defaultTimeout, training } from "./checkModel";
 import { BinaryTree } from "../src/utils/BinaryTree";
-import { mse } from "../src/ml/metrics";
+import { mse } from "../src/ml/calculations";
 import { trainFeatsTargs, validFeatsTargs } from "../src/ml/trainTest";
+import { kdFriend } from "./friends";
+
 jest.setTimeout(defaultTimeout)
 
-test('fake data', () => {
+test('fake data', async () => {
     let feats: number[][] = [];
     let targs: number[] = [];
     for (let i = 0; i < 20; i++) {
@@ -15,7 +17,7 @@ test('fake data', () => {
     }
 
     let knn = new KNNkd(1);
-    knn.fit(feats, targs);
+    await knn.fit(feats, targs);
 
     let valid: number[][] = [
         [
@@ -37,13 +39,13 @@ test('fake data', () => {
     expect(mse(knn.predict(valid), actual)).toBeLessThan(1);
 
     let knn2 = new KNNkd(2);
-    knn2.fit(feats, targs);
+    await knn2.fit(feats, targs);
     expect(mse(knn2.predict(valid), actual)).toBeLessThan(1);
 });
 
 test('train learner', async () => {
     if (training) {
-        let knn = new KNNkd(8);
+        let knn = new kdFriend(8);
         await trainLearner(knn);
         expect(knn.k).toBe(8);
         expect(typeof knn.features).not.toBe('undefined');
@@ -54,7 +56,7 @@ test('train learner', async () => {
         expect(knn.tree.right instanceof BinaryTree<number[][]>).toBe(true);
 
         expect(knn.features.length).toBeGreaterThan(10000);
-        expect(knn.features[0].length).toBe(6);
+        expect(knn.features[0].length).toBe(7);
         expect(knn.targets.length).toBe(knn.features.length);
 
         const minReward = Math.min(-2);

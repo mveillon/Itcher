@@ -3,10 +3,10 @@ import { MachineLearning } from "./models/MachineLearning.js";
 import { readAllPitchers, Pitcher } from "../baseballLogic/Pitcher.js";
 import { dataPaths, readSpreadSheet, sheet, sheetRow } from "../utils/files.js";
 import { usingNode } from "../utils/usingNode.js";
-import { resetState, state } from "../baseballLogic/GameState.js";
+import { GameState } from "../baseballLogic/GameState.js";
 import { rewards } from "./rewards.js";
 import { getFeature } from "./mappings.js";
-import { mse } from "./metrics.js";
+import { mse } from "./calculations.js";
 
 /**
  * Splits the spreadsheet into features and targets
@@ -36,7 +36,6 @@ const allFeatsTargs = (data: sheet): [number[][], number[]] => {
     const [features, targets] = allFeatsTargs(allData);
 
     await learner.fit(features, targets);
-    resetState();
 }
 
 /**
@@ -76,6 +75,7 @@ export const learnerMSE = (learner: MachineLearning): [number, number[]] => {
         throw new Error(`Undefined event with result ${result} and aid ${aid}`);
     }
     
+    let state = new GameState();
     state.pitcher = aidToPitcher(aid, allPitchers);    
     if (typeof state.pitcher === 'undefined') {
         return [[], 0];
@@ -98,7 +98,7 @@ export const learnerMSE = (learner: MachineLearning): [number, number[]] => {
 
     result = getPlayType(result, event);
     const target = rewards(result);
-    const features = getFeature(pitch);
+    const features = getFeature(pitch, state);
     
     return [features, target];
 }

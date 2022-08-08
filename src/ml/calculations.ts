@@ -96,3 +96,12 @@ export const variance = (x: number[]): number => {
     return avgVar(x)[1];
 }
 
+/**
+ * Sigmoid function to floor x to somewhere between 0 and 1
+ * @param x the number to reduce
+ * @returns $1 / (1 + e^-x)$
+ */
+export const sigmoid = (x: number): number => {
+    return 1 / (1 + Math.exp(-x));
+}
+

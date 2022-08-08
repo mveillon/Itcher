@@ -1,5 +1,7 @@
 - better accuracy, possibly with different models
 
+- resolve tensorflow inputs, as well as saving and loading model functionality
+
 - write index.html
 
 - add installation and running instructions to README

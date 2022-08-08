@@ -1,8 +1,7 @@
 import { MachineLearning } from "./MachineLearning.js";
-import { readJSON, writeJSON } from "../../utils/files.js";
 
 export class AlwaysMean extends MachineLearning {
-    mean: number;
+    private _mean: number;
 
     /**
      * Always predicts the mean of the targets supplied in training
@@ -10,28 +9,32 @@ export class AlwaysMean extends MachineLearning {
      */
     constructor() {
         super();
-        this.mean = 0;
+        this._mean = 0;
+    }
+
+    get mean(): number {
+        return this._mean;
     }
 
     fit(features: number[][], targets: number[]): void {
-        this.mean = targets.reduce((a, b) => a + b, 0) / targets.length;
+        this._mean = targets.reduce((a, b) => a + b, 0) / targets.length;
     }
 
     predict(features: number[][]): number[] {
         let res: number[] = [];
         for (let i = 0; i < features.length; i++) {
-            res.push(this.mean);
+            res.push(this._mean);
         }
         return res;
     }
 
     toObj(): { [key: string]: any } {
-        return { mean: this.mean };
+        return { _mean: this._mean };
     }
 
     static fromObj(obj: { [key: string]: any }): AlwaysMean {
         let res = new AlwaysMean();
-        res.mean = obj['mean'];
+        res._mean = obj['_mean'];
         return res;
     }
 }
