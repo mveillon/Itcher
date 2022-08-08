@@ -1,5 +1,5 @@
 EnsembleNeuralNet:
-	mse = 0.04460903637304691
+	mse = 0.04461522201089891
 
 Regression:
 	mse = 0.04459742576384757
@@ -11,19 +11,25 @@ AlwaysMean:
 	mse = 0.04460718377521539
 
 NeuralNet:
-	mse = 0.044610167618393176
+	mse = 0.04460708292849913
 
 EnsembleRegression:
-	mse = 0.0445972588367241
+	mse = 0.044597439112142576
+
+InteractionRegression:
+	mse = 0.044597417282354286
 
 EnsembleKNNBall:
-	mse = 0.04462110781894406
+	mse = 0.04461939611110695
 
 EnsembleAlwaysMean:
-	mse = 0.04460718377198528
+	mse = 0.044607183787319454
+
+EnsembleInteractionRegression:
+	mse = 0.04459744306372573
 
 EnsembleKNNkd:
-	mse = 0.04465192706089247
+	mse = 0.04461506175952499
 
 KNNkd:
-	mse = 0.0447407917974167
+	mse = 0.04485254163913952

@@ -23,7 +23,7 @@ export const stateToInd = (theState: GameState): number => {
     const factors = [
         theState.balls,
         theState.strikes,
-        Number(theState.pitcherPlatoon()),
+        +theState.pitcherPlatoon(),
     ];
     return dot(cumulative, factors);
 }

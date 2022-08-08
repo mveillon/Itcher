@@ -5,6 +5,7 @@ const DecisionTree = require("../../dist/ml/models/DecisionTree");
 const Ensemble = require("../../dist/ml/models/Ensemble");
 const KNNBall = require("../../dist/ml/models/KNNBall");
 const KNNkd = require("../../dist/ml/models/KNNkd");
+const InteractionRegression = require("../../dist/ml/models/InteractionRegression");
 const NeuralNet = require("../../dist/ml/models/NeuralNet");
 const Regression = require("../../dist/ml/models/Regression");
 
@@ -26,6 +27,7 @@ const learnerPreds = async () => {
         // 'DecisionTree': DecisionTree.decisionTree(),
         'KNNBall': KNNBall.knnBall(),
         'KNNkd': KNNkd.knnKD(),
+        'InteractionRegression': InteractionRegression.interactionRegression(),
         'NeuralNet': NeuralNet.neuralNet(),
         'Regression': Regression.regression(),
 
@@ -33,6 +35,7 @@ const learnerPreds = async () => {
         // 'EnsembleDecisionTree': new Ensemble.Ensemble(DecisionTree.decisionTree),
         'EnsembleKNNBall': new Ensemble.Ensemble(KNNBall.knnBall, numChildren),
         'EnsembleKNNkd': new Ensemble.Ensemble(KNNkd.knnKD, numChildren),
+        'EnsembleInteractionRegression': new Ensemble.Ensemble(InteractionRegression.interactionRegression, numChildren),
         'EnsembleNeuralNet': new Ensemble.Ensemble(NeuralNet.neuralNet, numChildren),
         'EnsembleRegression': new Ensemble.Ensemble(Regression.regression, numChildren),
     };
@@ -60,7 +63,7 @@ const learnerPreds = async () => {
     }
 
     const endTime = performance.now();
-    console.log(`\nFinished in ${(endTime - startTime) / 1000} seconds\n`);
+    console.log(`\nFinished in ${(endTime - startTime) / 60_000} minutes\n`);
     // then go to Python for plots
 }
 

@@ -9,30 +9,16 @@ export class Regression extends MachineLearning {
      * Finds a line of best fit of nth degree to make predictions
      * @param _degree the degree of the polynomial describing the trendline
      */
-    constructor(_degree: number = 2) {
+    constructor(degree: number = 2) {
         super();
-        this._degree = _degree;
+        this._degree = degree;
         this._w = undefined;
     }
 
     fit(features: number[][], targets: number[]): void {
         if (features.length === 0) return;
-        const featMat = new Matrix(features);
         const tarMat = Matrix.columnVector(targets);
-        const dims = [
-            features.length,
-            features[0].length
-        ];
-
-        let zs = Matrix.ones(dims[0], dims[1] * this._degree + 1);
-        for (let i = 0; i < dims[0]; i++) {
-            for (let j = 0; j < dims[1]; j++) {
-                const point = featMat.get(i, j);
-                for (let d = 1; d < this._degree + 1; d++) {
-                    zs.set(i, j * this._degree + d, Math.pow(point, d));
-                }
-            }
-        }
+        const zs = this.fitZs(features, targets);
 
         const zsT = zs.transpose();
 
@@ -48,26 +34,10 @@ export class Regression extends MachineLearning {
     }
 
     predict(features: number[][]): number[] {
-        if (!(this._w instanceof Matrix)) {
-            throw new Error(`Cannot predict before fitting!`);
-        }
         if (features.length === 0) return [];
 
-        const featMat = new Matrix(features);
-        const dims = [features.length, features[0].length];
-        let preds = Matrix.mul(Matrix.ones(dims[0], 1), this._w.get(0, 0));
-
-        for (let i = 0; i < dims[0]; i++) {
-            for (let j = 0; j < dims[1]; j++) {
-                const point = featMat.get(i, j);
-                for (let d = 1; d < this._degree + 1; d++) {
-                    const toAdd = this._w.get(j * this._degree + d, 0) * Math.pow(point, d);
-                    preds.set(i, 0, preds.get(i, 0) + toAdd);
-                }
-            }
-        }
-
-        return matToArray(preds);
+        const res = this.predictZs(features).mmul(this._w);
+        return matToArray(res);
     }
 
     static fromObj(obj: { [key: string]: any; }): Regression {
@@ -82,6 +52,39 @@ export class Regression extends MachineLearning {
             w: this._w
         };
     }
+
+    /**
+     * Augments the features array to include the polynomial terms
+     * @param features the set of attributes
+     * @param targets the rewards
+     * @returns an augmented feature array to use to find w
+     */
+    protected fitZs(features: number[][], targets: number[]): Matrix {
+        let zs = Matrix.ones(
+            features.length, 
+            features[0].length * this._degree + 1
+        );
+        
+        for (let i = 0; i < features.length; i++) {
+            for (let j = 0; j < features[0].length; j++) {
+                const point = features[i][j];
+                for (let d = 1; d < this._degree + 1; d++) {
+                    zs.set(i, j * this._degree + d, Math.pow(point, d));
+                }
+            }
+        }
+
+        return zs;
+    }
+
+    /**
+     * Augments the features array to be compatible with w
+     * @param features the set of attributes
+     * @returns the augmented features
+     */
+    protected predictZs(features: number[][]): Matrix {
+        return this.fitZs(features, []);
+    }
 }
 
 /**
@@ -90,7 +93,7 @@ export class Regression extends MachineLearning {
  * @returns the vector as an Array
  */
 export const matToArray = (mat: Matrix): number[] => {
-    let res = [];
+    let res: number[] = [];
     for (let i = 0; i < mat.rows; i++) {
         res.push(mat.get(i, 0));
     }

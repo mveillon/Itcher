@@ -105,3 +105,37 @@ export const sigmoid = (x: number): number => {
     return 1 / (1 + Math.exp(-x));
 }
 
+/**
+ * Returns the pearson correlation between x and y
+ * @param x the first array
+ * @param y the second array
+ * @returns the correlation between x and y
+ */
+export const correlation = (x: number[], y: number[]): number => {
+    let minLen;
+    if (x.length === y.length) {
+        minLen = x.length;
+    } else if (x.length < y.length) {
+        minLen = x.length;
+        y = y.slice(0, minLen);
+    } else {
+        minLen = y.length;
+        x = x.slice(0, minLen);
+    }
+    
+    const xAvg = average(x);
+    const yAvg = average(y);
+    let num = 0;
+    let denom = [0, 0];
+
+    for (let i = 0; i < minLen; i++) {
+        const xDiff = x[i] - xAvg;
+        const yDiff = y[i] - yAvg;
+        num += xDiff * yDiff;
+        denom[0] += Math.pow(xDiff, 2);
+        denom[1] += Math.pow(yDiff, 2);
+    }
+
+    return num / Math.sqrt(denom[0] * denom[1]);
+}
+

@@ -1,4 +1,4 @@
-import { mse, squareDistance, manhattanDistance, squaredMag, dot, average, variance, sigmoid } from "../src/ml/calculations";
+import { mse, squareDistance, manhattanDistance, squaredMag, dot, average, variance, sigmoid, correlation } from "../src/ml/calculations";
 import { upTo } from "../src/utils/utilities";
 
 test('mse', () => {
@@ -68,4 +68,12 @@ test('sigmoid', () => {
         expect(s[i]).toBeLessThanOrEqual(1);
         expect(s[i]).toBeGreaterThanOrEqual(s[i - 1]);
     }
+});
+
+test('correlation', () => {
+    expect(correlation([1, 2, 3], [4, 5, 6])).toBeCloseTo(1);
+    expect(correlation([1, 2, 3], [-1, -2, -3])).toBeCloseTo(-1);
+    expect(correlation([0, 1], [1, 2, 3])).toBeCloseTo(1);
+    expect(correlation([0, 1, 2], [1, 2])).toBeCloseTo(1);
+    expect(correlation([1, 2, 3], [4, 3, 4])).toBeCloseTo(0);
 });
