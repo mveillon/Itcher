@@ -1,4 +1,4 @@
-import { Regression, matToArray } from "./Regression.js";
+import { Regression } from "./Regression.js";
 import { correlation } from "../calculations.js";
 import { Matrix } from "../../../node_modules/ml-matrix/matrix.js";
 import { upTo } from "../../utils/utilities.js";
@@ -8,9 +8,11 @@ export class InteractionRegression extends Regression {
     protected _minCorr: number;
 
     /**
-     * Like polynomial regression but 
-     * @param degree 
-     * @param minCorr 
+     * Like polynomial regression but also multiplies different attributes together, 
+     * automatically pruning which combinations to use based on their correlation with 
+     * targets
+     * @param degree the maximum number of attributes to be used in any one term
+     * @param minCorr the minimum correlation allowed for any given term to be selected
      */
     constructor(degree: number = 2, minCorr: number = 0.1) {
         super(degree);
@@ -63,7 +65,7 @@ export class InteractionRegression extends Regression {
 
         for (const c of combos) {
             if (c.length <= 1) continue;
-            
+
             let x: number[] = [];
             for (let i = 0; i < features.length; i++) {
                 let total = 0;
