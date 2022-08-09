@@ -168,7 +168,9 @@ export class GameState {
         this.newBatter();
         let tailRunner = 0;
 
-        while (tailRunner < this.bases.length && this.bases[tailRunner++]) { }
+        while (tailRunner < this.bases.length && this.bases[tailRunner]) { 
+            tailRunner++;
+        }
 
         if (tailRunner < this.bases.length) {
             this.bases[tailRunner] = true;
