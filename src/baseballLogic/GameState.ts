@@ -127,7 +127,7 @@ export class GameState {
         this.newBatter();
 
         /* Runner on third */
-        if (this.bases[2]) this.bases[2] = false;
+        this.bases[2] = false;
 
         /* Runner on second */
         if (this.bases[1]) {
@@ -168,9 +168,7 @@ export class GameState {
         this.newBatter();
         let tailRunner = 0;
 
-        while (tailRunner < this.bases.length && this.bases[tailRunner]) {
-            tailRunner++;
-        }
+        while (tailRunner < this.bases.length && this.bases[tailRunner++]) { }
 
         if (tailRunner < this.bases.length) {
             this.bases[tailRunner] = true;
@@ -188,8 +186,10 @@ export class GameState {
     }
 
     foul() {
-        this.backup();
-        this._strikes = Math.min(this._strikes + 1, 2);
+        if (this._strikes < 2) {
+            this.backup();
+            this.strikes += 1;
+        }
     }
 
     single() {
@@ -219,6 +219,7 @@ export class GameState {
     }
 
     doublePlay() {
+        this.backup();
         this.newBatter();
         this.outs += 2;
         this.bases[0] = false;
@@ -239,14 +240,10 @@ export let state = new GameState();
  * @param keepStates whether to retain the old backups. Default is true
  */
 export const resetState = (
-    keepPitcher?: boolean, 
-    keepLineup?: boolean, 
-    keepStates?: boolean
+    keepPitcher: boolean = true, 
+    keepLineup: boolean = true, 
+    keepStates: boolean = true
     ) => {
-    if (typeof keepPitcher === 'undefined') keepPitcher = true;
-    if (typeof keepLineup === 'undefined') keepLineup = true;
-    if (typeof keepStates === 'undefined') keepStates = true;
-
     const oldPitch = state.pitcher;
     const oldLine = state.lineup;
     state.backup();

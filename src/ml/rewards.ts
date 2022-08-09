@@ -76,8 +76,9 @@ export const rewards = (res: string): number => {
             ];
             break;
         case 'f':
-            if (state.strikes === 0) return 0;
+            if (state.strikes === 2) return 0;
             else return rewards('k');
+            break;
         default:
             throw new Error(`Unexpected result: ${res}`);
             break;

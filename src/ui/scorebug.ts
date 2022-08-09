@@ -66,11 +66,7 @@ export const changeLineup = (newLineup: string[]) => {
         let diff = false;
         for (let i = 0; i < newLineup.length; i++) {
             if (!allowed.includes(newLineup[i])) return;
-
-            if (newLineup[i] !== state.lineup[i]) {
-                diff = true;
-                break;
-            }
+            diff ||= newLineup[i] !== state.lineup[i];
         }
         if (!diff) return;
     }

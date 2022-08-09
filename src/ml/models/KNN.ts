@@ -1,6 +1,7 @@
 import { MachineLearning } from "./MachineLearning.js";
 import { BinaryTree } from "../../utils/BinaryTree.js";
 import { average } from "../calculations.js"
+import { upTo } from "../../utils/utilities.js";
 
 export abstract class KNN extends MachineLearning {
     protected _features: number[][];
@@ -25,7 +26,7 @@ export abstract class KNN extends MachineLearning {
         this._features = features;
         this._targets = targets;
 
-        let inds: number[] = [...new Array(this._features.length).keys()]
+        let inds: number[] = upTo(this._features.length);
         const _tree = this.buildTree(inds);
         if (_tree instanceof BinaryTree<number[]>) {
             this._tree = _tree;
