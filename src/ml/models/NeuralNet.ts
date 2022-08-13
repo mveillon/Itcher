@@ -17,24 +17,30 @@ export class NeuralNet extends MachineLearning {
             );
         }
         this._net = tf.sequential();
-        const active = 'linear';
         this._net.add(tf.layers.dense({
             inputShape: [layerSizes[0]],
             units: layerSizes[1],
-            activation: active
+            activation: 'relu'
         }));
 
-        for (let i = 2; i < layerSizes.length; i++) {
+        for (let i = 2; i < layerSizes.length - 1; i++) {
             this._net.add(tf.layers.dense({
                 units: layerSizes[i],
-                activation: active
+                activation: 'relu'
+            }));
+        }
+
+        if (layerSizes.length > 2) {
+            this._net.add(tf.layers.dense({
+                units: layerSizes[layerSizes.length - 1],
+                activation: 'sigmoid'
             }));
         }
 
         this._net.compile({
             optimizer: tf.train.adam(),
-            loss: tf.losses.meanSquaredError,
-            metrics: [tf.metrics.meanAbsoluteError]
+            loss: tf.losses.sigmoidCrossEntropy,
+            metrics: [tf.metrics.meanSquaredError]
         });
     }
 
@@ -81,5 +87,5 @@ export class NeuralNet extends MachineLearning {
  * @returns default neural net
  */
  export const neuralNet = (numInputs: number = numAttributes()): NeuralNet => {
-    return new NeuralNet(numInputs, 64, 16, 16, 1);
+    return new NeuralNet(numInputs, 1024, 1);
 }

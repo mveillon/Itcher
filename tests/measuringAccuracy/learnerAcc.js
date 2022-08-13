@@ -41,7 +41,7 @@ const learnerPreds = async () => {
     };
 
     const [trainFeats, trainTargs] = trainTest.trainFeatsTargs();
-    const [validFeats, validTargs] = trainTest.validFeatsTargs();        
+    const [validFeats, validTargs] = trainTest.validFeatsTargs();  
     const root = "./tests/measuringAccuracy/";
     const err = (error) => { if (error) console.log(error); };
     fs.writeFile(root + "targs.txt", validTargs.join(','), err);

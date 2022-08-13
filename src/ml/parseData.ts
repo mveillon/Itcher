@@ -24,6 +24,10 @@ export const aidToPitcher = (aid: number, allPitchers: { [key: string]: Pitcher 
  * @returns the play type as a key into rewards
  */
 export const getPlayType = (result: string, event: string): string => {
+    if (!(result in playTypes)) {
+        throw new Error(`Unexpected result: ${result}`);
+    }
+
     result = playTypes[result];
     const outTypes = new Set([
         'Flyout', 
@@ -36,6 +40,7 @@ export const getPlayType = (result: string, event: string): string => {
         'Forceout',
         'Sac Bunt',
         'Fan Interference',
+        'Batter Interference',
     ]);
 
     if (result === 'ibb') {
@@ -82,9 +87,44 @@ export const getPlayType = (result: string, event: string): string => {
 }
 
 /**
- * Goes through the data and records all pitchers in it
+ * Goes through the train, validation, and testing sets and finds all pitchers present
  */
-export const findAllPitchers = () => {
+export const findAllPitchers = ()  => {
+    let accum: { [key: string]: Pitcher } = {}; 
+    const paths = [
+        dataPaths.train,
+        dataPaths.valid,
+        dataPaths.test,
+    ];
+
+    for (const pth of paths) {
+        pitchersInSheet(pth, accum);
+    }
+    
+    for (const player in accum) {
+        let total = 0;
+        for (const p in accum[player].pitches) {
+            const pitchO = accum[player].pitches[p];
+            total += pitchO.timesThrown;
+            pitchO.velo /= pitchO.timesThrown;
+            pitchO.spinRate /= pitchO.timesThrown;
+            pitchO.spinDirection /= pitchO.timesThrown;
+        }
+
+        for (const p in accum[player].pitches) {
+            accum[player].pitches[p].timesThrown /= total;
+        }
+    }
+
+    writeJSON(pitcherPath, accum);
+}
+
+/**
+ * Goes through the data at path and records all pitchers in it
+ * @param path where to find the spreadsheet of all pitches to read
+ * @param pitchers the JSONs read thus far. This will be updated by the function
+ */
+const pitchersInSheet = (path: string, pitchers: { [key: string]: Pitcher }) => {
     let names = readSpreadSheet(dataPaths.playerNames);
     for (const player of names) {
         idToName.set(parseInt(player['id']), `${player['first_name']} ${player['last_name']}`);
@@ -112,8 +152,7 @@ export const findAllPitchers = () => {
     }
     abs = undefined;
 
-    let pitches = readSpreadSheet(dataPaths.pitches);
-    let pitchers: { [key: string]: Pitcher } = {};
+    let pitches = readSpreadSheet(path);
     for (const p of pitches) {
         const pid = abToPitcher.get(parseInt(p['ab_id']));
         const playerName = idToName.get(pid);
@@ -142,24 +181,6 @@ export const findAllPitchers = () => {
             pitchObj.spinDirection += sDirec;
         }
     }
-    pitches = undefined;
-
-    for (const player in pitchers) {
-        let total = 0;
-        for (const p in pitchers[player].pitches) {
-            const pitchO = pitchers[player].pitches[p];
-            total += pitchO.timesThrown;
-            pitchO.velo /= pitchO.timesThrown;
-            pitchO.spinRate /= pitchO.timesThrown;
-            pitchO.spinDirection /= pitchO.timesThrown;
-        }
-
-        for (const p in pitchers[player].pitches) {
-            pitchers[player].pitches[p].timesThrown /= total;
-        }
-    }
-
-    writeJSON(pitcherPath, pitchers);    
 }
 
 export const pitchAbbreviations: { [key: string]: string } = {

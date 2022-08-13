@@ -1,32 +1,31 @@
-import pandas as pd
 import numpy as np
 from typing import Tuple, List
+from os import remove
+from os.path import exists
+from argparse import ArgumentParser
+from math import ceil
 
 ROOT_DIR = 'src/ml/data/'
+EXTENSION = '.ignore.csv'
+NUM_ATTRS = 40
 
 """
 pitches.ignore.csv shape is (2_867_154, 40)
-pitches_reduced.csv is a scaled down version for testing
-  shape is only (300_000, 40)
-pitches reduced generated with the following Unix command
-`> head -300001 src/allData/pitches.ignore.csv > src/ml/data/pitches_reduced.ignore.csv`
 """
 
-def get_csv(path: str) -> np.ndarray:
-    """Reads the csv at path and returns it."""
-    return pd.read_csv(path).to_numpy(dtype = 'U64')
-
-def get_header(path: str) -> str:
-    """Returns the header of the csv file at path"""
-    with open(path, 'r') as sheet:
-        return next(iter(sheet)).replace('\n', '')
-
-def split(path: str, splits: List[float]) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Splits the csv at path into train set, validation set, and testing set."""
-    assert np.isclose(sum(splits), 1), 'Splits must add up to 1!'
-    all_data = get_csv(path)
-    print(f'Shape of all data: {all_data.shape}')
-
+def lines_to_arr(lines: List[str]) -> np.ndarray:
+    """Converts the list of lines to a 2D array."""
+    arr = [ line.split(',') for line in lines ]
+    for i in range(len(arr)):
+        if len(arr[i]) != NUM_ATTRS:
+            arr[i][-1] = arr[i][-1][:-1]
+            arr[i] += [''] * (NUM_ATTRS - len(arr[i]))
+            arr[i][-1] += '\n'
+    return np.array(arr, dtype='U32')
+    
+def split(data: List[str], splits: List[float]) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Splits the data into train set, validation set, and testing set."""
+    all_data = lines_to_arr(data)
     np.random.shuffle(all_data)
     train_end = round(all_data.shape[0] * splits[0])
     valid_end = round(all_data.shape[0] * (splits[0] + splits[1]))
@@ -36,28 +35,118 @@ def split(path: str, splits: List[float]) -> Tuple[np.ndarray, np.ndarray, np.nd
     test_set = all_data[valid_end:]
     return train_set, valid_set, test_set
 
-def main(splits: List[float] = [0.5, 0.3, 0.2]):
-    """Splits pitches.ignore.csv and saves the output files"""
-    pth = ROOT_DIR + 'pitches_reduced.ignore.csv'
-    train, valid, test = split(pth, splits)
-    head = get_header(pth)
-    print('Split complete')
-    sets = {
-        'train.csv': train,
-        'valid.csv': valid,
-        'test.csv': test
+def save_splits(train: np.ndarray, valid: np.ndarray, test: np.ndarray):
+    """Appends the datasets to the pre-existing spreadsheets."""
+    paths = {
+        'train': train,
+        'valid': valid,
+        'test': test
     }
-    for path in sets:
-        # why are literally all of the default arguments wrong for np.savetxt
-        np.savetxt(
-            ROOT_DIR + path,
-            sets[path],
-            fmt = '%s',
-            delimiter = ',',
-            header = head,
-            comments = ''
-        )
-        print(path + f' writing complete: {sets[path].shape}')
+    for pth in paths:
+        with open(ROOT_DIR + pth + EXTENSION, 'a') as f:
+            lines = [ ','.join(line) for line in paths[pth] ]
+            f.write(''.join(lines))
+
+def clear_splits(header: str):
+    """Deletes the old split spreadsheets."""
+    paths = (
+        'train',
+        'valid',
+        'test'
+    )
+    for pth in paths:
+        sheet_path = ROOT_DIR + pth + EXTENSION
+        if exists(sheet_path): remove(sheet_path)
+        with open(sheet_path, 'w') as f:
+            f.write(header)
+
+def batch_manager(
+        splits: List[float], 
+        batch_size: int, 
+        num_batches: int
+    ):
+    """Splits pitches.ignore.csv and saves the output files.
+    
+    Args:
+        splits: fractional size of training, validation, and testing sets, respectively
+        batch_size: how many lines of the main file to process in each batch
+        num_batches: how many batches to do. If None, will just process the whole file
+
+    Returns:
+        None
+    """
+    data = np.empty((batch_size,), dtype='U256')
+    i = 0
+    batch_ind = 0
+    pth = ROOT_DIR + 'pitches.ignore.csv'
+
+    with open(pth, 'r') as f:
+        clear_splits(f.readline())
+        print('Files cleared')
+
+        for line in f:
+            data[i % batch_size] = line
+            i += 1
+            if i % batch_size == 0:
+                print(f'Saving batch {batch_ind}')
+                save_splits(*split(data, splits))
+                batch_ind += 1
+                if batch_ind == num_batches:
+                    print('Done!')
+                    return
+        
+        print('End of file reached')
+
+def main():
+    parser = ArgumentParser(
+        description = 'Splits data into train, validation, and testing sets'
+    )
+    parser.add_argument(
+        '-s', 
+        '--splits',
+        type=int,
+        nargs=3,
+        help='Fractional size of training, validation, and testing sets, respectively',
+        default=[0.5, 0.3, 0.2]
+    )
+    parser.add_argument(
+        '-b',
+        '--batchsize',
+        type=int,
+        help='How large each batch should be',
+    )
+    parser.add_argument(
+        '-c',
+        '--countbatches',
+        type=int,
+        help='How many batches to process. If zero, will process the whole file',
+    )
+    parser.add_argument(
+        '-r',
+        '--numrows',
+        type=int,
+        help="How many rows to include",
+    )
+    args = parser.parse_args()
+    if args.batchsize and args.countbatches and args.numrows:
+        raise ValueError('All of batchsize, countbatches, and numrows cannot be provided')
+    
+    batch_size = 100_000
+    num_batches = 5
+    if args.numrows:
+        if args.batchsize:
+            batch_size = args.batchsize
+        elif args.countbatches:
+            num_batches = args.countbatches
+            batch_size = min(batch_size, args.numrows)
+        else:
+            batch_size = min(batch_size, args.numrows)
+            num_batches = ceil(args.numrows / batch_size)
+    else:
+        if args.batchsize: batch_size = args.batchsize
+        if args.countbatches: num_batches = args.countbatches
+    
+    batch_manager(args.splits, batch_size, num_batches)
 
 if __name__ == '__main__':
     main()

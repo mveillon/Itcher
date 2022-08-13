@@ -65,7 +65,11 @@ export const extractFeaturesTargets = (
     let event = idToEvent.get(aid);    
     const pitch = pitchAbbreviations[play['pitch_type']];
 
-    if (isNaN(aid) || typeof pitch === 'undefined') {
+    if (
+        isNaN(aid) || 
+        typeof pitch === 'undefined' ||
+        result === ''
+    ) {
         return [[], 0];
     } 
     if (typeof result === 'undefined') {

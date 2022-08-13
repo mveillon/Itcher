@@ -16,7 +16,7 @@ def mse(x: np.ndarray, y: np.ndarray) -> float:
 def txt_to_np(path: str) -> np.ndarray:
     """Reads the text file and converts it to a numpy array."""
     with open(path, 'r') as f:
-        line = next(iter(f)).split(',')
+        line = f.readline().split(',')
         return np.fromiter(map(float, line), dtype = float, count = len(line))
 
 def plot_accuracy(learner_name: str) -> str:
