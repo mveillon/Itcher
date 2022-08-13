@@ -132,10 +132,12 @@ export const findAllPitchers = () => {
             }
             const sRate = parseFloat(p['spin_rate']);
             const sDirec = parseFloat(p['spin_dir']);
-            if (isNaN(sRate) || isNaN(sDirec)) continue;
+            const velo = parseFloat(p['start_speed']);
+            if (isNaN(sRate) || isNaN(sDirec) || isNaN(velo)) continue;
 
             const pitchObj = pitchers[playerName].pitches[pitchName];
             pitchObj.timesThrown += 1;
+            pitchObj.velo += velo;
             pitchObj.spinRate += sRate;
             pitchObj.spinDirection += sDirec;
         }
@@ -147,6 +149,7 @@ export const findAllPitchers = () => {
         for (const p in pitchers[player].pitches) {
             const pitchO = pitchers[player].pitches[p];
             total += pitchO.timesThrown;
+            pitchO.velo /= pitchO.timesThrown;
             pitchO.spinRate /= pitchO.timesThrown;
             pitchO.spinDirection /= pitchO.timesThrown;
         }

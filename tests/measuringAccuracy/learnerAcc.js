@@ -14,7 +14,7 @@ const { performance } = require('perf_hooks');
 
 /**
  * Saves the predictions of every ML model available. 
- * To run this code with the Python:
+ * To run this code from the root directory with the Python:
  * `> tsc; node tests/measuringAccuracy/learnerAcc.js; python3 tests/measuringAccuracy/learnerAcc.py`
  */
 const learnerPreds = async () => {

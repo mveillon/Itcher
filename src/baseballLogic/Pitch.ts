@@ -1,6 +1,7 @@
 export type pitchJSON = {
     name: string,
     timesThrown: number,
+    velo: number,
     spinRate: number,
     spinDirection: number
 };
@@ -8,6 +9,7 @@ export type pitchJSON = {
 export class Pitch {
     name: string;
     timesThrown: number;
+    velo: number;
     spinRate: number;
     spinDirection: number;
 
@@ -18,6 +20,7 @@ export class Pitch {
     constructor(_name: string) {
         this.name = _name;
         this.timesThrown = 0;
+        this.velo = 0;
         this.spinRate = 0;
         this.spinDirection = 0;
     }
@@ -30,6 +33,7 @@ export class Pitch {
     static fromObj(obj: pitchJSON): Pitch {
         let res = new Pitch(obj.name);
         res.timesThrown = obj.timesThrown;
+        res.velo = obj.velo;
         res.spinRate = obj.spinRate;
         res.spinDirection = obj.spinDirection;
         return res;

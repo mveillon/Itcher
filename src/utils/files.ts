@@ -1,6 +1,6 @@
 /* AVERT YOUR EYES - THIS IS THE HELL REQUIRED TO READ A FILE IN JS */
-let readFile: (path: string, encoding?: string) => string;
-let writeFile: (path: string, data: string) => void;
+export let readFile: (path: string, encoding?: string) => string;
+export let writeFile: (path: string, data: string) => void;
 import { usingNode } from "./usingNode.js";
 
 if (usingNode()) {

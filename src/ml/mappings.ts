@@ -1,6 +1,7 @@
 import { GameState } from "../baseballLogic/GameState.js";
 import { allPitchTypes } from "../utils/utilities.js";
 import { dot, sigmoid } from "./calculations.js";
+import { Pitch } from "../baseballLogic/Pitch.js";
 
 const maxes = [
     4, // max number of balls
@@ -32,7 +33,11 @@ export const stateToInd = (theState: GameState): number => {
  * @returns the width of the features array
  */
 export const numAttributes = (): number => {
-    return 7;
+    let state = new GameState();
+    state.pitcher.hand = 'R';
+    state.lineup = ['R'];
+    state.pitcher.pitches = { '4-seam': new Pitch('4-seam') };
+    return getFeature('4-seam', state).length;
 }
 
 /**
@@ -48,7 +53,7 @@ export const getFeature = (pitch: string, state: GameState): number[] => {
         state.balls,
         state.strikes,
         +state.pitcherPlatoon(),
-        pitchO.timesThrown,
+        pitchO.velo,
         pitchO.spinRate,
         Math.sin(radDirec),
         Math.cos(radDirec),

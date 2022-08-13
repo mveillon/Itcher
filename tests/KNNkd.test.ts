@@ -5,6 +5,7 @@ import { BinaryTree } from "../src/utils/BinaryTree";
 import { mse } from "../src/ml/calculations";
 import { trainFeatsTargs, validFeatsTargs } from "../src/ml/trainTest";
 import { kdFriend } from "./friends";
+import { numAttributes } from "../src/ml/mappings";
 
 jest.setTimeout(defaultTimeout)
 
@@ -56,7 +57,7 @@ test('train learner', async () => {
         expect(knn.tree.right instanceof BinaryTree<number[][]>).toBe(true);
 
         expect(knn.features.length).toBeGreaterThan(10000);
-        expect(knn.features[0].length).toBe(7);
+        expect(knn.features[0].length).toBe(numAttributes());
         expect(knn.targets.length).toBe(knn.features.length);
 
         const minReward = Math.min(-2);

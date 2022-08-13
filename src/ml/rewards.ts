@@ -1,4 +1,4 @@
-import { state } from "../baseballLogic/GameState.js";
+import { GameState } from "../baseballLogic/GameState.js";
 
 /**
  * Finds the reward given the current reward and what happened
@@ -6,7 +6,7 @@ import { state } from "../baseballLogic/GameState.js";
  * @param res what happened
  * @returns the run value of that pitch
  */
-export const rewards = (res: string): number => {
+export const rewards = (res: string, state: GameState): number => {
     let count: number[][];
     switch (res) {
         case 'k':
@@ -27,10 +27,10 @@ export const rewards = (res: string): number => {
             break;
         case 'kk':
             // included for legacy reasons basically
-            return rewards('k');
+            return rewards('k', state);
             break;
         case 'bb':
-            return rewards('b');
+            return rewards('b', state);
             break;
         case '1b':
             count = [
@@ -65,7 +65,7 @@ export const rewards = (res: string): number => {
             ];
             break;
         case 'dp':
-            return rewards('o') * 2;
+            return rewards('o', state) * 2;
             break;
         case 'o':
             count = [
@@ -77,7 +77,7 @@ export const rewards = (res: string): number => {
             break;
         case 'f':
             if (state.strikes === 2) return 0;
-            else return rewards('k');
+            else return rewards('k', state);
             break;
         default:
             throw new Error(`Unexpected result: ${res}`);

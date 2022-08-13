@@ -55,7 +55,7 @@ export const learnerMSE = (learner: MachineLearning): [number, number[]] => {
  * @param play one row of data
  * @returns the features of that row and the target
  */
- const extractFeaturesTargets = (
+export const extractFeaturesTargets = (
     play: sheetRow, 
     allPitchers: { [key: string]: Pitcher }
     ): [number[], number] => {
@@ -97,7 +97,7 @@ export const learnerMSE = (learner: MachineLearning): [number, number[]] => {
     state.outs = parseInt(play['outs']);
 
     result = getPlayType(result, event);
-    const target = rewards(result);
+    const target = rewards(result, state);
     const features = getFeature(pitch, state);
     
     return [features, target];
