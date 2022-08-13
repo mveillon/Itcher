@@ -6,7 +6,7 @@ import { numAttributes } from "../src/ml/mappings";
 jest.setTimeout(defaultTimeout);
 
 test('overall sensibility', async () => {
-    await checkModel(new NeuralNet(numAttributes(), 32, 128, 1));
+    await checkModel(new NeuralNet(numAttributes(), 1024, 1));
 });
 
 const searching = false;

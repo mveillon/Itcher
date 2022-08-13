@@ -1,6 +1,8 @@
 import { MachineLearning } from "./MachineLearning.js";
 import { numAttributes } from "../mappings.js";
 import * as tf from "@tensorflow/tfjs-node";
+import { validFeatsTargs } from "../trainTest.js";
+import { writeFile } from "../../utils/files.js";
 
 export class NeuralNet extends MachineLearning {
     private _net: tf.Sequential;
@@ -20,32 +22,34 @@ export class NeuralNet extends MachineLearning {
         this._net.add(tf.layers.dense({
             inputShape: [layerSizes[0]],
             units: layerSizes[1],
-            activation: 'relu'
+            activation: 'softsign'
         }));
 
         for (let i = 2; i < layerSizes.length - 1; i++) {
             this._net.add(tf.layers.dense({
                 units: layerSizes[i],
-                activation: 'relu'
+                activation: 'softsign'
             }));
         }
 
         if (layerSizes.length > 2) {
             this._net.add(tf.layers.dense({
-                units: layerSizes[layerSizes.length - 1],
-                activation: 'sigmoid'
-            }));
+                units: layerSizes[layerSizes.length - 1]
+            }))
         }
 
         this._net.compile({
             optimizer: tf.train.adam(),
-            loss: tf.losses.sigmoidCrossEntropy,
+            loss: tf.losses.meanSquaredError,
             metrics: [tf.metrics.meanSquaredError]
         });
     }
 
     async fit(features: number[][], targets: number[]) {
         if (features.length === 0) return;
+        const [validFeats, validTargs] = validFeatsTargs();
+        let trainAcc: number[] = [];
+        let validAcc: number[] = [];
         await this._net.fit(
             tf.tensor(features),
             tf.tensor(targets),
@@ -54,8 +58,18 @@ export class NeuralNet extends MachineLearning {
                 epochs: 30, 
                 batchSize: 64,
                 verbose: 0,
+                validationData: [tf.tensor(validFeats), tf.tensor(validTargs)],
+                callbacks: [new tf.CustomCallback({
+                    onEpochEnd: (batch, logs) => {
+                        trainAcc.push(logs.meanSquaredError);
+                        validAcc.push(logs.val_meanSquaredError);
+                    }
+                })]
             }
         );
+        const root = './src/ml/models/overfittingTest/';
+        writeFile(root + 'netTrainAcc.txt', trainAcc.join(','));
+        writeFile(root + 'netValidAcc.txt', validAcc.join(','));
     }
 
     predict(features: number[][]): number[] {
