@@ -4,15 +4,10 @@
         <meta charset="utf-8" />
         <title>ML Pitch Chooser</title>
         <link rel="stylesheet" type="text/css" href="./src/ui/styling.css">
-
-        <script type="module">
-            let exports = {};
-            import { main } from "./dist/main.js";
-            window.main = main;
-        </script>
+        <script src="bundle.js"></script>
     </head>
 
-    <body onload="main()">
+    <body onload="pitchChooser.init()">
         <div class="header-div">
             <h1>Pitch Chooser AI</h1>
         </div>
@@ -67,40 +62,5 @@
 
         </div>
 
-        <script type="module" src="./dist/main.js"></script>
-
-        <script type="module" src="./dist/baseballLogic/dispatch.js"></script>
-        <script type="module" src="./dist/baseballLogic/GameState.js"></script>
-        <script type="module" src="./dist/baseballLogic/Pitch.js"></script>
-        <script type="module" src="./dist/baseballLogic/Pitcher.js"></script>
-
-        <script type="module" src="./dist/ml/models/AlwaysMean.js"></script>
-        <script type="module" src="./dist/ml/models/DecisionTree.js"></script>
-        <script type="module" src="./dist/ml/models/Ensemble.js"></script>
-        <script type="module" src="./dist/ml/models/getLearner.js"></script>
-        <script type="module" src="./dist/ml/models/KNN.js"></script>
-        <script type="module" src="./dist/ml/models/KNNBall.js"></script>
-        <script type="module" src="./dist/ml/models/KNNkd.js"></script>
-        <script type="module" src="./dist/ml/models/InteractionRegression.js"></script>
-        <script type="module" src="./dist/ml/models/MachineLearning.js"></script>
-        <script type="module" src="./dist/ml/models/NeuralNet.js"></script>
-        <script type="module" src="./dist/ml/models/Regression.js"></script>
-
-        <script type="module" src="./dist/ml/calculations.js"></script>
-        <script type="module" src="./dist/ml/mappings.js"></script>
-        <script type="module" src="./dist/ml/nextPitch.js"></script>
-        <script type="module" src="./dist/ml/parseData.js"></script>
-        <script type="module" src="./dist/ml/rewards.js"></script>
-        <script type="module" src="./dist/ml/trainTest.js"></script>
-
-        <script type="module" src="./dist/ui/buttons.js"></script>
-        <script type="module" src="./dist/ui/scorebug.js"></script>
-
-        <script type="module" src="./dist/utils/BinaryTree.js"></script>
-        <script type="module" src="./dist/utils/files.js"></script>
-        <script type="module" src="./dist/utils/LinkedList.js"></script>
-        <script type="module" src="./dist/utils/random.js"></script>
-        <script type="module" src="./dist/utils/usingNode.js"></script>
-        <script type="module" src="./dist/utils/utilities.js"></script>
     </body>
 </html>

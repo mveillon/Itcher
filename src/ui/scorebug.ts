@@ -2,6 +2,7 @@ import { state } from "../baseballLogic/GameState.js";
 import { readAllPitchers } from "../baseballLogic/Pitcher.js";
 import { usingNode } from "../utils/usingNode.js";
 import { $ } from "../utils/utilities.js";
+import { nextPitch } from "../ml/nextPitch.js";
 
 /**
  * Toggles whether the base is occupied or not

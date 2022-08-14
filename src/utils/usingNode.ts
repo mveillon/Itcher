@@ -6,6 +6,7 @@
 export const usingNode = (): boolean => {
     return (
         typeof process !== 'undefined' &&
+        typeof process.release !== 'undefined' &&
         process.release.name.search(/node|io.js/) !== -1
     );
 }
