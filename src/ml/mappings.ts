@@ -55,10 +55,10 @@ export const getFeature = (pitch: string, state: GameState): number[] => {
         +state.pitcherPlatoon(),
         pitchO.velo,
         pitchO.spinRate,
-        Math.sin(radDirec),
         Math.cos(radDirec),
+        Math.sin(radDirec),
     ];
-    return res.map(sigmoid);
+    return res;
 }
 
 /**

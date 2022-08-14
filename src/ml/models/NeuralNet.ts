@@ -2,10 +2,10 @@ import { MachineLearning } from "./MachineLearning.js";
 import { numAttributes } from "../mappings.js";
 import * as tf from "@tensorflow/tfjs-node";
 import { validFeatsTargs } from "../trainTest.js";
-import { writeFile } from "../../utils/files.js";
+import { flatten } from "../../utils/arrayOps.js";
 
 export class NeuralNet extends MachineLearning {
-    private _net: tf.Sequential;
+    protected _net: tf.Sequential;
 
     /**
      * A deep learning neural network
@@ -18,58 +18,53 @@ export class NeuralNet extends MachineLearning {
                 `Layer sizes need to have at least 2 numbers: ${layerSizes}`
             );
         }
-        this._net = tf.sequential();
-        this._net.add(tf.layers.dense({
-            inputShape: [layerSizes[0]],
-            units: layerSizes[1],
-            activation: 'softsign'
-        }));
 
-        for (let i = 2; i < layerSizes.length - 1; i++) {
+        this._net = tf.sequential();
+        if (layerSizes.length === 2) {
             this._net.add(tf.layers.dense({
-                units: layerSizes[i],
+                inputShape: [layerSizes[0]],
+                units: layerSizes[1]
+            }));
+        } else {
+            this._net.add(tf.layers.dense({
+                inputShape: [layerSizes[0]],
+                units: layerSizes[1],
                 activation: 'softsign'
             }));
-        }
 
-        if (layerSizes.length > 2) {
+            for (let i = 2; i < layerSizes.length - 1; i++) {
+                this._net.add(tf.layers.dense({
+                    units: layerSizes[i],
+                    activation: 'softsign'
+                }));
+            }
+
             this._net.add(tf.layers.dense({
                 units: layerSizes[layerSizes.length - 1]
-            }))
+            }));
         }
 
         this._net.compile({
             optimizer: tf.train.adam(),
             loss: tf.losses.meanSquaredError,
-            metrics: [tf.metrics.meanSquaredError]
+            metrics: [tf.metrics.meanSquaredError],
         });
     }
 
     async fit(features: number[][], targets: number[]) {
         if (features.length === 0) return;
         const [validFeats, validTargs] = validFeatsTargs();
-        let trainAcc: number[] = [];
-        let validAcc: number[] = [];
         await this._net.fit(
             tf.tensor(features),
             tf.tensor(targets),
             {
                 shuffle: true,
-                epochs: 30, 
+                epochs: 10, 
                 batchSize: 64,
                 verbose: 0,
                 validationData: [tf.tensor(validFeats), tf.tensor(validTargs)],
-                callbacks: [new tf.CustomCallback({
-                    onEpochEnd: (batch, logs) => {
-                        trainAcc.push(logs.meanSquaredError);
-                        validAcc.push(logs.val_meanSquaredError);
-                    }
-                })]
             }
         );
-        const root = './src/ml/models/overfittingTest/';
-        writeFile(root + 'netTrainAcc.txt', trainAcc.join(','));
-        writeFile(root + 'netValidAcc.txt', validAcc.join(','));
     }
 
     predict(features: number[][]): number[] {
@@ -83,7 +78,7 @@ export class NeuralNet extends MachineLearning {
         );
 
         const res = (preds as tf.Tensor).arraySync();
-        return (res as number[][]).map(row => row[0]);
+        return flatten(res) as number[];
     }
 
     static fromObj(obj: { [key: string]: any }): MachineLearning {

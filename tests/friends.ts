@@ -5,6 +5,7 @@ import { KNNBall } from "../src/ml/models/KNNBall";
 import { KNNkd } from "../src/ml/models/KNNkd";
 import { Regression } from "../src/ml/models/Regression";
 import { Matrix } from "../node_modules/ml-matrix/matrix.js";
+import { NeuralNet } from "../src/ml/models/NeuralNet";
 
 export class TreeFriend extends DecisionTree {
     get tree() {
@@ -95,6 +96,16 @@ export class RegressionFriend extends Regression {
         res.w = o['w'];
         res.degree = o['degree'];
         return res;
+    }
+}
+
+export class NeuralNetFriend extends NeuralNet {
+    get net() {
+        return this._net;
+    }
+
+    set net(val) {
+        this._net = val;
     }
 }
 

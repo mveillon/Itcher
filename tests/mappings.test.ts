@@ -1,5 +1,12 @@
 import { GameState } from "../src/baseballLogic/GameState";
-import { stateToInd, pitchToInd, numStates, numActions, numAttributes, getFeature } from "../src/ml/mappings";
+import { 
+    stateToInd, 
+    pitchToInd, 
+    numStates, 
+    numActions, 
+    numAttributes, 
+    getFeature 
+} from "../src/ml/mappings";
 import { randInt } from "../src/utils/random";
 import { readAllPitchers } from "../src/baseballLogic/Pitcher";
 
@@ -34,7 +41,8 @@ test('pitch to ind', () => {
 });
 
 test('getFeature', () => {
-    const pitcher = readAllPitchers()['Felix Hernandez']
+    const pitcher = readAllPitchers()['Felix Hernandez'];
+    let feats: number[][] = [];
     for (let i = 0; i < 50; i++) {
         let state = new GameState();
         state.balls = randInt(4);
@@ -47,10 +55,21 @@ test('getFeature', () => {
         for (const pitch in state.pitcher.pitches) {
             const feat = getFeature(pitch, state);
             expect(feat.length).toBe(numAttributes());
-            for (const attr of feat) {
-                expect(attr).toBeLessThanOrEqual(1);
-                expect(attr).toBeGreaterThanOrEqual(0);
-            }
+            feats.push(feat);
         }
     }
+
+    let foundDiff: boolean[] = [];
+    let foundVals: Set<number>[] = [];
+    for (let j = 0; j < feats[0].length; j++) {
+        foundDiff.push(false);
+        foundVals.push(new Set<number>());
+    }
+    for (let i = 0; i < feats.length; i++) {
+        for (let j = 0; j < feats[i].length; j++) {
+            foundDiff[j] ||= foundVals[j].has(feats[i][j]);
+            foundVals[j].add(feats[i][j]);
+        }
+    }
+    expect(foundDiff).toEqual(Array(foundDiff.length).fill(true));
 });
