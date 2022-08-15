@@ -1,6 +1,5 @@
 - better accuracy, possibly with different models
-
-- resolve tensorflow inputs, as well as saving and loading model functionality
+    there is a node module for random forests
 
 - write index.html
 

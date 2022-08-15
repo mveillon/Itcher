@@ -39,6 +39,18 @@ export class Pitcher {
     }
 
     /**
+     * Converts this pitcher into JSON that fromObj can read
+     * @returns a JSON
+     */
+    toObj(): pitcherJSON {
+        return {
+            name: this.name,
+            pitches: this.pitches,
+            hand: this.hand
+        };
+    }
+
+    /**
      * Makes a shallow copy of this
      * @returns a copy of this pitcher
      */
@@ -56,11 +68,11 @@ import { findAllPitchers } from "../ml/parseData.js";
  */
 export const readAllPitchers = (): { [key: string]: Pitcher; } => {
     findAllPitchers();
-    let objs: { [key: string]: Pitcher };
+    let objs: { [key: string]: any };
     if (usingNode()) {
         objs = readJSON(pitcherPath);
     } else {
-        eval('objs = localStorage.getItem("pitchers.json")');
+        objs = JSON.parse(localStorage.getItem('pitchers.json'));
     }
     let res: { [key: string]: Pitcher } = {};
     for (const k in objs) {

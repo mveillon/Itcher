@@ -1,6 +1,6 @@
 import { readSpreadSheet, dataPaths, pitcherPath, writeJSON } from "../utils/files.js";
 import { Pitch } from "../baseballLogic/Pitch.js";
-import { Pitcher } from "../baseballLogic/Pitcher.js";
+import { Pitcher, pitcherJSON } from "../baseballLogic/Pitcher.js";
 import { getState } from "../baseballLogic/GameState.js";
 import { usingNode } from "../utils/usingNode.js";
 
@@ -121,7 +121,11 @@ export const findAllPitchers = ()  => {
     if (usingNode()) {
         writeJSON(pitcherPath, accum);
     } else {
-        eval('localStorage.setItem("pitchers.json", accum)');
+        let toWrite: { [key: string]: pitcherJSON } = {};
+        for (const p in accum) {
+            toWrite[p] = accum[p].toObj();
+        }
+        localStorage.setItem('pitchers.json', JSON.stringify(toWrite));
     }
 }
 

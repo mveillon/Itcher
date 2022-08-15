@@ -1,4 +1,4 @@
-import { getState, setState } from "../baseballLogic/GameState.js";
+import { GameState, getState, setState } from "../baseballLogic/GameState.js";
 import { readAllPitchers } from "../baseballLogic/Pitcher.js";
 import { usingNode } from "../utils/usingNode.js";
 import { $ } from "../utils/utilities.js";
@@ -115,7 +115,6 @@ let learner: MachineLearning;
  */
 export const updateNext = () => {
     if (typeof learner === 'undefined') {
-        console.log('Still waiting for learner...');
         return;
     }
     const next = nextPitch(learner);
@@ -128,6 +127,7 @@ export const updateNext = () => {
 export const updateBug = () => {
     if (!usingNode()) {
         const state = getState();
+
         const baseIds = [
             'first-base',
             'second-base',
@@ -151,8 +151,6 @@ export const updateBug = () => {
         ($('balls') as HTMLInputElement).value = state.balls.toString();
 
         updateNext();
-
-        console.log(`${state.balls}-${state.strikes}`);
     }
 }
 
@@ -179,5 +177,7 @@ export const getUpdateCount = () => {
  * the next pitch
  */
 export const initBug = async () => {
-    learner = await getLearner();
+    setState(new GameState());
+    // learner = await getLearner();
+    updateBug();
 }

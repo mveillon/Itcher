@@ -1,9 +1,10 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Buttons = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetState = exports.state = exports.GameState = void 0;
+exports.setState = exports.getState = exports.resetState = exports.GameState = void 0;
 const Pitcher_js_1 = _dereq_("./Pitcher.js");
 const LinkedList_js_1 = _dereq_("../utils/LinkedList.js");
+const usingNode_js_1 = _dereq_("../utils/usingNode.js");
 class GameState {
     /**
      * Keeps track of the current state of a baseball game
@@ -194,10 +195,43 @@ class GameState {
         this.outs += 2;
         this.bases[0] = false;
     }
+    /**
+     * Converts a JSON object into a game state
+     * @param obj the object to convert
+     * @returns a linked list
+     */
+    static fromObj(obj) {
+        let res = new GameState();
+        res._outs = obj.outs;
+        res._balls = obj.balls;
+        res._strikes = obj.strikes;
+        res._lineSpot = obj.lineSpot;
+        res.lastStates = LinkedList_js_1.List.fromObj(obj.lastStates);
+        res.pitcher = Pitcher_js_1.Pitcher.fromObj(obj.pitcher);
+        res.lineup = obj.lineup;
+        res.bases = obj.bases;
+        return res;
+    }
+    /**
+     * Converts the game state to a JSON that fromOBJ can read
+     * @returns the JSON
+     */
+    toObj() {
+        return {
+            outs: this._outs,
+            balls: this._balls,
+            strikes: this._strikes,
+            lineSpot: this._lineSpot,
+            lastStates: this.lastStates.toObj(),
+            pitcher: this.pitcher.toObj(),
+            lineup: this.lineup,
+            bases: this.bases
+        };
+    }
 }
 exports.GameState = GameState;
 GameState.maxBackups = 20;
-exports.state = new GameState();
+let state = new GameState();
 /**
  * Resets the global state variable, keeping only a few fields
  * @param keepPitcher whether to retain the old pitcher. Default is true
@@ -205,21 +239,49 @@ exports.state = new GameState();
  * @param keepStates whether to retain the old backups. Default is true
  */
 const resetState = (keepPitcher = true, keepLineup = true, keepStates = true) => {
-    const oldPitch = exports.state.pitcher;
-    const oldLine = exports.state.lineup;
-    exports.state.backup();
-    const oldStates = exports.state.lastStates;
-    exports.state = new GameState();
+    let oldState = (0, exports.getState)();
+    const oldPitch = oldState.pitcher;
+    const oldLine = oldState.lineup;
+    oldState.backup();
+    const oldStates = oldState.lastStates;
+    oldState = new GameState();
     if (keepPitcher)
-        exports.state.pitcher = oldPitch;
+        oldState.pitcher = oldPitch;
     if (keepLineup)
-        exports.state.lineup = oldLine;
+        oldState.lineup = oldLine;
     if (keepStates)
-        exports.state.lastStates = oldStates;
+        oldState.lastStates = oldStates;
+    (0, exports.setState)(oldState);
 };
 exports.resetState = resetState;
+/**
+ * Gets the global state to use
+ * @returns the global state
+ */
+const getState = () => {
+    if ((0, usingNode_js_1.usingNode)()) {
+        return state;
+    }
+    else {
+        return GameState.fromObj(JSON.parse(localStorage.getItem('state')));
+    }
+};
+exports.getState = getState;
+/**
+ * Updates the global state to the passed state
+ * @param newState the new state
+ */
+const setState = (newState) => {
+    if ((0, usingNode_js_1.usingNode)()) {
+        state = newState;
+    }
+    else {
+        localStorage.setItem('state', JSON.stringify(newState.toObj()));
+    }
+};
+exports.setState = setState;
 
-},{"../utils/LinkedList.js":15,"./Pitcher.js":3}],2:[function(_dereq_,module,exports){
+},{"../utils/LinkedList.js":10,"../utils/usingNode.js":13,"./Pitcher.js":3}],2:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Pitch = void 0;
@@ -247,6 +309,19 @@ class Pitch {
         res.spinRate = obj.spinRate;
         res.spinDirection = obj.spinDirection;
         return res;
+    }
+    /**
+     * Converts this pitch into a JSON that fromObj can read
+     * @returns a JSON
+     */
+    toObj() {
+        return {
+            name: this.name,
+            timesThrown: this.timesThrown,
+            velo: this.velo,
+            spinRate: this.spinRate,
+            spinDirection: this.spinDirection
+        };
     }
 }
 exports.Pitch = Pitch;
@@ -282,6 +357,17 @@ class Pitcher {
         return res;
     }
     /**
+     * Converts this pitcher into JSON that fromObj can read
+     * @returns a JSON
+     */
+    toObj() {
+        return {
+            name: this.name,
+            pitches: this.pitches,
+            hand: this.hand
+        };
+    }
+    /**
      * Makes a shallow copy of this
      * @returns a copy of this pitcher
      */
@@ -304,7 +390,7 @@ const readAllPitchers = () => {
         objs = (0, files_js_1.readJSON)(files_js_1.pitcherPath);
     }
     else {
-        eval('objs = localStorage.getItem("pitchers.json")');
+        objs = JSON.parse(localStorage.getItem('pitchers.json'));
     }
     let res = {};
     for (const k in objs) {
@@ -314,7 +400,7 @@ const readAllPitchers = () => {
 };
 exports.readAllPitchers = readAllPitchers;
 
-},{"../ml/parseData.js":10,"../utils/files.js":16,"../utils/usingNode.js":18,"./Pitch.js":2}],4:[function(_dereq_,module,exports){
+},{"../ml/parseData.js":7,"../utils/files.js":11,"../utils/usingNode.js":13,"./Pitch.js":2}],4:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.correlation = exports.sigmoid = exports.variance = exports.avgVar = exports.dot = exports.average = exports.squaredMag = exports.manhattanDistance = exports.squareDistance = exports.mse = void 0;
@@ -552,132 +638,7 @@ const numActions = () => {
 };
 exports.numActions = numActions;
 
-},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitch.js":2,"../utils/utilities.js":19,"./calculations.js":4}],6:[function(_dereq_,module,exports){
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.MachineLearning = void 0;
-const files_1 = _dereq_("../../utils/files");
-class MachineLearning {
-    /**
-     * Reads the machine learning model from the given path
-     * Allows for more efficient creation than training
-     * @param path the location of the saved model
-     * @returns the pre-trained model
-     */
-    static read(path) {
-        return this.fromObj((0, files_1.readJSON)(path));
-    }
-    /**
-     * Converts an object from a JSON file into an instance of this class
-     * The object is assumed to have been saved by the toObj method of this class
-     * @param obj the JSON object
-     * @returns the machine learning model
-     */
-    static fromObj(obj) {
-        throw new Error('Calling method of abstract class');
-    }
-    /**
-     * Writes the machine learning model to the given path
-     * Allows for more efficient creation later on than training
-     * @param path the location to save to
-     */
-    write(path) {
-        (0, files_1.writeJSON)(path, this.toObj());
-    }
-}
-exports.MachineLearning = MachineLearning;
-
-},{"../../utils/files":16}],7:[function(_dereq_,module,exports){
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.alwaysMean = exports.AlwaysMean = void 0;
-const MachineLearning_js_1 = _dereq_("./MachineLearning.js");
-class AlwaysMean extends MachineLearning_js_1.MachineLearning {
-    /**
-     * Always predicts the mean of the targets supplied in training
-     * Useful as a control model
-     */
-    constructor() {
-        super();
-        this._mean = 0;
-    }
-    get mean() {
-        return this._mean;
-    }
-    fit(features, targets) {
-        this._mean = targets.reduce((a, b) => a + b, 0) / targets.length;
-    }
-    predict(features) {
-        let res = [];
-        for (let i = 0; i < features.length; i++) {
-            res.push(this._mean);
-        }
-        return res;
-    }
-    toObj() {
-        return { _mean: this._mean };
-    }
-    static fromObj(obj) {
-        let res = new AlwaysMean();
-        res._mean = obj['_mean'];
-        return res;
-    }
-}
-exports.AlwaysMean = AlwaysMean;
-/**
- * Factory function for a default AlwaysMean
- * @returns default always mean
- */
-const alwaysMean = () => {
-    return new AlwaysMean();
-};
-exports.alwaysMean = alwaysMean;
-
-},{"./MachineLearning.js":6}],8:[function(_dereq_,module,exports){
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLearner = void 0;
-const trainTest_js_1 = _dereq_("../trainTest.js");
-const alwaysMean_js_1 = _dereq_("./alwaysMean.js");
-/**
- * Trains the machine learning network that will predict
- * the expected reward given the current state and what pitch
- * is being thrown.
- * @returns a machine learning model for selecting pitches
- */
-const getLearner = () => __awaiter(void 0, void 0, void 0, function* () {
-    // let res = knnKD();
-    // let res = regression();
-    let res = (0, alwaysMean_js_1.alwaysMean)();
-    // let res = neuralNet();
-    // let res = knnBall();
-    const numChildren = 8;
-    // let res = new Ensemble(knnKD, numChildren);
-    // let res = new Ensemble(regression, numChildren);
-    // let res = new Ensemble(alwaysMean, numChildren);
-    // let res = new Ensemble(neuralNet, numChildren);
-    // let res = new Ensemble(knnBall, numChildren);
-    // let res = new Ensemble([
-    //     knnKD(),
-    //     regression(),
-    //     neuralNet(),
-    //     knnBall(),
-    // ]);
-    yield (0, trainTest_js_1.trainLearner)(res);
-    return res;
-});
-exports.getLearner = getLearner;
-
-},{"../trainTest.js":12,"./alwaysMean.js":7}],9:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitch.js":2,"../utils/utilities.js":14,"./calculations.js":4}],6:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.nextPitch = void 0;
@@ -690,8 +651,9 @@ const random_js_1 = _dereq_("../utils/random.js");
  * @returns what pitch to throw
  */
 const nextPitch = (learner) => {
-    const pitches = Object.keys(GameState_js_1.state.pitcher.pitches);
-    const feats = pitches.map((pitch) => (0, mappings_js_1.getFeature)(pitch, GameState_js_1.state));
+    const state = (0, GameState_js_1.getState)();
+    const pitches = Object.keys(state.pitcher.pitches);
+    const feats = pitches.map((pitch) => (0, mappings_js_1.getFeature)(pitch, state));
     const rewards = learner.predict(feats);
     const weights = rewards.map(Math.tanh);
     let cum = [weights[0]];
@@ -702,7 +664,7 @@ const nextPitch = (learner) => {
 };
 exports.nextPitch = nextPitch;
 
-},{"../baseballLogic/GameState.js":1,"../utils/random.js":17,"./mappings.js":5}],10:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"../utils/random.js":12,"./mappings.js":5}],7:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.pitchAbbreviations = exports.findAllPitchers = exports.getPlayType = exports.aidToPitcher = exports.abToPlat = exports.idToEvent = void 0;
@@ -748,13 +710,14 @@ const getPlayType = (result, event) => {
         'Fan Interference',
         'Batter Interference',
     ]);
+    const state = (0, GameState_js_1.getState)();
     if (result === 'ibb') {
         return 'bb';
     }
-    else if (result === 'b' && GameState_js_1.state.balls === 3) {
+    else if (result === 'b' && state.balls === 3) {
         return 'bb';
     }
-    else if (result === 'k' && GameState_js_1.state.strikes === 2) {
+    else if (result === 'k' && state.strikes === 2) {
         return 'kk';
     }
     else if ((result === 'o' || result === 'h') &&
@@ -824,7 +787,11 @@ const findAllPitchers = () => {
         (0, files_js_1.writeJSON)(files_js_1.pitcherPath, accum);
     }
     else {
-        eval('localStorage.setItem("pitchers.json", accum)');
+        let toWrite = {};
+        for (const p in accum) {
+            toWrite[p] = accum[p].toObj();
+        }
+        localStorage.setItem('pitchers.json', JSON.stringify(toWrite));
     }
 };
 exports.findAllPitchers = findAllPitchers;
@@ -926,301 +893,112 @@ const playTypes = {
     O: 'dp',
 };
 
-},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitch.js":2,"../baseballLogic/Pitcher.js":3,"../utils/files.js":16,"../utils/usingNode.js":18}],11:[function(_dereq_,module,exports){
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.rewards = void 0;
-/**
- * Finds the reward given the current reward and what happened
- * Values courtesy of https://www.draysbay.com/platform/amp/2016/4/28/11521790/an-introduction-to-per-pitch-run-values
- * @param res what happened
- * @returns the run value of that pitch
- */
-const rewards = (res, state) => {
-    let count;
-    switch (res) {
-        case 'k':
-            count = [
-                [0.037, 0.051, 0.15],
-                [0.035, 0.054, 0.171],
-                [0.062, 0.069, 0.209],
-                [0.117, 0.066, 0.294]
-            ];
-            break;
-        case 'b':
-            count = [
-                [-0.032, -0.024, -0.021],
-                [-0.088, -0.048, -0.038],
-                [-0.143, -0.064, -0.085],
-                [-0.051, -0.168, -0.234]
-            ];
-            break;
-        case 'kk':
-            // included for legacy reasons basically
-            return (0, exports.rewards)('k', state);
-            break;
-        case 'bb':
-            return (0, exports.rewards)('b', state);
-            break;
-        case '1b':
-            count = [
-                [-0.466, -0.483, -0.534],
-                [-0.412, -0.459, -0.513],
-                [-0.35, -0.414, -0.475],
-                [-0.207, -0.324, -0.39]
-            ];
-            break;
-        case '2b':
-            count = [
-                [-0.746, -0.783, -0.834],
-                [-0.712, -0.759, -0.813],
-                [-0.65, -0.714, -0.775],
-                [-0.507, -0.623, -0.689]
-            ];
-            break;
-        case '3b':
-            count = [
-                [-1.016, -1.053, -1.104],
-                [-0.982, -1.029, -1.083],
-                [-0.919, -0.984, -1.044],
-                [-0.777, -0.893, -0.959]
-            ];
-            break;
-        case 'hr':
-            count = [
-                [-1.4, -1.436, -1.487],
-                [-1.365, -1.413, -1.466],
-                [-1.303, -1.367, -1.428],
-                [-1.16, -1.277, -1.343]
-            ];
-            break;
-        case 'dp':
-            return (0, exports.rewards)('o', state) * 2;
-            break;
-        case 'o':
-            count = [
-                [0.31, 0.262, 0.196],
-                [0.355, 0.293, 0.223],
-                [0.436, 0.352, 0.273],
-                [0.622, 0.47, 0.384]
-            ];
-            break;
-        case 'f':
-            if (state.strikes === 2)
-                return 0;
-            else
-                return (0, exports.rewards)('k', state);
-            break;
-        default:
-            throw new Error(`Unexpected result: ${res}`);
-            break;
-    }
-    return count[state.balls][state.strikes];
-};
-exports.rewards = rewards;
-
-},{}],12:[function(_dereq_,module,exports){
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.trainFeatsTargs = exports.validFeatsTargs = exports.extractFeaturesTargets = exports.learnerMSE = exports.trainLearner = void 0;
-const parseData_js_1 = _dereq_("./parseData.js");
-const Pitcher_js_1 = _dereq_("../baseballLogic/Pitcher.js");
-const files_js_1 = _dereq_("../utils/files.js");
-const GameState_js_1 = _dereq_("../baseballLogic/GameState.js");
-const rewards_js_1 = _dereq_("./rewards.js");
-const mappings_js_1 = _dereq_("./mappings.js");
-const calculations_js_1 = _dereq_("./calculations.js");
-/**
- * Splits the spreadsheet into features and targets
- * @param data the read spreadsheet
- * @returns the features of data and the targets
- */
-const allFeatsTargs = (data) => {
-    const allPitchers = (0, Pitcher_js_1.readAllPitchers)();
-    let features = [];
-    let targets = [];
-    for (const row of data) {
-        const [f, t] = (0, exports.extractFeaturesTargets)(row, allPitchers);
-        if (f.length === 0)
-            continue;
-        features.push(f);
-        targets.push(t);
-    }
-    return [features, targets];
-};
-/**
- * Trains the learner on the appropriate dataset
- */
-const trainLearner = (learner) => __awaiter(void 0, void 0, void 0, function* () {
-    // const trainData = usingNode() ? dataPaths.train : dataPaths.pitches;
-    const trainData = files_js_1.dataPaths.train;
-    const allData = (0, files_js_1.readSpreadSheet)(trainData);
-    const [features, targets] = allFeatsTargs(allData);
-    yield learner.fit(features, targets);
-});
-exports.trainLearner = trainLearner;
-/**
- * Returns the mean squared error and the predictions of learner on the validation set
- * @returns the mse
- */
-const learnerMSE = (learner) => {
-    const validData = (0, files_js_1.readSpreadSheet)(files_js_1.dataPaths.valid);
-    const [features, targets] = allFeatsTargs(validData);
-    const preds = learner.predict(features);
-    return [(0, calculations_js_1.mse)(preds, targets), preds];
-};
-exports.learnerMSE = learnerMSE;
-/**
- * Extracts the set of features and the target from one row
- * @param play one row of data
- * @returns the features of that row and the target
- */
-const extractFeaturesTargets = (play, allPitchers) => {
-    const aid = parseInt(play['ab_id']);
-    let result = play['code'];
-    let event = parseData_js_1.idToEvent.get(aid);
-    const pitch = parseData_js_1.pitchAbbreviations[play['pitch_type']];
-    if (isNaN(aid) ||
-        typeof pitch === 'undefined' ||
-        result === '') {
-        return [[], 0];
-    }
-    if (typeof result === 'undefined') {
-        throw new Error(`Undefined result with event ${event} and aid ${aid}`);
-    }
-    if (typeof event === 'undefined') {
-        throw new Error(`Undefined event with result ${result} and aid ${aid}`);
-    }
-    let state = new GameState_js_1.GameState();
-    state.pitcher = (0, parseData_js_1.aidToPitcher)(aid, allPitchers);
-    if (typeof state.pitcher === 'undefined') {
-        return [[], 0];
-    }
-    state.bases = [
-        !!parseInt(play['on_1b']),
-        !!parseInt(play['on_2b']),
-        !!parseInt(play['on_3b'])
-    ];
-    state.lineSpot = 0;
-    if (parseData_js_1.abToPlat.get(aid)) {
-        state.lineup = [state.pitcher.hand];
-    }
-    else {
-        state.lineup = ['Z'];
-    }
-    state.balls = parseInt(play['b_count']);
-    state.strikes = parseInt(play['s_count']);
-    state.outs = parseInt(play['outs']);
-    result = (0, parseData_js_1.getPlayType)(result, event);
-    const target = (0, rewards_js_1.rewards)(result, state);
-    const features = (0, mappings_js_1.getFeature)(pitch, state);
-    return [features, target];
-};
-exports.extractFeaturesTargets = extractFeaturesTargets;
-/**
- * Returns all the features and targets for validating an ML model
- * @returns the features and the targets from 'valid.csv'
- */
-const validFeatsTargs = () => {
-    return allFeatsTargs((0, files_js_1.readSpreadSheet)(files_js_1.dataPaths.valid));
-};
-exports.validFeatsTargs = validFeatsTargs;
-/**
- * Returns all the features and targets for training an ML model
- * @returns the features and targets from 'train.csv'
- */
-const trainFeatsTargs = () => {
-    return allFeatsTargs((0, files_js_1.readSpreadSheet)(files_js_1.dataPaths.train));
-};
-exports.trainFeatsTargs = trainFeatsTargs;
-
-},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitcher.js":3,"../utils/files.js":16,"./calculations.js":4,"./mappings.js":5,"./parseData.js":10,"./rewards.js":11}],13:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitch.js":2,"../baseballLogic/Pitcher.js":3,"../utils/files.js":11,"../utils/usingNode.js":13}],8:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.undo = exports.lineout = exports.flyout = exports.groundout = exports.doublePlay = exports.error = exports.out = exports.homeRun = exports.triple = exports.double = exports.single = exports.foul = exports.strike = exports.ball = void 0;
 const GameState_js_1 = _dereq_("../baseballLogic/GameState.js");
 const scorebug_js_1 = _dereq_("./scorebug.js");
 const ball = () => {
-    GameState_js_1.state.ball();
+    const state = (0, GameState_js_1.getState)();
+    state.ball();
+    (0, GameState_js_1.setState)(state);
     (0, scorebug_js_1.updateBug)();
 };
 exports.ball = ball;
 const strike = () => {
-    GameState_js_1.state.strike();
+    const state = (0, GameState_js_1.getState)();
+    state.strike();
+    (0, GameState_js_1.setState)(state);
     (0, scorebug_js_1.updateBug)();
 };
 exports.strike = strike;
 const foul = () => {
-    GameState_js_1.state.foul();
+    const state = (0, GameState_js_1.getState)();
+    state.foul();
+    (0, GameState_js_1.setState)(state);
     (0, scorebug_js_1.updateBug)();
 };
 exports.foul = foul;
 const single = () => {
-    GameState_js_1.state.single();
+    const state = (0, GameState_js_1.getState)();
+    state.single();
+    (0, GameState_js_1.setState)(state);
     (0, scorebug_js_1.updateBug)();
 };
 exports.single = single;
 const double = () => {
-    GameState_js_1.state.double();
+    const state = (0, GameState_js_1.getState)();
+    state.double();
+    (0, GameState_js_1.setState)(state);
     (0, scorebug_js_1.updateBug)();
 };
 exports.double = double;
 const triple = () => {
-    GameState_js_1.state.triple();
+    const state = (0, GameState_js_1.getState)();
+    state.triple();
+    (0, GameState_js_1.setState)(state);
     (0, scorebug_js_1.updateBug)();
 };
 exports.triple = triple;
 const homeRun = () => {
-    GameState_js_1.state.homeRun();
+    const state = (0, GameState_js_1.getState)();
+    state.homeRun();
+    (0, GameState_js_1.setState)(state);
     (0, scorebug_js_1.updateBug)();
 };
 exports.homeRun = homeRun;
 const out = () => {
-    GameState_js_1.state.out();
+    const state = (0, GameState_js_1.getState)();
+    state.out();
+    (0, GameState_js_1.setState)(state);
     (0, scorebug_js_1.updateBug)();
 };
 exports.out = out;
 const error = () => {
-    GameState_js_1.state.error();
+    const state = (0, GameState_js_1.getState)();
+    state.error();
+    (0, GameState_js_1.setState)(state);
     (0, scorebug_js_1.updateBug)();
 };
 exports.error = error;
 const doublePlay = () => {
-    GameState_js_1.state.doublePlay();
+    const state = (0, GameState_js_1.getState)();
+    state.doublePlay();
+    (0, GameState_js_1.setState)(state);
     (0, scorebug_js_1.updateBug)();
 };
 exports.doublePlay = doublePlay;
 const groundout = () => {
-    GameState_js_1.state.groundout();
+    const state = (0, GameState_js_1.getState)();
+    state.groundout();
+    (0, GameState_js_1.setState)(state);
     (0, scorebug_js_1.updateBug)();
 };
 exports.groundout = groundout;
 const flyout = () => {
-    GameState_js_1.state.flyout();
+    const state = (0, GameState_js_1.getState)();
+    state.flyout();
+    (0, GameState_js_1.setState)(state);
     (0, scorebug_js_1.updateBug)();
 };
 exports.flyout = flyout;
 const lineout = () => {
-    GameState_js_1.state.lineout();
+    const state = (0, GameState_js_1.getState)();
+    state.lineout();
+    (0, GameState_js_1.setState)(state);
     (0, scorebug_js_1.updateBug)();
 };
 exports.lineout = lineout;
 const undo = () => {
-    GameState_js_1.state.undo();
+    const state = (0, GameState_js_1.getState)();
+    state.undo();
+    (0, GameState_js_1.setState)(state);
     (0, scorebug_js_1.updateBug)();
 };
 exports.undo = undo;
 
-},{"../baseballLogic/GameState.js":1,"./scorebug.js":14}],14:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"./scorebug.js":9}],9:[function(_dereq_,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1232,20 +1010,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.bindLearner = exports.getUpdateCount = exports.updateBug = exports.updateNext = exports.changeLineSpot = exports.changeLineup = exports.changePitcher = exports.changeCount = exports.toggleOuts = exports.toggleBase = void 0;
+exports.initBug = exports.getUpdateCount = exports.updateBug = exports.updateNext = exports.changeLineSpot = exports.changeLineup = exports.changePitcher = exports.changeCount = exports.toggleOuts = exports.toggleBase = void 0;
 const GameState_js_1 = _dereq_("../baseballLogic/GameState.js");
 const Pitcher_js_1 = _dereq_("../baseballLogic/Pitcher.js");
 const usingNode_js_1 = _dereq_("../utils/usingNode.js");
 const utilities_js_1 = _dereq_("../utils/utilities.js");
 const nextPitch_js_1 = _dereq_("../ml/nextPitch.js");
-const getLearner_js_1 = _dereq_("../ml/models/getLearner.js");
 /**
  * Toggles whether the base is occupied or not
  * @param baseInd which base to toggle
  */
 const toggleBase = (baseInd) => {
-    GameState_js_1.state.backup();
-    GameState_js_1.state.bases[baseInd] = !GameState_js_1.state.bases[baseInd];
+    const state = (0, GameState_js_1.getState)();
+    state.backup();
+    state.bases[baseInd] = !state.bases[baseInd];
+    (0, GameState_js_1.setState)(state);
     (0, exports.updateBug)();
 };
 exports.toggleBase = toggleBase;
@@ -1254,16 +1033,18 @@ exports.toggleBase = toggleBase;
  * @param outInd which out button was clicked (0, 1, or 2)
  */
 const toggleOuts = (outInd) => {
-    GameState_js_1.state.backup();
+    const state = (0, GameState_js_1.getState)();
+    state.backup();
     if (outInd === 2) {
-        if (GameState_js_1.state.outs === 0) {
-            GameState_js_1.state.undo();
+        if (state.outs === 0) {
+            state.undo();
         }
-        GameState_js_1.state.outs = 0;
+        state.outs = 0;
     }
     else {
-        GameState_js_1.state.outs = outInd + +(outInd >= GameState_js_1.state.outs);
+        state.outs = outInd + +(outInd >= state.outs);
     }
+    (0, GameState_js_1.setState)(state);
     (0, exports.updateBug)();
 };
 exports.toggleOuts = toggleOuts;
@@ -1273,13 +1054,15 @@ exports.toggleOuts = toggleOuts;
  * @param strikes how many strikes there should be
  */
 const changeCount = (balls, strikes) => {
+    const state = (0, GameState_js_1.getState)();
     if ((balls < 4 || strikes < 3) &&
-        (balls !== GameState_js_1.state.balls || strikes !== GameState_js_1.state.strikes)) {
-        GameState_js_1.state.backup();
+        (balls !== state.balls || strikes !== state.strikes)) {
+        state.backup();
         if (strikes < 3)
-            GameState_js_1.state.balls = balls;
+            state.balls = balls;
         if (balls < 4)
-            GameState_js_1.state.strikes = strikes;
+            state.strikes = strikes;
+        (0, GameState_js_1.setState)(state);
         (0, exports.updateBug)();
     }
 };
@@ -1289,11 +1072,13 @@ exports.changeCount = changeCount;
  * @param pitcherName the new pitcher
  */
 const changePitcher = (pitcherName) => {
+    const state = (0, GameState_js_1.getState)();
     const allPitchers = (0, Pitcher_js_1.readAllPitchers)();
-    if (pitcherName !== GameState_js_1.state.pitcher.name && pitcherName in allPitchers) {
-        GameState_js_1.state.backup();
-        GameState_js_1.state.pitcher = allPitchers[pitcherName];
+    if (pitcherName !== state.pitcher.name && pitcherName in allPitchers) {
+        state.backup();
+        state.pitcher = allPitchers[pitcherName];
     }
+    (0, GameState_js_1.setState)(state);
     (0, exports.updateBug)();
 };
 exports.changePitcher = changePitcher;
@@ -1302,19 +1087,21 @@ exports.changePitcher = changePitcher;
  * @param newLineup the new lineup
  */
 const changeLineup = (newLineup) => {
-    if (newLineup.length === GameState_js_1.state.lineup.length) {
+    const state = (0, GameState_js_1.getState)();
+    if (newLineup.length === state.lineup.length) {
         const allowed = ['R', 'L', 'S'];
         let diff = false;
         for (let i = 0; i < newLineup.length; i++) {
             if (!allowed.includes(newLineup[i]))
                 return;
-            diff || (diff = newLineup[i] !== GameState_js_1.state.lineup[i]);
+            diff || (diff = newLineup[i] !== state.lineup[i]);
         }
         if (!diff)
             return;
     }
-    GameState_js_1.state.backup();
-    GameState_js_1.state.lineup = newLineup;
+    state.backup();
+    state.lineup = newLineup;
+    (0, GameState_js_1.setState)(state);
     (0, exports.updateBug)();
 };
 exports.changeLineup = changeLineup;
@@ -1323,10 +1110,12 @@ exports.changeLineup = changeLineup;
  * @param newSpot the new lineup spot
  */
 const changeLineSpot = (newSpot) => {
-    if (newSpot >= 0 && newSpot < 9 && newSpot !== GameState_js_1.state.lineSpot) {
-        GameState_js_1.state.backup();
-        GameState_js_1.state.lineSpot = newSpot;
+    const state = (0, GameState_js_1.getState)();
+    if (newSpot >= 0 && newSpot < 9 && newSpot !== state.lineSpot) {
+        state.backup();
+        state.lineSpot = newSpot;
     }
+    (0, GameState_js_1.setState)(state);
     (0, exports.updateBug)();
 };
 exports.changeLineSpot = changeLineSpot;
@@ -1337,7 +1126,6 @@ let learner;
  */
 const updateNext = () => {
     if (typeof learner === 'undefined') {
-        console.log('Still waiting for learner...');
         return;
     }
     const next = (0, nextPitch_js_1.nextPitch)(learner);
@@ -1349,13 +1137,14 @@ exports.updateNext = updateNext;
  */
 const updateBug = () => {
     if (!(0, usingNode_js_1.usingNode)()) {
+        const state = (0, GameState_js_1.getState)();
         const baseIds = [
             'first-base',
             'second-base',
             'third-base'
         ];
         for (let i = 0; i < baseIds.length; i++) {
-            const file = GameState_js_1.state.bases[i] ? 'occupied' : 'empty';
+            const file = state.bases[i] ? 'occupied' : 'empty';
             (0, utilities_js_1.$)(baseIds[i]).src = `../../assets/${file}.png`;
         }
         const outIds = [
@@ -1363,13 +1152,12 @@ const updateBug = () => {
             'two-out',
         ];
         for (let i = 0; i < outIds.length; i++) {
-            const file = GameState_js_1.state.outs > i ? 'out' : 'no-out';
+            const file = state.outs > i ? 'out' : 'no-out';
             (0, utilities_js_1.$)(outIds[i]).src = `../../assets/${file}.png`;
         }
-        (0, utilities_js_1.$)('strikes').value = GameState_js_1.state.strikes.toString();
-        (0, utilities_js_1.$)('balls').value = GameState_js_1.state.balls.toString();
+        (0, utilities_js_1.$)('strikes').value = state.strikes.toString();
+        (0, utilities_js_1.$)('balls').value = state.balls.toString();
         (0, exports.updateNext)();
-        console.log(`${GameState_js_1.state.balls}-${GameState_js_1.state.strikes}`);
     }
 };
 exports.updateBug = updateBug;
@@ -1396,12 +1184,14 @@ exports.getUpdateCount = getUpdateCount;
  * Creates and trains the machine learning model responsible for choosing
  * the next pitch
  */
-const bindLearner = () => __awaiter(void 0, void 0, void 0, function* () {
-    learner = yield (0, getLearner_js_1.getLearner)();
+const initBug = () => __awaiter(void 0, void 0, void 0, function* () {
+    (0, GameState_js_1.setState)(new GameState_js_1.GameState());
+    // learner = await getLearner();
+    (0, exports.updateBug)();
 });
-exports.bindLearner = bindLearner;
+exports.initBug = initBug;
 
-},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitcher.js":3,"../ml/models/getLearner.js":8,"../ml/nextPitch.js":9,"../utils/usingNode.js":18,"../utils/utilities.js":19}],15:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitcher.js":3,"../ml/nextPitch.js":6,"../utils/usingNode.js":13,"../utils/utilities.js":14}],10:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.List = void 0;
@@ -1416,6 +1206,38 @@ class ListNode {
         this.prev = _prev;
         this.val = _val;
         this.next = _next;
+    }
+    /**
+     * Converts a JSON object into a ListNode
+     * Does not set previous pointers
+     * @param obj the object to convert
+     * @returns the converted list node
+     */
+    static fromObj(obj) {
+        let res = new ListNode(obj.val);
+        if (typeof obj.next !== undefined) {
+            res.next = ListNode.fromObj(obj.next);
+        }
+        return res;
+    }
+    /**
+     * Recursively converts the list from this node on
+     * into an object to be saved to a JSON. Does not
+     * keep track of prev pointer
+     * @returns a JSON object
+     */
+    toObj() {
+        let next;
+        if (typeof this.next === 'undefined') {
+            next = undefined;
+        }
+        else {
+            next = this.next.toObj();
+        }
+        return {
+            val: this.val,
+            next: next
+        };
     }
 }
 class List {
@@ -1575,10 +1397,53 @@ class List {
     toString() {
         return `(${[...this].join(', ')})`;
     }
+    /**
+     * Converts a JSON object into a linked list
+     * @param obj the object to convert
+     * @returns a linked list
+     */
+    static fromObj(obj) {
+        let res = new List();
+        res._length = obj.length;
+        if (typeof obj.head !== 'undefined') {
+            const nodes = ListNode.fromObj(obj.head);
+            res._head = nodes;
+            let current = res._head;
+            let last = undefined;
+            while (typeof current !== 'undefined') {
+                current.prev = last;
+                last = current;
+                current = current.next;
+            }
+            current.prev = last;
+        }
+        return res;
+    }
+    /**
+     * Converts this object into a JSON object
+     * @returns the JSON object
+     */
+    toObj() {
+        let head;
+        let tail;
+        if (typeof this._head === 'undefined') {
+            head = undefined;
+            tail = undefined;
+        }
+        else {
+            head = this._head.toObj();
+            tail = this._tail.toObj();
+        }
+        return {
+            length: this._length,
+            head: head,
+            tail: tail
+        };
+    }
 }
 exports.List = List;
 
-},{}],16:[function(_dereq_,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dataPaths = exports.pitcherPath = exports.writeJSON = exports.readJSON = exports.readSpreadSheet = exports.writeFile = exports.readFile = void 0;
@@ -1658,7 +1523,7 @@ exports.dataPaths = {
     test: dataRoot + "test.ignore.csv",
 };
 
-},{"./usingNode.js":18}],17:[function(_dereq_,module,exports){
+},{"./usingNode.js":13}],12:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.choices = exports.shuffle = exports.choice = exports.randInt = void 0;
@@ -1737,7 +1602,7 @@ const choices = (arr, n) => {
 };
 exports.choices = choices;
 
-},{}],18:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 (function (process){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -1755,7 +1620,7 @@ const usingNode = () => {
 exports.usingNode = usingNode;
 
 }).call(this)}).call(this,_dereq_('_process'))
-},{"_process":20}],19:[function(_dereq_,module,exports){
+},{"_process":15}],14:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.upTo = exports.$ = exports.allPitchTypes = void 0;
@@ -1803,7 +1668,7 @@ const upTo = (n) => {
 };
 exports.upTo = upTo;
 
-},{"./usingNode.js":18}],20:[function(_dereq_,module,exports){
+},{"./usingNode.js":13}],15:[function(_dereq_,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -1989,5 +1854,5 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}]},{},[13])(13)
+},{}]},{},[8])(8)
 });

@@ -17,7 +17,8 @@
         "unit": "jest --config tests/jest.config.js --coverage",
         "test": "clear; npm run unit",
         "tobrowser": "tsc; browserify dist/main.js --standalone Main | derequire > builds/mainBundle.js; browserify dist/ui/buttons.js --standalone Buttons | derequire > builds/buttonBundle.js; browserify dist/ui/scorebug.js --standalone Scorebug | derequire > builds/scorebugBundle.js",
-        "plot-models": "tsc; node tests/measuringAccuracy/learnerAcc.js; python3 tests/measuringAccuracy/learnerAcc.py"
+        "plot-models": "tsc; node tests/measuringAccuracy/learnerAcc.js; python3 tests/measuringAccuracy/learnerAcc.py",
+        "run-server": "npm run tobrowser; live-server"
     },
     "devDependencies": {
         "@babel/cli": "^7.18.9",

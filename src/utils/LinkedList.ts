@@ -14,6 +14,39 @@ class ListNode<T> {
         this.val = _val;
         this.next = _next;
     }
+
+    /**
+     * Converts a JSON object into a ListNode
+     * Does not set previous pointers
+     * @param obj the object to convert
+     * @returns the converted list node
+     */
+    static fromObj<T>(obj: { [key: string]: any }): ListNode<T> {
+        let res = new ListNode<T>(obj.val);
+        if (typeof obj.next !== undefined) {
+            res.next = ListNode.fromObj<T>(obj.next);
+        }
+        return res;
+    }
+
+    /**
+     * Recursively converts the list from this node on
+     * into an object to be saved to a JSON. Does not
+     * keep track of prev pointer
+     * @returns a JSON object
+     */
+    toObj(): { [key: string]: any } {
+        let next: { [key: string]: any } | undefined;
+        if (typeof this.next === 'undefined') {
+            next = undefined;
+        } else {
+            next = this.next.toObj();
+        }
+        return {
+            val: this.val,
+            next: next
+        }
+    }
 }
 
 export class List<T> {
@@ -187,6 +220,50 @@ export class List<T> {
      */
     toString(): string {
         return `(${[...this].join(', ')})`;
+    }
+
+    /**
+     * Converts a JSON object into a linked list
+     * @param obj the object to convert
+     * @returns a linked list
+     */
+    static fromObj<T>(obj: { [key: string]: any }): List<T> {
+        let res = new List<T>();
+        res._length = obj.length;
+        if (typeof obj.head !== 'undefined') {
+            const nodes = ListNode.fromObj<T>(obj.head);
+            res._head = nodes;
+            let current = res._head;
+            let last = undefined;
+            while (typeof current !== 'undefined') {
+                current.prev = last;
+                last = current;
+                current = current.next;
+            }
+            (current as ListNode<T>).prev = last;
+        } 
+        return res;
+    }
+
+    /**
+     * Converts this object into a JSON object
+     * @returns the JSON object
+     */
+    toObj(): { [key: string]: any } {
+        let head: { [key: string]: any } | undefined;
+        let tail: { [key: string]: any } | undefined;
+        if (typeof this._head === 'undefined') {
+            head = undefined;
+            tail = undefined;
+        } else {
+            head = this._head.toObj();
+            tail = this._tail.toObj();
+        }
+        return {
+            length: this._length,
+            head: head,
+            tail: tail
+        };
     }
 }
 

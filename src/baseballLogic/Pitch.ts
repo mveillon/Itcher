@@ -38,4 +38,18 @@ export class Pitch {
         res.spinDirection = obj.spinDirection;
         return res;
     }
+
+    /**
+     * Converts this pitch into a JSON that fromObj can read
+     * @returns a JSON
+     */
+    toObj(): pitchJSON {
+        return {
+            name: this.name,
+            timesThrown: this.timesThrown,
+            velo: this.velo,
+            spinRate: this.spinRate,
+            spinDirection: this.spinDirection
+        };
+    }
 }

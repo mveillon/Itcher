@@ -232,6 +232,41 @@ export class GameState {
     flyout = this.out;
     lineout = this.out;
     undo = this.restore;
+
+    /**
+     * Converts a JSON object into a game state
+     * @param obj the object to convert
+     * @returns a linked list
+     */
+    static fromObj(obj: { [key: string]: any }): GameState {
+        let res = new GameState();
+        res._outs = obj.outs;
+        res._balls = obj.balls;
+        res._strikes = obj.strikes;
+        res._lineSpot = obj.lineSpot;
+        res.lastStates = List.fromObj<GameState>(obj.lastStates);
+        res.pitcher = Pitcher.fromObj(obj.pitcher);
+        res.lineup = obj.lineup;
+        res.bases = obj.bases;
+        return res;
+    }
+
+    /**
+     * Converts the game state to a JSON that fromOBJ can read
+     * @returns the JSON
+     */
+    toObj(): { [key: string]: any } {
+        return {
+            outs: this._outs,
+            balls: this._balls,
+            strikes: this._strikes,
+            lineSpot: this._lineSpot,
+            lastStates: this.lastStates.toObj(),
+            pitcher: this.pitcher.toObj(),
+            lineup: this.lineup,
+            bases: this.bases
+        };
+    }
 }
 
 let state = new GameState();
@@ -268,9 +303,7 @@ export const getState = (): GameState => {
     if (usingNode()) {
         return state;
     } else {
-        let s;
-        eval('s = localStorage.get("state")');
-        return s;
+        return GameState.fromObj(JSON.parse(localStorage.getItem('state')));
     }
 }
 
@@ -282,6 +315,6 @@ export const setState = (newState: GameState) => {
     if (usingNode()) {
         state = newState;
     } else {
-        eval('localStorage.set("state", newState)');
+        localStorage.setItem('state', JSON.stringify(newState.toObj()));
     }
 }
