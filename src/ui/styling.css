@@ -32,22 +32,39 @@ body {
     background-color: var(--dominant);
 }
 
-.button-div {
-    float: left;
-    width: 40%;
-    text-align: center;
-    transform: translateY(50px);
+.col-container {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
 }
 
-.scorebug {
-    position: relative;
+.row-container {
     display: flex;
-    float: right;
-    width: 60%;
+    flex: 1;
+    flex-direction: row;
+}
+
+.parent,
+.row-container {
+    justify-content: space-between;
+}
+
+.button-div,
+.col-container {
+    flex: 2;
+}
+
+.button-row,
+.row-container {
+    justify-content: center;
     align-items: center;
 }
 
-button {
+.scorebug {
+    flex: 1;
+}
+
+.event-button {
     margin: 10px;
     padding: 10px;
     width: 80px;
@@ -58,11 +75,12 @@ button {
     font-family: var(--font);
 }
 
-button:hover {
+.event-button:hover {
     background-color: var(--dominant);
     color: var(--secondary)
 }
 
+/* 
 .bases {
     float: right;
     margin: 60px 330px;
@@ -99,4 +117,4 @@ button:hover {
     color: var(--secondary);
     font-size: 50px;
     flex-direction: row;
-}
+} */

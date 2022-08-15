@@ -8,15 +8,17 @@
     "version": "1.0.0",
     "keywords": [
         "baseball",
-        "machine learning",
-        "reinforcement learning"
+        "machine learning"
     ],
     "description": "A UI to randomly select the next pitch to throw",
     "repository": "github:mveillon/Pitch-Chooser-AI",
     "private": true,
     "scripts": {
         "unit": "jest --config tests/jest.config.js --coverage",
-        "test": "npm run unit"
+        "test": "npm run unit",
+        "testjs": "clear && npm test",
+        "tobrowser": "tsc; browserify dist/main.js --standalone Main | derequire > builds/mainBundle.js; browserify dist/ui/buttons.js --standalone Buttons | derequire > builds/buttonBundle.js; browserify dist/ui/scorebug.js --standalone Scorebug | derequire > builds/scorebugBundle.js",
+        "plot-models": "tsc; node tests/measuringAccuracy/learnerAcc.js; python3 tests/measuringAccuracy/learnerAcc.py"
     },
     "devDependencies": {
         "@babel/cli": "^7.18.9",
@@ -27,6 +29,7 @@
         "@types/jest": "^28.1.6",
         "@types/synaptic": "^1.0.4",
         "browserify": "^17.0.0",
+        "derequire": "^2.1.1",
         "jest": "^28.1.3",
         "jest-ts-webcompat-resolver": "^1.0.0",
         "ml-matrix": "^6.10.2",

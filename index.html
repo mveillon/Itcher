@@ -4,63 +4,81 @@
         <meta charset="utf-8" />
         <title>ML Pitch Chooser</title>
         <link rel="stylesheet" type="text/css" href="./src/ui/styling.css">
-        <script src="bundle.js"></script>
+        <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
+        <script src="./builds/mainBundle.js"></script>
+        <script src="./builds/buttonBundle.js"></script>
+        <script src="./builds/scorebugBundle.js"></script>
     </head>
 
-    <body onload="pitchChooser.init()">
+    <body onload="Main.init()">
         <div class="header-div">
             <h1>Pitch Chooser AI</h1>
         </div>
 
-        <div class="button-div">
-            <button id="ball">Ball</button>
-            <button id="strike">Strike</button>
-            <button id="foul">Foul</button>
-            <br>
+        <div class="parent">
+            <div class="button-div">
+                <div class="button-row">
+                    <button type="button" onclick="Buttons.ball()" class="event-button">Ball</button>
+                    <button type="button" onclick="Buttons.strike()" class="event-button">Strike</button>
+                    <button type="button" onclick="Buttons.foul()" class="event-button">Foul</button>
+                </div>
 
-            <button id="1b">1b</button>
-            <button id="2b">2b</button>
-            <button id="3b">3b</button>
-            <button id="hr">HR</button>
-            <br>
+                <div class="button-row">
+                    <button type="button" onclick="Buttons.single()" class="event-button">1b</button>
+                    <button type="button" onclick="Buttons.double()" class="event-button">2b</button>
+                    <button type="button" onclick="Buttons.triple()" class="event-button">3b</button>
+                    <button type="button" onclick="Buttons.homeRun()" class="event-button">HR</button>
+                </div>
 
-            <button id="error">Error</button>
-            <button id="go">GO</button>
-            <button id="lo">LO</button>
-            <button id="fo">FO</button>
-            <br>
+                <div class="button-row">
+                    <button type="button" onclick="Buttons.error()" class="event-button">Error</button>
+                    <button type="button" onclick="Buttons.groundout()" class="event-button">GO</button>
+                    <button type="button" onclick="Buttons.lineout()" class="event-button">LO</button>
+                    <button type="button" onclick="Buttons.flyout()" class="event-button">FO</button>
+                </div>
 
-            <button id="dp">DP</button>
-            <button id="undo">Undo</button>
-        </div>
-
-        <div class="scorebug">
-            <div class="bases">
-                <input type="image" src="./assets/empty.png" id="third-base" class="base" />
-                <input type="image" src="./assets/empty.png" id="second-base" class="base" />
-                <input type="image" src="./assets/empty.png" id="first-base" class="base" />
+                <div class="button-row">
+                    <button type="button" onclick="Buttons.doublePlay()" class="event-button">DP</button>
+                    <button type="button" onclick="Buttons.undo()" class="event-button">Undo</button>
+                </div>
             </div>
 
-            <div class="outs">
-                <input type="image" src="./assets/no-out.png" id="one-out" class="out" />
-                <input type="image" src="./assets/no-out.png" id="two-out" class="out" />
-                <input type="image" src="./assets/no-out.png" id="three-out" class="out" />
+            <div class="scorebug">
+                <div class="bases">
+                    <button type="button" onclick="Scorebug.toggleBase(2)">
+                        <img src="./assets/empty.png" id="third-base" class="base" />
+                    </button>
+
+                    <button type="button" onclick="Scorebug.toggleBase(1)">
+                        <img src="./assets/empty.png" id="second-base" class="base" />
+                    </button>
+
+                    <button type="button" onclick="Scorebug.toggleBase(0)">
+                        <img src="./assets/empty.png" id="first-base" class="base" />
+                    </button>
+    
+                <div class="row-container">
+                    <div class="outs">
+                        <button type="button" onclick="Scorebug.toggleOuts(0)">
+                            <img src="./assets/no-out.png" id="one-out" class="out" />
+                        </button>
+
+                        <button type="button" onclick="Scorebug.toggleOuts(1)">
+                            <img src="./assets/no-out.png" id="two-out" class="out" />
+                        </button>
+
+                        <button type="button" onclick="Scorebug.toggleOuts(2)">
+                            <img src="./assets/no-out.png" id="three-out" class="out" />
+                        </button>
+                    </div>
+        
+                    <div class="count">
+                        <input type="strikes" class="count-input" />
+                        <p class="count-dash">-</p>
+                        <input type="balls" class="count-input" />
+                    </div>
+                </div>
             </div>
-
-            <div class="count">
-                <input type="strikes" class="count-input" />
-                <p class="count-dash">-</p>
-                <input type="balls" class="count-input" />
-            </div>
         </div>
-
-        <div class="batter-pitcher">
-
-        </div>
-
-        <div class="next-pitch">
-
-        </div>
-
     </body>
 </html>

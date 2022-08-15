@@ -1,5 +1,6 @@
 import { pitcherPath, readJSON } from "../utils/files.js";
 import { Pitch, pitchJSON } from "./Pitch.js";
+import { usingNode } from "../utils/usingNode.js";
 
 export type pitcherJSON = {
     name: string,
@@ -55,7 +56,12 @@ import { findAllPitchers } from "../ml/parseData.js";
  */
 export const readAllPitchers = (): { [key: string]: Pitcher; } => {
     findAllPitchers();
-    const objs = readJSON(pitcherPath) as { [key: string]: pitcherJSON };
+    let objs: { [key: string]: Pitcher };
+    if (usingNode()) {
+        objs = readJSON(pitcherPath);
+    } else {
+        eval('objs = localStorage.getItem("pitchers.json")');
+    }
     let res: { [key: string]: Pitcher } = {};
     for (const k in objs) {
         res[k] = Pitcher.fromObj(objs[k]);

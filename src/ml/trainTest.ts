@@ -2,7 +2,6 @@ import { aidToPitcher, getPlayType, abToPlat, idToEvent, pitchAbbreviations } fr
 import { MachineLearning } from "./models/MachineLearning.js";
 import { readAllPitchers, Pitcher } from "../baseballLogic/Pitcher.js";
 import { dataPaths, readSpreadSheet, sheet, sheetRow } from "../utils/files.js";
-import { usingNode } from "../utils/usingNode.js";
 import { GameState } from "../baseballLogic/GameState.js";
 import { rewards } from "./rewards.js";
 import { getFeature } from "./mappings.js";
@@ -31,7 +30,8 @@ const allFeatsTargs = (data: sheet): [number[][], number[]] => {
  * Trains the learner on the appropriate dataset
  */
  export const trainLearner = async (learner: MachineLearning) => {
-    const trainData = usingNode() ? dataPaths.train : dataPaths.pitches;
+    // const trainData = usingNode() ? dataPaths.train : dataPaths.pitches;
+    const trainData = dataPaths.train;
     const allData = readSpreadSheet(trainData);
     const [features, targets] = allFeatsTargs(allData);
 

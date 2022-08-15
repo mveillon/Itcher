@@ -3,6 +3,8 @@ import { readAllPitchers } from "../baseballLogic/Pitcher.js";
 import { usingNode } from "../utils/usingNode.js";
 import { $ } from "../utils/utilities.js";
 import { nextPitch } from "../ml/nextPitch.js";
+import { getLearner } from "../ml/models/getLearner.js";
+import { MachineLearning } from "../ml/models/MachineLearning.js";
 
 /**
  * Toggles whether the base is occupied or not
@@ -11,6 +13,7 @@ import { nextPitch } from "../ml/nextPitch.js";
 export const toggleBase = (baseInd: number) => {
     state.backup();
     state.bases[baseInd] = !state.bases[baseInd];
+    updateBug();
 }
 
 /**
@@ -27,6 +30,7 @@ export const toggleOuts = (outInd: number) => {
     } else {
         state.outs = outInd + +(outInd >= state.outs);
     }
+    updateBug();
 }
 
 /**
@@ -43,6 +47,7 @@ export const changeCount = (balls: number, strikes: number) => {
         if (strikes < 3) state.balls = balls;
         if (balls < 4) state.strikes = strikes;
     }
+    updateBug();
 }
 
 /**
@@ -55,6 +60,7 @@ export const changePitcher = (pitcherName: string) => {
         state.backup();
         state.pitcher = allPitchers[pitcherName];
     }
+    updateBug();
 }
 
 /**
@@ -74,6 +80,7 @@ export const changeLineup = (newLineup: string[]) => {
 
     state.backup();
     state.lineup = newLineup;
+    updateBug();
 }
 
 /**
@@ -85,16 +92,27 @@ export const changeLineSpot = (newSpot: number) => {
         state.backup();
         state.lineSpot = newSpot;
     }
+    updateBug();
 }
+
+let learner: MachineLearning;
 
 /**
  * Finds the next pitch to throw and updates the html
  * to reflect that
  */
 export const updateNext = () => {
-
+    if (typeof learner === 'undefined') {
+        console.log('Still waiting for learner...');
+        return;
+    }
+    const next = nextPitch(learner);
+    console.log(next);
 }
 
+/**
+ * Updates the scorebug based on the current state
+ */
 export const updateBug = () => {
     if (!usingNode()) {
         const baseIds = [
@@ -115,27 +133,15 @@ export const updateBug = () => {
             const file = state.outs > i ? 'out' : 'no-out';
             ($(outIds[i]) as HTMLImageElement).src = `../../assets/${file}.png`;
         }
+
+        updateNext();
     }
 }
 
-const updateBases = (baseInd: number) => {
-    toggleBase(baseInd);
-    updateBug();
+/**
+ * Creates and trains the machine learning model responsible for choosing
+ * the next pitch
+ */
+export const bindLearner = async () => {
+    learner = await getLearner();
 }
-
-const updateOut = (outInd: number) => {
-    toggleOuts(outInd);
-    updateBug();
-}
-
-export const bindToggles = () => {
-    if (!usingNode()) {
-        $('first-base').onclick = () => updateBases(0);
-        $('second-base').onclick = () => updateBases(1);
-        $('third-base').onclick = () => updateBases(2);
-        $('one-out').onclick = () => updateOut(0);
-        $('two-out').onclick = () => updateOut(1);
-        $('three-out').onclick = () => updateOut(2);
-    }
-}
-

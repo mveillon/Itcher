@@ -24,14 +24,11 @@ if (usingNode()) {
     }
 
     writeFile = (path: string, data: string) => {
-        fetch(path, {
-            method: 'POST',
-            body: data
-        });
+        throw new Error('Cannot write to file when running via browser.');
     }
 }
-/* Ok you can look now */
 
+/* Ok you can look now */
 export type sheetRow = { [key: string]: string };
 export type sheet = sheetRow[];
 
