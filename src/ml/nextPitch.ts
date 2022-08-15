@@ -1,5 +1,5 @@
 import { getFeature } from "./mappings.js";
-import { state } from "../baseballLogic/GameState.js";
+import { getState } from "../baseballLogic/GameState.js";
 import { choice } from "../utils/random.js";
 import { MachineLearning } from "./models/MachineLearning.js";
 
@@ -9,6 +9,7 @@ import { MachineLearning } from "./models/MachineLearning.js";
  * @returns what pitch to throw
  */
 export const nextPitch = (learner: MachineLearning): string => {
+    const state = getState();
     const pitches = Object.keys(state.pitcher.pitches);
     const feats = pitches.map((pitch) => getFeature(pitch, state));
     const rewards = learner.predict(feats);

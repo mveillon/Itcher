@@ -1,5 +1,6 @@
 import { Pitcher } from "./Pitcher.js";
 import { List } from "../utils/LinkedList.js";
+import { usingNode } from "../utils/usingNode.js";
 
 export class GameState {
     private _outs: number;
@@ -233,7 +234,7 @@ export class GameState {
     undo = this.restore;
 }
 
-export let state = new GameState();
+let state = new GameState();
 
 /**
  * Resets the global state variable, keeping only a few fields
@@ -246,13 +247,41 @@ export const resetState = (
     keepLineup: boolean = true, 
     keepStates: boolean = true
     ) => {
-    const oldPitch = state.pitcher;
-    const oldLine = state.lineup;
-    state.backup();
-    const oldStates = state.lastStates;
+    let oldState = getState();
+    const oldPitch = oldState.pitcher;
+    const oldLine = oldState.lineup;
+    oldState.backup();
+    const oldStates = oldState.lastStates;
 
-    state = new GameState();
-    if (keepPitcher) state.pitcher = oldPitch;
-    if (keepLineup) state.lineup = oldLine;
-    if (keepStates) state.lastStates = oldStates;
+    oldState = new GameState();
+    if (keepPitcher) oldState.pitcher = oldPitch;
+    if (keepLineup) oldState.lineup = oldLine;
+    if (keepStates) oldState.lastStates = oldStates;
+    setState(oldState);
+}
+
+/**
+ * Gets the global state to use
+ * @returns the global state
+ */
+export const getState = (): GameState => {
+    if (usingNode()) {
+        return state;
+    } else {
+        let s;
+        eval('s = localStorage.get("state")');
+        return s;
+    }
+}
+
+/**
+ * Updates the global state to the passed state
+ * @param newState the new state
+ */
+export const setState = (newState: GameState) => {
+    if (usingNode()) {
+        state = newState;
+    } else {
+        eval('localStorage.set("state", newState)');
+    }
 }

@@ -1,5 +1,5 @@
 import { nextPitch } from "../src/ml/nextPitch";
-import { state, resetState } from "../src/baseballLogic/GameState";
+import { getState, resetState, setState } from "../src/baseballLogic/GameState";
 import { readAllPitchers } from "../src/baseballLogic/Pitcher";
 import { getLearner } from "../src/ml/models/getLearner";
 import { defaultTimeout } from "./checkModel";
@@ -8,6 +8,7 @@ jest.setTimeout(defaultTimeout);
 test('next pitch', async () => {
     const learner = await getLearner();
     resetState(false);
+    const state = getState();
     state.lineup = ['R'];
     const pitcher = readAllPitchers()['Felix Hernandez'];
     state.pitcher = pitcher;
@@ -17,6 +18,7 @@ test('next pitch', async () => {
                 state.balls = b;
                 state.strikes = s;
                 state.lineup[0] = p ? 'R' : 'L';
+                setState(state);
                 const pitch = nextPitch(learner);
                 const contained = pitch in pitcher.pitches;
                 if (!contained) {

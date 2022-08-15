@@ -32,36 +32,34 @@ body {
     background-color: var(--dominant);
 }
 
-.col-container {
+.parent {
+    margin-top: 20px;
     display: flex;
-    flex: 1;
-    flex-direction: column;
-}
-
-.row-container {
-    display: flex;
-    flex: 1;
     flex-direction: row;
-}
-
-.parent,
-.row-container {
     justify-content: space-between;
+    align-items: flex-start;
 }
 
-.button-div,
-.col-container {
-    flex: 2;
+.button-div {
+    margin-top: 0px;
+    display: flex;
+    flex-direction: column;
+    flex: 50%;
 }
 
-.button-row,
-.row-container {
+.button-row {
+    display: flex;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
 }
 
 .scorebug {
-    flex: 1;
+    flex: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .event-button {
@@ -78,6 +76,49 @@ body {
 .event-button:hover {
     background-color: var(--dominant);
     color: var(--secondary)
+}
+
+.bases {
+    transform: rotate(45deg);
+}
+
+#third-base {
+    transform: translate(35px, 36px);
+}
+
+.outs {
+    display: flex;
+    flex-direction: row;
+    margin-top: 40px;
+}
+
+.out {
+    margin-left:  5px;
+    margin-right: 5px;
+}
+
+.count {
+    display: flex;
+    flex-direction: row;
+    margin-top: 40px;
+    justify-content: center;
+    align-items: center;
+}
+
+.count-input {
+    margin-right: 5px;
+    margin-left: 5px;
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    background-color: var(--dominant);
+    color: var(--secondary);
+    font-size: 40px;
+}
+
+.count-dash {
+    color: var(--secondary);
+    font-size: 60px;
 }
 
 /* 

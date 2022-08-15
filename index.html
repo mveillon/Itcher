@@ -45,38 +45,22 @@
 
             <div class="scorebug">
                 <div class="bases">
-                    <button type="button" onclick="Scorebug.toggleBase(2)">
-                        <img src="./assets/empty.png" id="third-base" class="base" />
-                    </button>
-
-                    <button type="button" onclick="Scorebug.toggleBase(1)">
-                        <img src="./assets/empty.png" id="second-base" class="base" />
-                    </button>
-
-                    <button type="button" onclick="Scorebug.toggleBase(0)">
-                        <img src="./assets/empty.png" id="first-base" class="base" />
-                    </button>
+                    <input type="image" onclick="Scorebug.toggleBase(2)" src="./assets/empty.png" class="base" id="third-base" />
+                    <input type="image" onclick="Scorebug.toggleBase(1)" src="./assets/empty.png" class="base" id="second-base" />
+                    <input type="image" onclick="Scorebug.toggleBase(0)" src="./assets/empty.png" class="base" id="first-base" />
+                </div>
+                    
+                <div class="outs">
+                    <input type="image" onclick="Scorebug.toggleOuts(0)" src="./assets/no-out.png" class="out" id="one-out" />
+                    <input type="image" onclick="Scorebug.toggleOuts(1)" src="./assets/no-out.png" class="out" id="two-out" />
+                    <input type="image" onclick="Scorebug.toggleOuts(2)" src="./assets/no-out.png" class="out" id="three-out" />
+                </div>
     
-                <div class="row-container">
-                    <div class="outs">
-                        <button type="button" onclick="Scorebug.toggleOuts(0)">
-                            <img src="./assets/no-out.png" id="one-out" class="out" />
-                        </button>
-
-                        <button type="button" onclick="Scorebug.toggleOuts(1)">
-                            <img src="./assets/no-out.png" id="two-out" class="out" />
-                        </button>
-
-                        <button type="button" onclick="Scorebug.toggleOuts(2)">
-                            <img src="./assets/no-out.png" id="three-out" class="out" />
-                        </button>
-                    </div>
-        
-                    <div class="count">
-                        <input type="strikes" class="count-input" />
-                        <p class="count-dash">-</p>
-                        <input type="balls" class="count-input" />
-                    </div>
+                <div class="count">
+                    <input type="text" class="count-input" id="balls" />
+                    <p class="count-dash">-</p>
+                    <input type="text" class="count-input" id="strikes" />
+                    <input type="submit" class="event-button" onclick="Scorebug.getUpdateCount()" />
                 </div>
             </div>
         </div>

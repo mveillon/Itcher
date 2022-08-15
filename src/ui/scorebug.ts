@@ -1,4 +1,4 @@
-import { state } from "../baseballLogic/GameState.js";
+import { getState, setState } from "../baseballLogic/GameState.js";
 import { readAllPitchers } from "../baseballLogic/Pitcher.js";
 import { usingNode } from "../utils/usingNode.js";
 import { $ } from "../utils/utilities.js";
@@ -11,8 +11,10 @@ import { MachineLearning } from "../ml/models/MachineLearning.js";
  * @param baseInd which base to toggle
  */
 export const toggleBase = (baseInd: number) => {
+    const state = getState();
     state.backup();
     state.bases[baseInd] = !state.bases[baseInd];
+    setState(state);
     updateBug();
 }
 
@@ -21,6 +23,7 @@ export const toggleBase = (baseInd: number) => {
  * @param outInd which out button was clicked (0, 1, or 2)
  */
 export const toggleOuts = (outInd: number) => {
+    const state = getState();
     state.backup();
     if (outInd === 2) {
         if (state.outs === 0) {
@@ -30,6 +33,7 @@ export const toggleOuts = (outInd: number) => {
     } else {
         state.outs = outInd + +(outInd >= state.outs);
     }
+    setState(state);
     updateBug();
 }
 
@@ -39,15 +43,17 @@ export const toggleOuts = (outInd: number) => {
  * @param strikes how many strikes there should be
  */
 export const changeCount = (balls: number, strikes: number) => {
-    if (balls > 4 || strikes > 3) return;
-    if (balls === 4 && strikes === 3) {
-        return;
-    } else if (balls !== state.balls || strikes !== state.strikes) {
+    const state = getState();
+    if (
+        (balls < 4 || strikes < 3) &&
+        (balls !== state.balls || strikes !== state.strikes)
+    ) {
         state.backup();
         if (strikes < 3) state.balls = balls;
         if (balls < 4) state.strikes = strikes;
+        setState(state);
+        updateBug();
     }
-    updateBug();
 }
 
 /**
@@ -55,11 +61,13 @@ export const changeCount = (balls: number, strikes: number) => {
  * @param pitcherName the new pitcher
  */
 export const changePitcher = (pitcherName: string) => {
+    const state = getState();
     const allPitchers = readAllPitchers();
     if (pitcherName !== state.pitcher.name && pitcherName in allPitchers) {
         state.backup();
         state.pitcher = allPitchers[pitcherName];
     }
+    setState(state);
     updateBug();
 }
 
@@ -68,6 +76,7 @@ export const changePitcher = (pitcherName: string) => {
  * @param newLineup the new lineup
  */
 export const changeLineup = (newLineup: string[]) => {
+    const state = getState()
     if (newLineup.length === state.lineup.length) {
         const allowed = ['R', 'L', 'S'];
         let diff = false;
@@ -80,6 +89,7 @@ export const changeLineup = (newLineup: string[]) => {
 
     state.backup();
     state.lineup = newLineup;
+    setState(state);
     updateBug();
 }
 
@@ -88,10 +98,12 @@ export const changeLineup = (newLineup: string[]) => {
  * @param newSpot the new lineup spot
  */
 export const changeLineSpot = (newSpot: number) => {
+    const state = getState();
     if (newSpot >= 0 && newSpot < 9 && newSpot !== state.lineSpot) {
         state.backup();
         state.lineSpot = newSpot;
     }
+    setState(state);
     updateBug();
 }
 
@@ -115,6 +127,7 @@ export const updateNext = () => {
  */
 export const updateBug = () => {
     if (!usingNode()) {
+        const state = getState();
         const baseIds = [
             'first-base',
             'second-base',
@@ -134,7 +147,30 @@ export const updateBug = () => {
             ($(outIds[i]) as HTMLImageElement).src = `../../assets/${file}.png`;
         }
 
+        ($('strikes') as HTMLInputElement).value = state.strikes.toString();
+        ($('balls') as HTMLInputElement).value = state.balls.toString();
+
         updateNext();
+
+        console.log(`${state.balls}-${state.strikes}`);
+    }
+}
+
+/**
+ * Retrieves the values for the ball and strike fields and updates the count
+ */
+export const getUpdateCount = () => {
+    if (!usingNode()) {
+        let balls: number;
+        let strikes: number;
+        try {
+            balls = parseInt(($('balls') as HTMLInputElement).value);
+            strikes = parseInt(($('strikes') as HTMLInputElement).value);
+        } catch {
+            console.log('Invalid ball or strike input!');
+            return;
+        }
+        changeCount(balls, strikes);
     }
 }
 
@@ -142,6 +178,6 @@ export const updateBug = () => {
  * Creates and trains the machine learning model responsible for choosing
  * the next pitch
  */
-export const bindLearner = async () => {
+export const initBug = async () => {
     learner = await getLearner();
 }

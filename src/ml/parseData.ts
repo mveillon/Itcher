@@ -1,7 +1,7 @@
 import { readSpreadSheet, dataPaths, pitcherPath, writeJSON } from "../utils/files.js";
 import { Pitch } from "../baseballLogic/Pitch.js";
 import { Pitcher } from "../baseballLogic/Pitcher.js";
-import { state } from "../baseballLogic/GameState.js";
+import { getState } from "../baseballLogic/GameState.js";
 import { usingNode } from "../utils/usingNode.js";
 
 export let idToEvent = new Map<number, string>();
@@ -44,6 +44,7 @@ export const getPlayType = (result: string, event: string): string => {
         'Batter Interference',
     ]);
 
+    const state = getState();
     if (result === 'ibb') {
         return 'bb';
     } else if (result === 'b' && state.balls === 3) {

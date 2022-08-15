@@ -1232,7 +1232,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.bindLearner = exports.updateBug = exports.updateNext = exports.changeLineSpot = exports.changeLineup = exports.changePitcher = exports.changeCount = exports.toggleOuts = exports.toggleBase = void 0;
+exports.bindLearner = exports.getUpdateCount = exports.updateBug = exports.updateNext = exports.changeLineSpot = exports.changeLineup = exports.changePitcher = exports.changeCount = exports.toggleOuts = exports.toggleBase = void 0;
 const GameState_js_1 = _dereq_("../baseballLogic/GameState.js");
 const Pitcher_js_1 = _dereq_("../baseballLogic/Pitcher.js");
 const usingNode_js_1 = _dereq_("../utils/usingNode.js");
@@ -1273,19 +1273,15 @@ exports.toggleOuts = toggleOuts;
  * @param strikes how many strikes there should be
  */
 const changeCount = (balls, strikes) => {
-    if (balls > 4 || strikes > 3)
-        return;
-    if (balls === 4 && strikes === 3) {
-        return;
-    }
-    else if (balls !== GameState_js_1.state.balls || strikes !== GameState_js_1.state.strikes) {
+    if ((balls < 4 || strikes < 3) &&
+        (balls !== GameState_js_1.state.balls || strikes !== GameState_js_1.state.strikes)) {
         GameState_js_1.state.backup();
         if (strikes < 3)
             GameState_js_1.state.balls = balls;
         if (balls < 4)
             GameState_js_1.state.strikes = strikes;
+        (0, exports.updateBug)();
     }
-    (0, exports.updateBug)();
 };
 exports.changeCount = changeCount;
 /**
@@ -1370,10 +1366,32 @@ const updateBug = () => {
             const file = GameState_js_1.state.outs > i ? 'out' : 'no-out';
             (0, utilities_js_1.$)(outIds[i]).src = `../../assets/${file}.png`;
         }
+        (0, utilities_js_1.$)('strikes').value = GameState_js_1.state.strikes.toString();
+        (0, utilities_js_1.$)('balls').value = GameState_js_1.state.balls.toString();
         (0, exports.updateNext)();
+        console.log(`${GameState_js_1.state.balls}-${GameState_js_1.state.strikes}`);
     }
 };
 exports.updateBug = updateBug;
+/**
+ * Retrieves the values for the ball and strike fields and updates the count
+ */
+const getUpdateCount = () => {
+    if (!(0, usingNode_js_1.usingNode)()) {
+        let balls;
+        let strikes;
+        try {
+            balls = parseInt((0, utilities_js_1.$)('balls').value);
+            strikes = parseInt((0, utilities_js_1.$)('strikes').value);
+        }
+        catch (_a) {
+            console.log('Invalid ball or strike input!');
+            return;
+        }
+        (0, exports.changeCount)(balls, strikes);
+    }
+};
+exports.getUpdateCount = getUpdateCount;
 /**
  * Creates and trains the machine learning model responsible for choosing
  * the next pitch

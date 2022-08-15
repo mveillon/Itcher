@@ -1,10 +1,11 @@
-import { state } from "../baseballLogic/GameState.js";
+import { getState, setState } from "../baseballLogic/GameState.js";
 
 /**
  * Updates state based on the result
  * @param result a string representation of what happened
  */
 export const dispatch = (result: string) => {
+    const state = getState();
     switch (result) {
         case 'k':
             state.strike();
@@ -48,4 +49,5 @@ export const dispatch = (result: string) => {
             throw new Error(`Unexpected result ${result}`);
             break;
     }
+    setState(state);
 }

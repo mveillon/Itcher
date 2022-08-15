@@ -1,10 +1,11 @@
-import { state, resetState } from "../src/baseballLogic/GameState";
+import { getState, setState, resetState } from "../src/baseballLogic/GameState";
 import * as bug from "../src/ui/scorebug";
 
 const r = () => resetState(true, true, false);
 
 test('toggleBase', () => {
     r();
+    const state = getState();
     for (let i = 0; i < state.bases.length; i++) {
         let trueBases = [false, false, false];
         trueBases[i] = true;
@@ -22,6 +23,7 @@ test('toggleBase', () => {
 
 test('toggleOuts', () => {
     r();
+    let state = getState();
     bug.toggleOuts(0);
     expect(state.outs).toBe(1);
     bug.toggleOuts(0);
@@ -58,6 +60,7 @@ test('toggleOuts', () => {
     }
 
     r();
+    state = getState();
     state.strike();
     bug.toggleOuts(2);
     state.undo(); // undoes strike
@@ -71,6 +74,7 @@ test('toggleOuts', () => {
 
 test('change count', () => {
     r();
+    let state = getState();
     for (let b = 0; b < 4; b++) {
         for (let s = 0; s < 3; s++) {
             bug.changeCount(b, s);
@@ -79,6 +83,7 @@ test('change count', () => {
         }
     }
     r();
+    state = getState();
     expect(state.strikes).toBe(0);
     expect(state.balls).toBe(0);
     state.strike();
@@ -91,6 +96,7 @@ test('change count', () => {
 
     state.undo();
     state.single();
+    setState(state);
     bug.changeCount(0, 0);
     state.undo();
     expect(state.bases).toEqual([false, false, false]);
@@ -99,13 +105,17 @@ test('change count', () => {
         for (let s = 1; s < 3; s++) {
             bug.changeCount(b, s);
             state.undo();
+            setState(state);
             expect(state.strikes).toBe(0);
             expect(state.balls).toBe(0);
         }
     }
 
-    for (let s = 0; s < 2; s++) {
+    for (let s = 0; s < 3; s++) {
         r();
+        state = getState();
+        expect(state.strikes).toBe(0);
+        expect(state.balls).toBe(0);
         bug.changeCount(4, s);
         expect(state.strikes).toBe(0);
         expect(state.balls).toBe(0);
@@ -116,6 +126,7 @@ test('change count', () => {
 
     for (let b = 0; b < 3; b++) {
         r();
+        state = getState();
         bug.changeCount(b, 3);
         expect(state.strikes).toBe(0);
         expect(state.balls).toBe(0);
@@ -125,6 +136,7 @@ test('change count', () => {
     }
 
     r();
+    state = getState();
     state.strike();
     bug.changeCount(4, 3);
     expect(state.strikes).toBe(1);
@@ -138,6 +150,7 @@ test('change count', () => {
 
 test('change pitcher', () => {
     resetState(false);
+    const state = getState();
     const oldName = state.pitcher.name;
     const newName = 'Felix Hernandez';
     bug.changePitcher(newName);
@@ -150,6 +163,7 @@ test('change pitcher', () => {
 
 test('change lineup', () => {
     resetState(false, false);
+    const state = getState();
     const oldLine = state.lineup;
     const newLine = ['R', 'L', 'S'];
     bug.changeLineup(newLine);
@@ -160,6 +174,7 @@ test('change lineup', () => {
 
 test('change linespot', () => {
     resetState();
+    const state = getState();
     bug.changeLineSpot(1);
     expect(state.lineSpot).toBe(1);
     state.undo();
