@@ -201,7 +201,9 @@ class GameState {
 }
 exports.GameState = GameState;
 GameState.maxBackups = 20;
-let state = new GameState();
+const stateContext = {
+    state: new GameState()
+};
 /**
  * Resets the global state variable, keeping only a few fields
  * @param keepPitcher whether to retain the old pitcher. Default is true
@@ -229,7 +231,7 @@ exports.resetState = resetState;
  * @returns the global state
  */
 const getState = () => {
-    return state;
+    return stateContext.state;
 };
 exports.getState = getState;
 /**
@@ -237,11 +239,11 @@ exports.getState = getState;
  * @param newState the new state
  */
 const setState = (newState) => {
-    state = newState;
+    stateContext.state = newState;
 };
 exports.setState = setState;
 
-},{"../utils/LinkedList.js":10,"./Pitcher.js":3}],2:[function(_dereq_,module,exports){
+},{"../utils/LinkedList.js":11,"./Pitcher.js":3}],2:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Pitch = void 0;
@@ -344,10 +346,11 @@ const parseData_js_1 = _dereq_("../ml/parseData.js");
  * @returns all of the pitchers in the dataset
  */
 const readAllPitchers = () => {
-    (0, parseData_js_1.findAllPitchers)();
+    if (parseData_js_1.idToEvent.size === 0)
+        (0, parseData_js_1.findAllPitchers)();
     let objs;
     if ((0, usingNode_js_1.usingNode)()) {
-        objs = (0, files_js_1.readJSON)(files_js_1.pitcherPath);
+        objs = (0, files_js_1.readJSON)((0, files_js_1.pitcherPath)());
     }
     else {
         objs = JSON.parse(localStorage.getItem('pitchers.json'));
@@ -360,20 +363,44 @@ const readAllPitchers = () => {
 };
 exports.readAllPitchers = readAllPitchers;
 
-},{"../ml/parseData.js":8,"../utils/files.js":11,"../utils/usingNode.js":13,"./Pitch.js":2}],4:[function(_dereq_,module,exports){
+},{"../ml/parseData.js":8,"../utils/files.js":13,"../utils/usingNode.js":15,"./Pitch.js":2}],4:[function(_dereq_,module,exports){
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.init = void 0;
-const scorebug_js_1 = _dereq_("./ui/scorebug.js");
-const init = () => {
-    (0, scorebug_js_1.initBug)();
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
 };
-exports.init = init;
+Object.defineProperty(exports, "__esModule", { value: true });
+const bug = __importStar(_dereq_("./ui/scorebug.js"));
+const buttons = __importStar(_dereq_("./ui/buttons.js"));
+const init = () => {
+    bug.initBug();
+};
+module.exports = Object.assign(Object.assign({ init: init }, bug), buttons);
 
-},{"./ui/scorebug.js":9}],5:[function(_dereq_,module,exports){
+},{"./ui/buttons.js":9,"./ui/scorebug.js":10}],5:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.correlation = exports.sigmoid = exports.variance = exports.avgVar = exports.dot = exports.average = exports.squaredMag = exports.manhattanDistance = exports.squareDistance = exports.mse = void 0;
+const arrayOps_js_1 = _dereq_("../utils/arrayOps.js");
 /**
  * Finds the mean squared error
  * @param x the first array
@@ -381,12 +408,8 @@ exports.correlation = exports.sigmoid = exports.variance = exports.avgVar = expo
  * @returns the mean squared error of x and y
  */
 const mse = (x, y) => {
-    let total = 0;
-    const len = Math.min(x.length, y.length);
-    for (let i = 0; i < len; i++) {
-        total += Math.pow(x[i] - y[i], 2) / len;
-    }
-    return total;
+    const minLen = Math.min(x.length, y.length);
+    return minLen > 0 ? (0, exports.squareDistance)(x, y) / minLen : 0;
 };
 exports.mse = mse;
 /**
@@ -453,12 +476,12 @@ exports.dot = dot;
  * @returns the average and variance of x
  */
 const avgVar = (x) => {
-    const mean = x.reduce((a, b) => a + b, 0) / x.length;
+    const mean = (0, arrayOps_js_1.sumList)(x) / x.length;
     let total = 0;
     for (const n of x) {
-        total += Math.pow(n - mean, 2) / x.length;
+        total += Math.pow(n - mean, 2);
     }
-    return [mean, total];
+    return [mean, total / x.length];
 };
 exports.avgVar = avgVar;
 /**
@@ -513,7 +536,7 @@ const correlation = (x, y) => {
 };
 exports.correlation = correlation;
 
-},{}],6:[function(_dereq_,module,exports){
+},{"../utils/arrayOps.js":12}],6:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.numActions = exports.numStates = exports.pitchToInd = exports.getFeature = exports.numAttributes = exports.stateToInd = void 0;
@@ -608,7 +631,7 @@ const numActions = () => {
 };
 exports.numActions = numActions;
 
-},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitch.js":2,"../utils/utilities.js":14,"./calculations.js":5}],7:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitch.js":2,"../utils/utilities.js":16,"./calculations.js":5}],7:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.nextPitch = void 0;
@@ -634,7 +657,7 @@ const nextPitch = (learner) => {
 };
 exports.nextPitch = nextPitch;
 
-},{"../baseballLogic/GameState.js":1,"../utils/random.js":12,"./mappings.js":6}],8:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"../utils/random.js":14,"./mappings.js":6}],8:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.pitchAbbreviations = exports.findAllPitchers = exports.getPlayType = exports.aidToPitcher = exports.abToPlat = exports.idToEvent = void 0;
@@ -663,10 +686,11 @@ exports.aidToPitcher = aidToPitcher;
  * @returns the play type as a key into rewards
  */
 const getPlayType = (result, event) => {
-    if (!(result in playTypes)) {
+    const pTypes = playTypes();
+    if (!(result in pTypes)) {
         throw new Error(`Unexpected result: ${result}`);
     }
-    result = playTypes[result];
+    result = pTypes[result];
     const outTypes = new Set([
         'Flyout',
         'Groundout',
@@ -732,10 +756,11 @@ exports.getPlayType = getPlayType;
  */
 const findAllPitchers = () => {
     let accum = {};
+    const dPaths = (0, files_js_1.dataPaths)();
     const paths = [
-        files_js_1.dataPaths.train,
-        files_js_1.dataPaths.valid,
-        files_js_1.dataPaths.test,
+        dPaths.train,
+        dPaths.valid,
+        dPaths.test
     ];
     for (const pth of paths) {
         pitchersInSheet(pth, accum);
@@ -754,7 +779,7 @@ const findAllPitchers = () => {
         }
     }
     if ((0, usingNode_js_1.usingNode)()) {
-        (0, files_js_1.writeJSON)(files_js_1.pitcherPath, accum);
+        (0, files_js_1.writeJSON)((0, files_js_1.pitcherPath)(), accum);
     }
     else {
         let toWrite = {};
@@ -771,12 +796,13 @@ exports.findAllPitchers = findAllPitchers;
  * @param pitchers the JSONs read thus far. This will be updated by the function
  */
 const pitchersInSheet = (path, pitchers) => {
-    let names = (0, files_js_1.readSpreadSheet)(files_js_1.dataPaths.playerNames);
+    const dPaths = (0, files_js_1.dataPaths)();
+    let names = (0, files_js_1.readSpreadSheet)(dPaths.playerNames);
     for (const player of names) {
         idToName.set(parseInt(player['id']), `${player['first_name']} ${player['last_name']}`);
     }
     names = undefined; // free up memory hopefully
-    let abs = (0, files_js_1.readSpreadSheet)(files_js_1.dataPaths.atBats);
+    let abs = (0, files_js_1.readSpreadSheet)(dPaths.atBats);
     let idToHand = new Map();
     const allowed = ['R', 'L', 'S'];
     for (const ab of abs) {
@@ -796,6 +822,7 @@ const pitchersInSheet = (path, pitchers) => {
     }
     abs = undefined;
     let pitches = (0, files_js_1.readSpreadSheet)(path);
+    const abbrs = (0, exports.pitchAbbreviations)();
     for (const p of pitches) {
         const pid = abToPitcher.get(parseInt(p['ab_id']));
         const playerName = idToName.get(pid);
@@ -805,7 +832,7 @@ const pitchersInSheet = (path, pitchers) => {
         if (!(playerName in pitchers)) {
             pitchers[playerName] = new Pitcher_js_1.Pitcher(playerName, idToHand.get(pid));
         }
-        const pitchName = exports.pitchAbbreviations[p['pitch_type']];
+        const pitchName = abbrs[p['pitch_type']];
         if (typeof pitchName !== 'undefined') {
             if (!(pitchName in pitchers[playerName].pitches)) {
                 pitchers[playerName].pitches[pitchName] = new Pitch_js_1.Pitch(pitchName);
@@ -823,47 +850,148 @@ const pitchersInSheet = (path, pitchers) => {
         }
     }
 };
-exports.pitchAbbreviations = {
-    CH: 'changeup',
-    CU: 'curveball',
-    EP: 'eephus',
-    FC: 'cutter',
-    FF: '4-seam',
-    FO: 'pitchout',
-    PO: 'pitchout',
-    FS: 'splitter',
-    FT: '2-seam',
-    IN: 'intentional ball',
-    KC: 'knuckle-curve',
-    KN: 'knuckleball',
-    SC: 'screwball',
-    SI: 'sinker',
-    SL: 'slider',
-    UN: 'unknown'
+/**
+ * Maps the pitch abbreviations found in the spreadsheets into a full pitch name
+ * @returns a mapping from abbreviation to pitch name
+ */
+const pitchAbbreviations = () => {
+    return {
+        CH: 'changeup',
+        CU: 'curveball',
+        EP: 'eephus',
+        FC: 'cutter',
+        FF: '4-seam',
+        FO: 'pitchout',
+        PO: 'pitchout',
+        FS: 'splitter',
+        FT: '2-seam',
+        IN: 'intentional ball',
+        KC: 'knuckle-curve',
+        KN: 'knuckleball',
+        SC: 'screwball',
+        SI: 'sinker',
+        SL: 'slider',
+        UN: 'unknown'
+    };
 };
-const playTypes = {
-    B: 'b',
-    '*B': 'b',
-    S: 'k',
-    C: 'k',
-    F: 'f',
-    T: 'k',
-    L: 'f',
-    I: 'b',
-    W: 'k',
-    M: 'k',
-    P: 'b',
-    Q: 'k',
-    R: 'f',
-    X: 'o',
-    D: 'h',
-    E: 'h',
-    H: 'bb',
-    V: 'ibb',
-    O: 'dp',
+exports.pitchAbbreviations = pitchAbbreviations;
+/**
+ * Returns a mapping from the play abbreviations the spreadsheet uses to play types
+ * used by dispatch
+ * @returns a mapping from spreadsheet abbreviations to ones used by this code
+ */
+const playTypes = () => {
+    return {
+        B: 'b',
+        '*B': 'b',
+        S: 'k',
+        C: 'k',
+        F: 'f',
+        T: 'k',
+        L: 'f',
+        I: 'b',
+        W: 'k',
+        M: 'k',
+        P: 'b',
+        Q: 'k',
+        R: 'f',
+        X: 'o',
+        D: 'h',
+        E: 'h',
+        H: 'bb',
+        V: 'ibb',
+        O: 'dp',
+    };
 };
 
-},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitch.js":2,"../baseballLogic/Pitcher.js":3,"../utils/files.js":11,"../utils/usingNode.js":13}],9:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitch.js":2,"../baseballLogic/Pitcher.js":3,"../utils/files.js":13,"../utils/usingNode.js":15}],9:[function(_dereq_,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.undo = exports.lineout = exports.flyout = exports.groundout = exports.doublePlay = exports.error = exports.out = exports.homeRun = exports.triple = exports.double = exports.single = exports.foul = exports.strike = exports.ball = void 0;
+const GameState_js_1 = _dereq_("../baseballLogic/GameState.js");
+const scorebug_js_1 = _dereq_("./scorebug.js");
+const ball = () => {
+    const state = (0, GameState_js_1.getState)();
+    changeState(state, state.ball);
+};
+exports.ball = ball;
+const strike = () => {
+    const state = (0, GameState_js_1.getState)();
+    changeState(state, state.strike);
+};
+exports.strike = strike;
+const foul = () => {
+    const state = (0, GameState_js_1.getState)();
+    changeState(state, state.foul);
+};
+exports.foul = foul;
+const single = () => {
+    const state = (0, GameState_js_1.getState)();
+    changeState(state, state.single);
+};
+exports.single = single;
+const double = () => {
+    const state = (0, GameState_js_1.getState)();
+    changeState(state, state.double);
+};
+exports.double = double;
+const triple = () => {
+    const state = (0, GameState_js_1.getState)();
+    changeState(state, state.triple);
+};
+exports.triple = triple;
+const homeRun = () => {
+    const state = (0, GameState_js_1.getState)();
+    changeState(state, state.homeRun);
+};
+exports.homeRun = homeRun;
+const out = () => {
+    const state = (0, GameState_js_1.getState)();
+    changeState(state, state.out);
+};
+exports.out = out;
+const error = () => {
+    const state = (0, GameState_js_1.getState)();
+    changeState(state, state.error);
+};
+exports.error = error;
+const doublePlay = () => {
+    const state = (0, GameState_js_1.getState)();
+    changeState(state, state.doublePlay);
+};
+exports.doublePlay = doublePlay;
+const groundout = () => {
+    const state = (0, GameState_js_1.getState)();
+    changeState(state, state.groundout);
+};
+exports.groundout = groundout;
+const flyout = () => {
+    const state = (0, GameState_js_1.getState)();
+    changeState(state, state.flyout);
+};
+exports.flyout = flyout;
+const lineout = () => {
+    const state = (0, GameState_js_1.getState)();
+    changeState(state, state.lineout);
+};
+exports.lineout = lineout;
+const undo = () => {
+    const state = (0, GameState_js_1.getState)();
+    changeState(state, state.undo);
+};
+exports.undo = undo;
+/**
+ * Changes the state and updates the html safely
+ * @param state the state to update
+ * @param meth which of the state's methods to use
+ */
+const changeState = (state, meth) => {
+    meth.bind(state)();
+    (0, GameState_js_1.setState)(state);
+    (0, scorebug_js_1.updateBug)();
+};
+
+},{"../baseballLogic/GameState.js":1,"./scorebug.js":10}],10:[function(_dereq_,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -875,7 +1003,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initBug = exports.addBall = exports.addStrike = exports.updateBug = exports.updateNext = exports.changeLineSpot = exports.changeLineup = exports.changePitcher = exports.changeCount = exports.toggleOuts = exports.toggleBase = void 0;
+exports.initBug = exports.addBall = exports.addStrike = exports.updateBug = exports.updateNext = exports.changeLineSpot = exports.changeLineup = exports.changePitcher = exports.toggleOuts = exports.toggleBase = void 0;
 const GameState_js_1 = _dereq_("../baseballLogic/GameState.js");
 const Pitcher_js_1 = _dereq_("../baseballLogic/Pitcher.js");
 const usingNode_js_1 = _dereq_("../utils/usingNode.js");
@@ -913,28 +1041,6 @@ const toggleOuts = (outInd) => {
     (0, exports.updateBug)();
 };
 exports.toggleOuts = toggleOuts;
-/**
- * Changes the count to the user's input
- * @param balls how many balls there should be
- * @param strikes how many strikes there should be
- */
-const changeCount = (balls, strikes) => {
-    const state = (0, GameState_js_1.getState)();
-    const validBall = balls < 4 && balls >= 0;
-    const validStrike = strikes < 3 && strikes >= 0;
-    if ((validBall || validStrike) &&
-        (balls !== state.balls || strikes !== state.strikes)) {
-        state.backup();
-        if (validStrike)
-            state.balls = balls;
-        if (validBall)
-            state.strikes = strikes;
-        (0, GameState_js_1.setState)(state);
-        (0, exports.updateBug)();
-    }
-    console.log(state.bases);
-};
-exports.changeCount = changeCount;
 /**
  * Changes who's throwing
  * @param pitcherName the new pitcher
@@ -1034,7 +1140,13 @@ exports.updateBug = updateBug;
  */
 const addStrike = (toAdd) => {
     const state = (0, GameState_js_1.getState)();
-    (0, exports.changeCount)(state.balls, state.strikes + toAdd);
+    const newS = state.strikes + toAdd;
+    if (newS >= 0) {
+        state.backup();
+        state.strikes = newS;
+        (0, GameState_js_1.setState)(state);
+        (0, exports.updateBug)();
+    }
 };
 exports.addStrike = addStrike;
 /**
@@ -1043,7 +1155,13 @@ exports.addStrike = addStrike;
  */
 const addBall = (toAdd) => {
     const state = (0, GameState_js_1.getState)();
-    (0, exports.changeCount)(state.balls + toAdd, state.strikes);
+    const newB = state.balls + toAdd;
+    if (newB >= 0) {
+        state.backup();
+        state.balls = newB;
+        (0, GameState_js_1.setState)(state);
+        (0, exports.updateBug)();
+    }
 };
 exports.addBall = addBall;
 /**
@@ -1057,7 +1175,7 @@ const initBug = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.initBug = initBug;
 
-},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitcher.js":3,"../ml/nextPitch.js":7,"../utils/usingNode.js":13,"../utils/utilities.js":14}],10:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitcher.js":3,"../ml/nextPitch.js":7,"../utils/usingNode.js":15,"../utils/utilities.js":16}],11:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.List = void 0;
@@ -1309,19 +1427,243 @@ class List {
 }
 exports.List = List;
 
-},{}],11:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sumList = exports.ndMap = exports.allClose = exports.any = exports.all = exports.isClose = exports.argMax = exports.argMin = exports.argBest = exports.colAverage = exports.flatten = exports.scalarMul = exports.subArrays = exports.addArrays = void 0;
+/**
+ * Makes sure the two arrays are compatible for math operations
+ * @param a1 the first array
+ * @param a2 the second array
+ */
+const checkInputs = (a1, a2) => {
+    if ((typeof a1 !== typeof a2) ||
+        (Array.isArray(a1) && a1.length !== a2.length)) {
+        throw new Error(`Mismatched shapes: ${a1} and ${a2}`);
+    }
+};
+/**
+ * Adds the two n-dimensional matrices element-wise
+ * @param a1 the first matrix
+ * @param a2 the second matrix
+ * @returns their element-wise sum
+ */
+const addArrays = (a1, a2) => {
+    checkInputs(a1, a2);
+    if (typeof a1 === 'number') {
+        return a1 + a2;
+    }
+    let res = [];
+    for (let i = 0; i < a1.length; i++) {
+        res.push((0, exports.addArrays)(a1[i], a2[i]));
+    }
+    return res;
+};
+exports.addArrays = addArrays;
+/**
+ * Subtracts the two n-dimensional matrices element-wise
+ * @param a1 the first matrix
+ * @param a2 the second matrix
+ * @returns a1 - a2 element-wise
+ */
+const subArrays = (a1, a2) => {
+    return (0, exports.addArrays)(a1, (0, exports.scalarMul)(-1, a2));
+};
+exports.subArrays = subArrays;
+/**
+ * Multiplies every element of A by x and returns a new matrix
+ * @param x the scalar
+ * @param A the matrix to multiply
+ * @returns the result of x * A
+ */
+const scalarMul = (x, A) => {
+    if (typeof A === 'number') {
+        return x * A;
+    }
+    let res = [];
+    for (const row of A) {
+        res.push((0, exports.scalarMul)(x, row));
+    }
+    return res;
+};
+exports.scalarMul = scalarMul;
+/**
+ * Flattens the n-dimensional array into just one array
+ * @param A the array to flatten
+ */
+const flatten = (A) => {
+    if (typeof A === 'number') {
+        return A;
+    }
+    return [].concat(...A.map(exports.flatten));
+};
+exports.flatten = flatten;
+/**
+ * Returns the averages of the columns of A
+ * @param A the 2D matrix to average
+ * @returns the column-wise average of A
+ */
+const colAverage = (A) => {
+    if (A.length === 0)
+        return [];
+    let res = A[0];
+    for (let i = 1; i < A.length; i++) {
+        res = (0, exports.addArrays)(res, A[i]);
+    }
+    return (0, exports.scalarMul)(1 / A.length, res);
+};
+exports.colAverage = colAverage;
+/**
+ * Finds the index of the best element in x, based on comp
+ * @param x the array to look through
+ * @param comp how to compare the elements of x. Should return true if the first arg is "better"
+ * than the second
+ * @returns the index of the best element in x
+ */
+const argBest = (x, comp) => {
+    if (x.length === 0) {
+        throw new Error('Empty array');
+    }
+    let b = 0;
+    for (let i = 0; i < x.length; i++) {
+        if (comp(x[i], x[b])) {
+            b = i;
+        }
+    }
+    return b;
+};
+exports.argBest = argBest;
+/**
+ * Returns the index of the smallest elemeent of x
+ * @param x the array to look at
+ * @returns where the smallest element is
+ */
+const argMin = (x) => {
+    return (0, exports.argBest)(x, (a, b) => a < b);
+};
+exports.argMin = argMin;
+/**
+ * Returns the index of the largest elemeent of x
+ * @param x the array to look at
+ * @returns where the largest element is
+ */
+const argMax = (x) => {
+    return (0, exports.argBest)(x, (a, b) => a > b);
+};
+exports.argMax = argMax;
+/**
+ * Returns an array where `ith` element corresponds to whether `x[i]` is close enough to `y[i]`,
+ * where close enough means within floating-point error bars. Uses the formula `abs(x - y) <= atol + rtol * abs(y)`
+ * @param x the first array
+ * @param y the second array
+ * @param rtol the relative tolerance, which is multiplied by the elements of b
+ * @param atol the absolute tolerance. Should be non-zero when x and y have elements that are both zero
+ * @returns an ndArray of which values of x and y are close
+ */
+const isClose = (x, y, rtol = 1e-5, atol = 1e-8) => {
+    checkInputs(x, y);
+    if (typeof x === 'number') {
+        return Math.abs(x - y) <= atol + rtol * Math.abs(y);
+    }
+    let res = [];
+    for (let i = 0; i < x.length; i++) {
+        res.push((0, exports.isClose)(x[i], y[i], rtol, atol));
+    }
+    return res;
+};
+exports.isClose = isClose;
+/**
+ * Returns whether every element of bools is true.
+ * Returns false if bools is empty
+ * @param bools an n-dimensional array of booleans
+ * @returns whether all elements of bools is true
+ */
+const all = (bools) => {
+    if (typeof bools === 'boolean') {
+        return bools;
+    }
+    if (bools.length === 0)
+        return false;
+    for (const nested of bools) {
+        if (!(0, exports.all)(nested)) {
+            return false;
+        }
+    }
+    return true;
+};
+exports.all = all;
+/**
+ * Returns whether any element of bools is true.
+ * Returns false if bools is empty
+ * @param bools an n-dimensional array of booleans
+ * @returns whether any elements of bools is true
+ */
+const any = (bools) => {
+    if (typeof bools === 'boolean') {
+        return bools;
+    }
+    for (const nested of bools) {
+        if ((0, exports.all)(nested)) {
+            return true;
+        }
+    }
+    return false;
+};
+exports.any = any;
+/**
+ * Returns whether every element of x is close to every element of y, using the formula
+ * `abs(x - y) <= atol + rtol * abs(y)
+ * @param x the first array
+ * @param y the second array
+ * @param rtol the relative tolerance, which is multiplied by the elements of b
+ * @param atol the absolute tolerance. Should be non-zero when x and y have elements that are both zero
+ * @returns whether every element of x is close to every element of y
+ */
+const allClose = (x, y, rtol = 1e-5, atol = 1e-8) => {
+    return (0, exports.all)((0, exports.isClose)(x, y, rtol, atol));
+};
+exports.allClose = allClose;
+/**
+ * Maps func onto every element of x and returns a new array of the same shape as x
+ * @param x the ndArray of any type
+ * @param func a function that takes an element of x and returns something else
+ * @returns func mapped onto x
+ */
+const ndMap = (x, func) => {
+    if (Array.isArray(x)) {
+        let res = [];
+        for (const nested of x) {
+            res.push((0, exports.ndMap)(nested, func));
+        }
+        return res;
+    }
+    return func(x);
+};
+exports.ndMap = ndMap;
+/**
+ * Returns the sum of every element of the n-dimensional list
+ * @param x the array of numbers
+ * @returns the sum of every element in x
+ */
+const sumList = (x) => {
+    if (typeof x === 'number') {
+        return x;
+    }
+    return x.map(exports.sumList).reduce((a, b) => a + b, 0);
+};
+exports.sumList = sumList;
+
+},{}],13:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dataPaths = exports.pitcherPath = exports.writeJSON = exports.readJSON = exports.readSpreadSheet = exports.writeFile = exports.readFile = void 0;
 const usingNode_js_1 = _dereq_("./usingNode.js");
 if ((0, usingNode_js_1.usingNode)()) {
-    // running via node - we need it to work both ways for testing
     let fs = eval('require("fs")');
     exports.readFile = fs.readFileSync;
     exports.writeFile = fs.writeFileSync;
 }
 else {
-    // running via the browser
     exports.readFile = (path, encoding) => {
         const xhr = new XMLHttpRequest();
         xhr.open("GET", path, false);
@@ -1378,18 +1720,32 @@ const writeJSON = (path, obj) => {
     (0, exports.writeFile)(path, JSON.stringify(obj));
 };
 exports.writeJSON = writeJSON;
-exports.pitcherPath = "./src/baseballLogic/pitchers.json";
-const dataRoot = "./src/ml/data/";
-exports.dataPaths = {
-    atBats: dataRoot + "atbats.ignore.csv",
-    pitches: dataRoot + "pitches.ignore.csv",
-    playerNames: dataRoot + "player_names.ignore.csv",
-    train: dataRoot + "train.ignore.csv",
-    valid: dataRoot + "valid.ignore.csv",
-    test: dataRoot + "test.ignore.csv",
+/**
+ * The path where the pitchers JSON is located
+ * @returns the path to the pitchers JSON from the root dir
+ */
+const pitcherPath = () => {
+    return "./src/baseballLogic/pitchers.json";
 };
+exports.pitcherPath = pitcherPath;
+/**
+ * Returns the paths to all the spreadsheets
+ * @returns an object with all the paths to all the sheets
+ */
+const dataPaths = () => {
+    const dataRoot = "./src/ml/data/";
+    return {
+        atBats: dataRoot + "atbats.ignore.csv",
+        pitches: dataRoot + "pitches.ignore.csv",
+        playerNames: dataRoot + "player_names.ignore.csv",
+        train: dataRoot + "train.ignore.csv",
+        valid: dataRoot + "valid.ignore.csv",
+        test: dataRoot + "test.ignore.csv",
+    };
+};
+exports.dataPaths = dataPaths;
 
-},{"./usingNode.js":13}],12:[function(_dereq_,module,exports){
+},{"./usingNode.js":15}],14:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.choices = exports.shuffle = exports.choice = exports.randInt = void 0;
@@ -1404,12 +1760,11 @@ const randInt = (min, max) => {
         max = min;
         min = 0;
     }
-    return Math.floor(Math.random() * (max - min) + min - 0.0001); // 0.0001 is just in case Math.random returns 1.0
+    return Math.floor(Math.random() * (max - min) + min - 1e-9); // 1e-9 is just in case Math.random returns 1.0
 };
 exports.randInt = randInt;
 /**
  * Returns a randomly selected element of the array
- * O(1)
  * @param arr the array to select an element from
  * @param ws optional cumulative weights for each element in arr
  * @returns one choice from the array
@@ -1460,15 +1815,11 @@ exports.shuffle = shuffle;
 const choices = (arr, n) => {
     var arrCopy = [...arr];
     (0, exports.shuffle)(arrCopy);
-    var res = [];
-    for (var i = 0; i < n; i++) {
-        res.push(arrCopy[i]);
-    }
-    return res;
+    return arrCopy.slice(0, n);
 };
 exports.choices = choices;
 
-},{}],13:[function(_dereq_,module,exports){
+},{}],15:[function(_dereq_,module,exports){
 (function (process){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -1486,7 +1837,7 @@ const usingNode = () => {
 exports.usingNode = usingNode;
 
 }).call(this)}).call(this,_dereq_('_process'))
-},{"_process":15}],14:[function(_dereq_,module,exports){
+},{"_process":17}],16:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.upTo = exports.$ = exports.allPitchTypes = void 0;
@@ -1525,7 +1876,7 @@ else {
     };
 }
 /**
- * Returns a sorted array with every int in the range [0, n) inclusive
+ * Returns a sorted array with every int in the range [0, n)
  * @param n 1 + the max number in the array
  * @returns an array with every int up to n
  */
@@ -1534,7 +1885,7 @@ const upTo = (n) => {
 };
 exports.upTo = upTo;
 
-},{"./usingNode.js":13}],15:[function(_dereq_,module,exports){
+},{"./usingNode.js":15}],17:[function(_dereq_,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 

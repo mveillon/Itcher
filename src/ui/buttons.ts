@@ -71,8 +71,13 @@ export const undo = () => {
     changeState(state, state.undo);
 }
 
+/**
+ * Changes the state and updates the html safely
+ * @param state the state to update
+ * @param meth which of the state's methods to use
+ */
 const changeState = (state: GameState, meth: () => void) => {
-    meth();
+    meth.bind(state)();
     setState(state);
     updateBug();
 }

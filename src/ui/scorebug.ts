@@ -145,6 +145,7 @@ export const addStrike = (toAdd: number) => {
         state.backup();
         state.strikes = newS;
         setState(state);
+        updateBug();
     }
 }
 
@@ -159,6 +160,7 @@ export const addBall = (toAdd: number) => {
         state.backup();
         state.balls = newB;
         setState(state);
+        updateBug();
     }
 }
 

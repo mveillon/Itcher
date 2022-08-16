@@ -1,7 +1,7 @@
 - better accuracy, possibly with different models
     there is a node module for random forests
 
-- write index.html
+- index.html add pitcher name, lineup, and next pitch
 
 - add installation and running instructions to README
     relevant command is "npm install" - maybe add shell script or something?

@@ -235,7 +235,9 @@ export class GameState {
     undo = this.restore;
 }
 
-let state = new GameState();
+const stateContext = {
+    state: new GameState()
+};
 
 /**
  * Resets the global state variable, keeping only a few fields
@@ -266,7 +268,7 @@ export const resetState = (
  * @returns the global state
  */
 export const getState = (): GameState => {
-    return state;
+    return stateContext.state;
 }
 
 /**
@@ -274,5 +276,5 @@ export const getState = (): GameState => {
  * @param newState the new state
  */
 export const setState = (newState: GameState) => {
-    state = newState;
+    stateContext.state = newState;
 }
