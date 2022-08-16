@@ -4,7 +4,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.setState = exports.getState = exports.resetState = exports.GameState = void 0;
 const Pitcher_js_1 = _dereq_("./Pitcher.js");
 const LinkedList_js_1 = _dereq_("../utils/LinkedList.js");
-const usingNode_js_1 = _dereq_("../utils/usingNode.js");
 class GameState {
     /**
      * Keeps track of the current state of a baseball game
@@ -30,6 +29,8 @@ class GameState {
         return this._balls;
     }
     set strikes(s) {
+        if (s < 0)
+            return;
         if (s >= 3) {
             this.strikeout();
         }
@@ -38,6 +39,8 @@ class GameState {
         }
     }
     set balls(b) {
+        if (b < 0)
+            return;
         if (b >= 4) {
             this.walk();
         }
@@ -195,39 +198,6 @@ class GameState {
         this.outs += 2;
         this.bases[0] = false;
     }
-    /**
-     * Converts a JSON object into a game state
-     * @param obj the object to convert
-     * @returns a linked list
-     */
-    static fromObj(obj) {
-        let res = new GameState();
-        res._outs = obj.outs;
-        res._balls = obj.balls;
-        res._strikes = obj.strikes;
-        res._lineSpot = obj.lineSpot;
-        res.lastStates = LinkedList_js_1.List.fromObj(obj.lastStates);
-        res.pitcher = Pitcher_js_1.Pitcher.fromObj(obj.pitcher);
-        res.lineup = obj.lineup;
-        res.bases = obj.bases;
-        return res;
-    }
-    /**
-     * Converts the game state to a JSON that fromOBJ can read
-     * @returns the JSON
-     */
-    toObj() {
-        return {
-            outs: this._outs,
-            balls: this._balls,
-            strikes: this._strikes,
-            lineSpot: this._lineSpot,
-            lastStates: this.lastStates.toObj(),
-            pitcher: this.pitcher.toObj(),
-            lineup: this.lineup,
-            bases: this.bases
-        };
-    }
 }
 exports.GameState = GameState;
 GameState.maxBackups = 20;
@@ -259,12 +229,7 @@ exports.resetState = resetState;
  * @returns the global state
  */
 const getState = () => {
-    if ((0, usingNode_js_1.usingNode)()) {
-        return state;
-    }
-    else {
-        return GameState.fromObj(JSON.parse(localStorage.getItem('state')));
-    }
+    return state;
 };
 exports.getState = getState;
 /**
@@ -272,16 +237,11 @@ exports.getState = getState;
  * @param newState the new state
  */
 const setState = (newState) => {
-    if ((0, usingNode_js_1.usingNode)()) {
-        state = newState;
-    }
-    else {
-        localStorage.setItem('state', JSON.stringify(newState.toObj()));
-    }
+    state = newState;
 };
 exports.setState = setState;
 
-},{"../utils/LinkedList.js":9,"../utils/usingNode.js":12,"./Pitcher.js":3}],2:[function(_dereq_,module,exports){
+},{"../utils/LinkedList.js":9,"./Pitcher.js":3}],2:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Pitch = void 0;
@@ -905,7 +865,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initBug = exports.getUpdateCount = exports.updateBug = exports.updateNext = exports.changeLineSpot = exports.changeLineup = exports.changePitcher = exports.changeCount = exports.toggleOuts = exports.toggleBase = void 0;
+exports.initBug = exports.addBall = exports.addStrike = exports.updateBug = exports.updateNext = exports.changeLineSpot = exports.changeLineup = exports.changePitcher = exports.changeCount = exports.toggleOuts = exports.toggleBase = void 0;
 const GameState_js_1 = _dereq_("../baseballLogic/GameState.js");
 const Pitcher_js_1 = _dereq_("../baseballLogic/Pitcher.js");
 const usingNode_js_1 = _dereq_("../utils/usingNode.js");
@@ -950,12 +910,14 @@ exports.toggleOuts = toggleOuts;
  */
 const changeCount = (balls, strikes) => {
     const state = (0, GameState_js_1.getState)();
-    if ((balls < 4 || strikes < 3) &&
+    const validBall = balls < 4 && balls >= 0;
+    const validStrike = strikes < 3 && strikes >= 0;
+    if ((validBall || validStrike) &&
         (balls !== state.balls || strikes !== state.strikes)) {
         state.backup();
-        if (strikes < 3)
+        if (validStrike)
             state.balls = balls;
-        if (balls < 4)
+        if (validBall)
             state.strikes = strikes;
         (0, GameState_js_1.setState)(state);
         (0, exports.updateBug)();
@@ -1050,31 +1012,29 @@ const updateBug = () => {
             const file = state.outs > i ? 'out' : 'no-out';
             (0, utilities_js_1.$)(outIds[i]).src = `../../assets/${file}.png`;
         }
-        (0, utilities_js_1.$)('strikes').value = state.strikes.toString();
-        (0, utilities_js_1.$)('balls').value = state.balls.toString();
+        (0, utilities_js_1.$)('count-text').innerHTML = `${state.balls}-${state.strikes}`;
         (0, exports.updateNext)();
     }
 };
 exports.updateBug = updateBug;
 /**
- * Retrieves the values for the ball and strike fields and updates the count
+ * Adds toAdd to the global state's strike count
+ * @param toAdd how much to add. Can be negative
  */
-const getUpdateCount = () => {
-    if (!(0, usingNode_js_1.usingNode)()) {
-        let balls;
-        let strikes;
-        try {
-            balls = parseInt((0, utilities_js_1.$)('balls').value);
-            strikes = parseInt((0, utilities_js_1.$)('strikes').value);
-        }
-        catch (_a) {
-            console.log('Invalid ball or strike input!');
-            return;
-        }
-        (0, exports.changeCount)(balls, strikes);
-    }
+const addStrike = (toAdd) => {
+    const state = (0, GameState_js_1.getState)();
+    (0, exports.changeCount)(state.balls, state.strikes + toAdd);
 };
-exports.getUpdateCount = getUpdateCount;
+exports.addStrike = addStrike;
+/**
+ * Adds toAdd to the global state's ball count
+ * @param toAdd how much to add. Can be negative
+ */
+const addBall = (toAdd) => {
+    const state = (0, GameState_js_1.getState)();
+    (0, exports.changeCount)(state.balls + toAdd, state.strikes);
+};
+exports.addBall = addBall;
 /**
  * Creates and trains the machine learning model responsible for choosing
  * the next pitch

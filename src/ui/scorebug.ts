@@ -44,13 +44,15 @@ export const toggleOuts = (outInd: number) => {
  */
 export const changeCount = (balls: number, strikes: number) => {
     const state = getState();
+    const validBall = balls < 4 && balls >= 0;
+    const validStrike = strikes < 3 && strikes >= 0;
     if (
-        (balls < 4 || strikes < 3) &&
+        (validBall || validStrike) &&
         (balls !== state.balls || strikes !== state.strikes)
     ) {
         state.backup();
-        if (strikes < 3) state.balls = balls;
-        if (balls < 4) state.strikes = strikes;
+        if (validStrike) state.balls = balls;
+        if (validBall) state.strikes = strikes;
         setState(state);
         updateBug();
     }
@@ -147,29 +149,28 @@ export const updateBug = () => {
             ($(outIds[i]) as HTMLImageElement).src = `../../assets/${file}.png`;
         }
 
-        ($('strikes') as HTMLInputElement).value = state.strikes.toString();
-        ($('balls') as HTMLInputElement).value = state.balls.toString();
+        $('count-text').innerHTML = `${state.balls}-${state.strikes}`;
 
         updateNext();
     }
 }
 
 /**
- * Retrieves the values for the ball and strike fields and updates the count
+ * Adds toAdd to the global state's strike count
+ * @param toAdd how much to add. Can be negative
  */
-export const getUpdateCount = () => {
-    if (!usingNode()) {
-        let balls: number;
-        let strikes: number;
-        try {
-            balls = parseInt(($('balls') as HTMLInputElement).value);
-            strikes = parseInt(($('strikes') as HTMLInputElement).value);
-        } catch {
-            console.log('Invalid ball or strike input!');
-            return;
-        }
-        changeCount(balls, strikes);
-    }
+export const addStrike = (toAdd: number) => {
+    const state = getState();
+    changeCount(state.balls, state.strikes + toAdd);
+}
+
+/**
+ * Adds toAdd to the global state's ball count
+ * @param toAdd how much to add. Can be negative
+ */
+export const addBall = (toAdd: number) => {
+    const state = getState();
+    changeCount(state.balls + toAdd, state.strikes);
 }
 
 /**
