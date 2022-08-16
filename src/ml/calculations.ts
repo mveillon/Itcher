@@ -1,3 +1,5 @@
+import { sumList } from "../utils/arrayOps.js";
+
 /**
  * Finds the mean squared error
  * @param x the first array
@@ -5,12 +7,8 @@
  * @returns the mean squared error of x and y
  */
  export const mse = (x: number[], y: number[]): number => {
-    let total = 0;
-    const len = Math.min(x.length, y.length);
-    for (let i = 0; i < len; i++) {
-        total += Math.pow(x[i] - y[i], 2) / len;
-    }
-    return total;
+    const minLen = Math.min(x.length, y.length);
+    return minLen > 0 ? squareDistance(x, y) / minLen : 0;
 }
 
 /**
@@ -77,14 +75,14 @@ export const average = (x: number[]): number => {
  * @returns the average and variance of x
  */
 export const avgVar = (x: number[]): [number, number] => {
-    const mean = x.reduce((a, b) => a + b, 0) / x.length;
+    const mean = sumList(x) / x.length;
     
     let total = 0;
     for (const n of x) {
-        total += Math.pow(n - mean, 2) / x.length;
+        total += Math.pow(n - mean, 2);
     }
 
-    return [mean, total];
+    return [mean, total / x.length];
 }
 
 /**

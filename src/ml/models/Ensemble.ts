@@ -2,6 +2,7 @@ import { shuffle } from "../../utils/random.js";
 import { MachineLearning } from "./MachineLearning.js";
 import { readJSON } from "../../utils/files.js";
 import { upTo } from "../../utils/utilities.js";
+import { colAverage } from "../../utils/arrayOps.js";
 
 export class Ensemble extends MachineLearning {
     protected _models: MachineLearning[];
@@ -51,19 +52,7 @@ export class Ensemble extends MachineLearning {
     }
 
     predict(features: number[][]): number[] {
-        const preds2d = this._models.map((m) => m.predict(features));
-        let agg: number[] = [];
-        for (let i = 0; i < features.length; i++) {
-            agg.push(0);
-        }
-
-        for (let i = 0; i < preds2d.length; i++) {
-            for (let j = 0; j < features.length; j++) {
-                agg[j] += preds2d[i][j] / this._models.length;
-            }
-        }
-
-        return agg;
+        return colAverage(this._models.map((m) => m.predict(features)));
     }
 
     /**
@@ -79,11 +68,7 @@ export class Ensemble extends MachineLearning {
     }
 
     static fromObjEnsemble(obj: { [key: string]: any }, converter: convertFunc): Ensemble {
-        let models: MachineLearning[] = [];
-        for (const m of obj['models']) {
-            models.push(converter(m));
-        }
-        return new Ensemble(models);
+        return new Ensemble(obj['models'].map(converter));
     }
  
     static fromObj(obj: { [key: string]: any }): Ensemble {

@@ -13,24 +13,32 @@ export class KNNBall extends KNN {
         /* Too expensive to find the two furthest points so we use a heuristic */ 
         inds.sort((a, b) => squaredMag(this._features[a]) - squaredMag(this._features[b]));
         const p1 = inds[0];
-        const p2 = inds[inds.length - 1];
+        let p2: number;
+        let bestDistance = -Infinity;
+        for (const i of inds) {
+            const newDist = squareDistance(this._features[p1], this._features[i])
+            if (newDist > bestDistance) {
+                p2 = i;
+                bestDistance = newDist;
+            }
+        }
+
         const comp = (vec: number[]): boolean => {
             return (
                 squareDistance(vec, this._features[p1]) <
                 squareDistance(vec, this._features[p2])
             );
         }
-        let left: number[] = [];
-        let right: number[] = [];
+        let splits: [number[], number[]] = [[], []];
         for (const i of inds) {
-            if (comp(this._features[i])) left.push(i);
-            else right.push(i);
+            splits[+(!comp(this._features[i]))].push(i);
         }
-        if (left.length <= 1 || right.length <= 1) return inds;
+
+        if (splits[0].length <= 1 || splits[1].length <= 1) return inds;
 
         return new BinaryTree<number[]>(
-            this.buildTree(left),
-            this.buildTree(right),
+            this.buildTree(splits[0]),
+            this.buildTree(splits[1]),
             comp
         );
     }

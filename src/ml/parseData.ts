@@ -25,11 +25,12 @@ export const aidToPitcher = (aid: number, allPitchers: { [key: string]: Pitcher 
  * @returns the play type as a key into rewards
  */
 export const getPlayType = (result: string, event: string): string => {
-    if (!(result in playTypes)) {
+    const pTypes = playTypes();
+    if (!(result in pTypes)) {
         throw new Error(`Unexpected result: ${result}`);
     }
 
-    result = playTypes[result];
+    result = pTypes[result];
     const outTypes = new Set([
         'Flyout', 
         'Groundout', 
@@ -93,10 +94,11 @@ export const getPlayType = (result: string, event: string): string => {
  */
 export const findAllPitchers = ()  => {
     let accum: { [key: string]: Pitcher } = {}; 
+    const dPaths = dataPaths();
     const paths = [
-        dataPaths.train,
-        dataPaths.valid,
-        dataPaths.test,
+        dPaths.train,
+        dPaths.valid,
+        dPaths.test
     ];
 
     for (const pth of paths) {
@@ -119,7 +121,7 @@ export const findAllPitchers = ()  => {
     }
 
     if (usingNode()) {
-        writeJSON(pitcherPath, accum);
+        writeJSON(pitcherPath(), accum);
     } else {
         let toWrite: { [key: string]: pitcherJSON } = {};
         for (const p in accum) {
@@ -135,13 +137,14 @@ export const findAllPitchers = ()  => {
  * @param pitchers the JSONs read thus far. This will be updated by the function
  */
 const pitchersInSheet = (path: string, pitchers: { [key: string]: Pitcher }) => {
-    let names = readSpreadSheet(dataPaths.playerNames);
+    const dPaths = dataPaths();
+    let names = readSpreadSheet(dPaths.playerNames);
     for (const player of names) {
         idToName.set(parseInt(player['id']), `${player['first_name']} ${player['last_name']}`);
     }
     names = undefined; // free up memory hopefully
 
-    let abs = readSpreadSheet(dataPaths.atBats);
+    let abs = readSpreadSheet(dPaths.atBats);
     let idToHand = new Map<number, string>();
     const allowed = ['R', 'L', 'S'];
     for (const ab of abs) {
@@ -163,6 +166,7 @@ const pitchersInSheet = (path: string, pitchers: { [key: string]: Pitcher }) => 
     abs = undefined;
 
     let pitches = readSpreadSheet(path);
+    const abbrs = pitchAbbreviations();
     for (const p of pitches) {
         const pid = abToPitcher.get(parseInt(p['ab_id']));
         const playerName = idToName.get(pid);
@@ -174,7 +178,7 @@ const pitchersInSheet = (path: string, pitchers: { [key: string]: Pitcher }) => 
             pitchers[playerName] = new Pitcher(playerName, idToHand.get(pid));
         }
 
-        const pitchName = pitchAbbreviations[p['pitch_type']];
+        const pitchName = abbrs[p['pitch_type']];
         if (typeof pitchName !== 'undefined') {
             if (!(pitchName in pitchers[playerName].pitches)) {
                 pitchers[playerName].pitches[pitchName] = new Pitch(pitchName);
@@ -193,43 +197,56 @@ const pitchersInSheet = (path: string, pitchers: { [key: string]: Pitcher }) => 
     }
 }
 
-export const pitchAbbreviations: { [key: string]: string } = {
-    CH: 'changeup',
-    CU: 'curveball',
-    EP: 'eephus',
-    FC: 'cutter',
-    FF: '4-seam',
-    FO: 'pitchout',
-    PO: 'pitchout',
-    FS: 'splitter',
-    FT: '2-seam',
-    IN: 'intentional ball',
-    KC: 'knuckle-curve',
-    KN: 'knuckleball',
-    SC: 'screwball',
-    SI: 'sinker',
-    SL: 'slider',
-    UN: 'unknown'
+/**
+ * Maps the pitch abbreviations found in the spreadsheets into a full pitch name
+ * @returns a mapping from abbreviation to pitch name
+ */
+export const pitchAbbreviations = (): { [key: string]: string } => {
+    return {
+        CH: 'changeup',
+        CU: 'curveball',
+        EP: 'eephus',
+        FC: 'cutter',
+        FF: '4-seam',
+        FO: 'pitchout',
+        PO: 'pitchout',
+        FS: 'splitter',
+        FT: '2-seam',
+        IN: 'intentional ball',
+        KC: 'knuckle-curve',
+        KN: 'knuckleball',
+        SC: 'screwball',
+        SI: 'sinker',
+        SL: 'slider',
+        UN: 'unknown'
+    };
 };
 
-const playTypes: { [key: string]: string } = {
-    B: 'b',
-    '*B': 'b', 
-    S: 'k',
-    C: 'k',
-    F: 'f',
-    T: 'k',
-    L: 'f', 
-    I: 'b',
-    W: 'k',
-    M: 'k',
-    P: 'b',
-    Q: 'k',
-    R: 'f',
-    X: 'o',
-    D: 'h',
-    E: 'h',
-    H: 'bb',
-    V: 'ibb',
-    O: 'dp',
-};
+/**
+ * Returns a mapping from the play abbreviations the spreadsheet uses to play types
+ * used by dispatch
+ * @returns a mapping from spreadsheet abbreviations to ones used by this code
+ */
+const playTypes = (): { [key: string]: string } => {
+    return {
+        B: 'b',
+        '*B': 'b', 
+        S: 'k',
+        C: 'k',
+        F: 'f',
+        T: 'k',
+        L: 'f', 
+        I: 'b',
+        W: 'k',
+        M: 'k',
+        P: 'b',
+        Q: 'k',
+        R: 'f',
+        X: 'o',
+        D: 'h',
+        E: 'h',
+        H: 'bb',
+        V: 'ibb',
+        O: 'dp',
+    };
+}

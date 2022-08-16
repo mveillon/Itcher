@@ -1,4 +1,19 @@
-import { addArrays, subArrays, scalarMul, flatten } from "../src/utils/arrayOps";
+import { 
+    addArrays, 
+    subArrays, 
+    scalarMul, 
+    flatten,
+    colAverage,
+    argMax,
+    argMin,
+    all,
+    any,
+    isClose,
+    allClose,
+    ndMap,
+    sumList
+} from "../src/utils/arrayOps";
+import { shuffle } from "../src/utils/random";
 
 test('add arrays', () => {
     expect(addArrays(1, 2)).toBe(3);
@@ -101,4 +116,185 @@ test('flatten', () => {
             ]
         ]
     )).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+});
+
+test('colAverage', () => {
+    expect(colAverage([
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+    ])).toEqual([4, 5, 6]);
+
+    expect(colAverage([[1, 2, 3]])).toEqual([1, 2, 3]);
+
+    const avgs = colAverage([
+        [1, 2, 3, 4],
+        [6, 5, 4, 3],
+        [7, 8, 9, 10]
+    ]);
+    const trueVals = [14 / 3, 15 / 3, 16 / 3, 17 / 3];
+    expect(avgs.length).toBe(trueVals.length);
+    for (let i = 0; i < avgs.length; i++) {
+        expect(avgs[i]).toBeCloseTo(trueVals[i]);
+    }
+});
+
+test('argMin/Max', () => {
+    const a = [1, 2, 3, 4];
+    expect(argMax(a)).toBe(a.length - 1);
+    expect(argMin(a)).toBe(0);
+    shuffle(a);
+    expect(a[argMax(a)]).toBe(4);
+    expect(a[argMin(a)]).toBe(1);
+});
+
+test('any and all', () => {
+    expect(all(false)).toBe(false);
+    expect(all(true)).toBe(true);
+    expect(all([])).toBe(false);
+    expect(all([false, true, true])).toBe(false);
+    expect(all([true, true, false])).toBe(false);
+    expect(all([true, true, true])).toBe(true);
+    expect(all([
+        [true, true, true],
+        [false, true, false]
+    ])).toBe(false);
+    expect(all([
+        [true, true, true],
+        [true, true, true]
+    ])).toBe(true);
+    expect(all([
+        [
+            [true, true, true],
+            [false, true, true]
+        ],
+        [
+            [true, true]
+        ]
+    ])).toBe(false);
+    expect(all([
+        [
+            [true, true, true],
+            [true, true, true]
+        ],
+        [
+            [true, true]
+        ]
+    ])).toBe(true);
+
+    expect(any(false)).toBe(false);
+    expect(any(true)).toBe(true);
+    expect(any([])).toBe(false);
+    expect(any([false, true, true])).toBe(true);
+    expect(any([true, true, false])).toBe(true);
+    expect(any([false, false, false])).toBe(false);
+    expect(any([
+        [true, true, true],
+        [false, true, false]
+    ])).toBe(true);
+    expect(any([
+        [false, false, false],
+        [false, false, false]
+    ])).toBe(false);
+    expect(any([
+        [
+            [true, true, true],
+            [false, true, true]
+        ],
+        [
+            [true, true]
+        ]
+    ])).toBe(true);
+    expect(any([
+        [
+            [false, false, false],
+            [false, false, false]
+        ],
+        [
+            [false, false]
+        ]
+    ])).toBe(false);
+});
+
+test('isClose', () => {
+    const eps = 1e-10;
+    expect(isClose(0, 0)).toBe(true);
+    expect(isClose(1, 0)).toBe(false);
+    expect(isClose(0, eps)).toBe(true);
+    expect(isClose(0, 0.1)).toBe(false);
+    
+    expect(isClose([1, 2, 3], [1, 2, 3])).toEqual([true, true, true]);
+    expect(isClose([1, 2, 3], [1 + eps, 2 - eps, 3 + eps])).toEqual([true, true, true]);
+    expect(isClose([1, 2, 3], [1 - eps, 2 + eps, 4])).toEqual([true, true, false]);
+    expect(isClose([1, 2, 3], [4, 5, 6])).toEqual([false, false, false]);
+
+    expect(isClose([
+        [1, 2, 3],
+        [4, 5, 6]
+    ], [
+        [1 + eps, 2 - eps, 3 + eps],
+        [4 - eps, 5 + eps, 6 - eps]
+    ])).toEqual([
+        [true, true, true],
+        [true, true, true]
+    ]);
+    expect(isClose([
+        [1, 2, 3],
+        [4, 5, 6]
+    ], [
+        [1 + eps, 3 - eps, 3 + eps],
+        [4 - eps, 5 + eps, 7 - eps]
+    ])).toEqual([
+        [true, false, true],
+        [true, true, false]
+    ]);
+
+    expect(allClose([
+        [1, 2, 3],
+        [4, 5, 6]
+    ], [
+        [1 + eps, 2 - eps, 3 + eps],
+        [4 - eps, 5 + eps, 6 - eps]
+    ])).toBe(true);
+    expect(allClose([
+        [1, 2, 3],
+        [4, 5, 6]
+    ], [
+        [1 + eps, 3 - eps, 3 + eps],
+        [4 - eps, 5 + eps, 7 - eps]
+    ])).toBe(false);
+});
+
+test('ndMap', () => {
+    const square = (n: number): number => Math.pow(n, 2);
+    expect(ndMap(2, square)).toBe(4);
+    expect(ndMap([1, 2, 3], square)).toEqual([1, 4, 9]);
+    expect(ndMap([
+        [1, 2, 3],
+        [4, 5, 6]
+    ], square)).toEqual([
+        [1, 4, 9],
+        [16, 25, 36]
+    ]);
+
+    const isZero = (n: number): boolean => !n;
+    expect(ndMap([[0, 1, 2]], isZero)).toEqual([[true, false, false]]);
+});
+
+test('sumList', () => {
+    expect(sumList(1)).toBe(1);
+    expect(sumList([1, 2, 3])).toBe(6);
+    expect(sumList([
+        [1, 2, 3],
+        [4, 5, 6]
+    ])).toBe(21);
+    expect(sumList([
+        [
+            [1, 2, 3],
+            [4, 5, 6]
+        ],
+        [
+            [7, 8, 9],
+        ]
+    ])).toBe(45);
 });

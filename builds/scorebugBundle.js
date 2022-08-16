@@ -922,6 +922,7 @@ const changeCount = (balls, strikes) => {
         (0, GameState_js_1.setState)(state);
         (0, exports.updateBug)();
     }
+    console.log(state.bases);
 };
 exports.changeCount = changeCount;
 /**

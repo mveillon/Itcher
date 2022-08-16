@@ -61,16 +61,16 @@ export class Pitcher {
     }
 }
 
-import { findAllPitchers } from "../ml/parseData.js";
+import { findAllPitchers, idToEvent } from "../ml/parseData.js";
 /**
  * Reads pitchers.json and returns all pitchers in it
  * @returns all of the pitchers in the dataset
  */
 export const readAllPitchers = (): { [key: string]: Pitcher; } => {
-    findAllPitchers();
+    if (idToEvent.size === 0) findAllPitchers();
     let objs: { [key: string]: any };
     if (usingNode()) {
-        objs = readJSON(pitcherPath);
+        objs = readJSON(pitcherPath());
     } else {
         objs = JSON.parse(localStorage.getItem('pitchers.json'));
     }

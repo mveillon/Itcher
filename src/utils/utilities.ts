@@ -35,7 +35,7 @@ if (usingNode()) {
 }
 
 /**
- * Returns a sorted array with every int in the range [0, n) inclusive
+ * Returns a sorted array with every int in the range [0, n)
  * @param n 1 + the max number in the array
  * @returns an array with every int up to n
  */

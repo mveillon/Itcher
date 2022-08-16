@@ -1,14 +1,17 @@
-export type ndArray = number | ndArray[];
+export type ndArray<T> = T | ndArray<T>[];
+
+export type numArray = ndArray<number>;
+export type boolArray = ndArray<boolean>;
 
 /**
  * Makes sure the two arrays are compatible for math operations
  * @param a1 the first array
  * @param a2 the second array
  */
-const checkInputs = (a1: ndArray, a2: ndArray) => {
+const checkInputs = (a1: numArray, a2: numArray) => {
     if (
         (typeof a1 !== typeof a2) ||
-        (typeof a1 !== 'number' && a1.length !== (a2 as number[]).length)
+        (Array.isArray(a1) && a1.length !== (a2 as number[]).length)
     ) {
         throw new Error(`Mismatched shapes: ${a1} and ${a2}`);
     }
@@ -20,13 +23,13 @@ const checkInputs = (a1: ndArray, a2: ndArray) => {
  * @param a2 the second matrix
  * @returns their element-wise sum
  */
-export const addArrays = (a1: ndArray, a2: ndArray): ndArray => {
+export const addArrays = (a1: numArray, a2: numArray): numArray => {
     checkInputs(a1, a2);
     if (typeof a1 === 'number') {
         return a1 + (a2 as number);
     }
 
-    let res: ndArray = [];
+    let res: numArray = [];
     for (let i = 0; i < a1.length; i++) {
         res.push(addArrays(a1[i], (a2 as number[])[i]));
     }
@@ -39,7 +42,7 @@ export const addArrays = (a1: ndArray, a2: ndArray): ndArray => {
  * @param a2 the second matrix
  * @returns a1 - a2 element-wise
  */
-export const subArrays = (a1: ndArray, a2: ndArray): ndArray => {
+export const subArrays = (a1: numArray, a2: numArray): numArray => {
     return addArrays(a1, scalarMul(-1, a2));
 }
 
@@ -49,12 +52,12 @@ export const subArrays = (a1: ndArray, a2: ndArray): ndArray => {
  * @param A the matrix to multiply
  * @returns the result of x * A
  */
-export const scalarMul = (x: number, A: ndArray): ndArray => {
+export const scalarMul = (x: number, A: numArray): numArray => {
     if (typeof A === 'number') {
         return x * A;
     }
 
-    let res: ndArray = [];
+    let res: numArray = [];
     for (const row of A) {
         res.push(scalarMul(x, row));
     }
@@ -66,7 +69,7 @@ export const scalarMul = (x: number, A: ndArray): ndArray => {
  * Flattens the n-dimensional array into just one array
  * @param A the array to flatten
  */
-export const flatten = (A: ndArray): number | number[] => {
+export const flatten = (A: numArray): number | number[] => {
     if (typeof A === 'number') {
         return A;
     }
@@ -86,4 +89,143 @@ export const colAverage = (A: number[][]): number[] => {
         res = addArrays(res, A[i]) as number[];
     }
     return scalarMul(1 / A.length, res) as number[];
+}
+
+/**
+ * Finds the index of the best element in x, based on comp
+ * @param x the array to look through
+ * @param comp how to compare the elements of x. Should return true if the first arg is "better"
+ * than the second
+ * @returns the index of the best element in x
+ */
+export const argBest = (x: number[], comp: (a: number, b: number) => boolean) => {
+    if (x.length === 0) {
+        throw new Error('Empty array');
+    }
+    let b = 0;
+    for (let i = 0; i < x.length; i++) {
+        if (comp(x[i], x[b])) {
+            b = i;
+        }
+    }
+    return b;
+}
+
+/**
+ * Returns the index of the smallest elemeent of x
+ * @param x the array to look at
+ * @returns where the smallest element is
+ */
+export const argMin = (x: number[]): number => {
+    return argBest(x, (a, b) => a < b);
+}
+
+/**
+ * Returns the index of the largest elemeent of x
+ * @param x the array to look at
+ * @returns where the largest element is
+ */
+export const argMax = (x: number[]): number => {
+    return argBest(x, (a, b) => a > b);
+}
+
+/**
+ * Returns an array where `ith` element corresponds to whether `x[i]` is close enough to `y[i]`,
+ * where close enough means within floating-point error bars. Uses the formula `abs(x - y) <= atol + rtol * abs(y)`
+ * @param x the first array
+ * @param y the second array
+ * @param rtol the relative tolerance, which is multiplied by the elements of b
+ * @param atol the absolute tolerance. Should be non-zero when x and y have elements that are both zero
+ * @returns an ndArray of which values of x and y are close
+ */
+export const isClose = (x: numArray, y: numArray, rtol: number = 1e-5, atol: number = 1e-8): boolArray => {
+    checkInputs(x, y);
+    if (typeof x === 'number') {
+        return Math.abs(x - (y as number)) <= atol + rtol * Math.abs(y as number);
+    }
+
+    let res: ndArray<boolean> = [];
+    for (let i = 0; i < x.length; i++) {
+        res.push(isClose(x[i], (y as number[])[i], rtol, atol));
+    }
+    return res;
+}
+
+/**
+ * Returns whether every element of bools is true. 
+ * Returns false if bools is empty
+ * @param bools an n-dimensional array of booleans
+ * @returns whether all elements of bools is true
+ */
+export const all = (bools: boolArray): boolean => {
+    if (typeof bools === 'boolean') {
+        return bools;
+    }
+    if (bools.length === 0) return false;
+    for (const nested of bools) {
+        if (!all(nested)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ * Returns whether any element of bools is true.
+ * Returns false if bools is empty
+ * @param bools an n-dimensional array of booleans
+ * @returns whether any elements of bools is true
+ */
+ export const any = (bools: boolArray): boolean => {
+    if (typeof bools === 'boolean') {
+        return bools;
+    }
+    for (const nested of bools) {
+        if (all(nested)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Returns whether every element of x is close to every element of y, using the formula
+ * `abs(x - y) <= atol + rtol * abs(y)
+ * @param x the first array
+ * @param y the second array
+ * @param rtol the relative tolerance, which is multiplied by the elements of b
+ * @param atol the absolute tolerance. Should be non-zero when x and y have elements that are both zero
+ * @returns whether every element of x is close to every element of y
+ */
+export const allClose = (x: numArray, y: numArray, rtol: number = 1e-5, atol: number = 1e-8): boolean => {
+    return all(isClose(x, y, rtol, atol));
+}
+
+/**
+ * Maps func onto every element of x and returns a new array of the same shape as x
+ * @param x the ndArray of any type
+ * @param func a function that takes an element of x and returns something else
+ * @returns func mapped onto x
+ */
+export const ndMap = <T, U>(x: ndArray<T>, func: (val: T) => U): ndArray<U> => {
+    if (Array.isArray(x)) {
+        let res: ndArray<U> = [];
+        for (const nested of x) {
+            res.push(ndMap(nested, func));
+        }
+        return res;
+    }
+    return func(x);
+}
+
+/**
+ * Returns the sum of every element of the n-dimensional list
+ * @param x the array of numbers
+ * @returns the sum of every element in x
+ */
+export const sumList = (x: numArray): number => {
+    if (typeof x === 'number') {
+        return x;
+    }
+    return x.map(sumList).reduce((a, b) => a + b, 0);
 }

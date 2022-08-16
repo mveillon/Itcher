@@ -1,6 +1,6 @@
 import { GameState } from "../baseballLogic/GameState.js";
 import { allPitchTypes } from "../utils/utilities.js";
-import { dot, sigmoid } from "./calculations.js";
+import { dot } from "./calculations.js";
 import { Pitch } from "../baseballLogic/Pitch.js";
 
 const maxes = [
@@ -28,6 +28,7 @@ export const stateToInd = (theState: GameState): number => {
     ];
     return dot(cumulative, factors);
 }
+
 /**
  * The total number of attributes in each feature
  * @returns the width of the features array

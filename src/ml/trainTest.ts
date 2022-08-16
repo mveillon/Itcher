@@ -31,7 +31,7 @@ const allFeatsTargs = (data: sheet): [number[][], number[]] => {
  */
  export const trainLearner = async (learner: MachineLearning) => {
     // const trainData = usingNode() ? dataPaths.train : dataPaths.pitches;
-    const trainData = dataPaths.train;
+    const trainData = dataPaths().train;
     const allData = readSpreadSheet(trainData);
     const [features, targets] = allFeatsTargs(allData);
 
@@ -43,7 +43,7 @@ const allFeatsTargs = (data: sheet): [number[][], number[]] => {
  * @returns the mse
  */
 export const learnerMSE = (learner: MachineLearning): [number, number[]] => {
-    const validData = readSpreadSheet(dataPaths.valid);
+    const validData = readSpreadSheet(dataPaths().valid);
     const [features, targets] = allFeatsTargs(validData);
     
     const preds = learner.predict(features);
@@ -63,7 +63,7 @@ export const extractFeaturesTargets = (
     const aid = parseInt(play['ab_id']);
     let result = play['code'];
     let event = idToEvent.get(aid);    
-    const pitch = pitchAbbreviations[play['pitch_type']];
+    const pitch = pitchAbbreviations()[play['pitch_type']];
 
     if (
         isNaN(aid) || 
@@ -112,7 +112,7 @@ export const extractFeaturesTargets = (
  * @returns the features and the targets from 'valid.csv'
  */
 export const validFeatsTargs = (): [number[][], number[]] => {
-    return allFeatsTargs(readSpreadSheet(dataPaths.valid));
+    return allFeatsTargs(readSpreadSheet(dataPaths().valid));
 }
 
 /**
@@ -120,5 +120,5 @@ export const validFeatsTargs = (): [number[][], number[]] => {
  * @returns the features and targets from 'train.csv'
  */
 export const trainFeatsTargs = (): [number[][], number[]] => {
-    return allFeatsTargs(readSpreadSheet(dataPaths.train));
+    return allFeatsTargs(readSpreadSheet(dataPaths().train));
 }

@@ -1,100 +1,78 @@
-import { getState, setState } from "../baseballLogic/GameState.js";
+import { GameState, getState, setState } from "../baseballLogic/GameState.js";
 import { updateBug } from "./scorebug.js";
 
 export const ball = () => {
     const state = getState();
-    state.ball();
-    setState(state);
-    updateBug();
+    changeState(state, state.ball);
 }
 
 export const strike = () => {
     const state = getState();
-    state.strike();
-    setState(state);
-    updateBug();
+    changeState(state, state.strike);
 }
 
 export const foul = () => {
     const state = getState();
-    state.foul();
-    setState(state);
-    updateBug();
+    changeState(state, state.foul);
 }
 
 export const single = () => {
     const state = getState();
-    state.single();
-    setState(state);
-    updateBug();
+    changeState(state, state.single);
 }
 
 export const double = () => {
     const state = getState();
-    state.double();
-    setState(state);
-    updateBug();
+    changeState(state, state.double);
 }
 
 export const triple = () => {
     const state = getState();
-    state.triple();
-    setState(state);
-    updateBug();
+    changeState(state, state.triple);
 }
 
 export const homeRun = () => {
     const state = getState();
-    state.homeRun();
-    setState(state);
-    updateBug();
+    changeState(state, state.homeRun);
 }
 
 export const out = () => {
     const state = getState();
-    state.out();
-    setState(state);
-    updateBug();
+    changeState(state, state.out);
 }
 
 export const error = () => {
     const state = getState();
-    state.error();
-    setState(state);
-    updateBug();
+    changeState(state, state.error);
 }
 
 export const doublePlay = () => {
     const state = getState();
-    state.doublePlay();
-    setState(state);
-    updateBug();
+    changeState(state, state.doublePlay);
 }
 
 export const groundout = () => {
     const state = getState();
-    state.groundout();
-    setState(state);
-    updateBug();
+    changeState(state, state.groundout);
 }
 
 export const flyout = () => {
     const state = getState();
-    state.flyout();
-    setState(state);
-    updateBug();
+    changeState(state, state.flyout);
 }
 
 export const lineout = () => {
     const state = getState();
-    state.lineout();
-    setState(state);
-    updateBug();
+    changeState(state, state.lineout);
 }
 
 export const undo = () => {
     const state = getState();
-    state.undo();
+    changeState(state, state.undo);
+}
+
+const changeState = (state: GameState, meth: () => void) => {
+    meth();
     setState(state);
     updateBug();
 }

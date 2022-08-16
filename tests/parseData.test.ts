@@ -3,10 +3,11 @@ import { allPitchTypes } from "../src/utils/utilities";
 
 test('pitch types', () => {
     const pitchTypes = allPitchTypes();
+    const abbrs = pitchAbbreviations();
     for (const p of pitchTypes) {
         let found = false;
-        for (const abb in pitchAbbreviations) {
-            if (p === pitchAbbreviations[abb]) {
+        for (const abb in abbrs) {
+            if (p === abbrs[abb]) {
                 found = true;
                 break;
             }
@@ -14,7 +15,7 @@ test('pitch types', () => {
         expect(found).toBe(true);
     }
 
-    for (const abb in pitchAbbreviations) {
-        expect(pitchTypes.includes(pitchAbbreviations[abb]));
+    for (const abb in abbrs) {
+        expect(pitchTypes.includes(abbrs[abb]));
     }
 });

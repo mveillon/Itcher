@@ -4,12 +4,10 @@ export let writeFile: (path: string, data: string) => void;
 import { usingNode } from "./usingNode.js";
 
 if (usingNode()) {
-    // running via node - we need it to work both ways for testing
     let fs = eval('require("fs")');
     readFile = fs.readFileSync;
     writeFile = fs.writeFileSync;
 } else {
-    // running via the browser
     readFile = (path: string, encoding?: string): string => {
         const xhr = new XMLHttpRequest();
         xhr.open("GET", path, false);
@@ -29,6 +27,7 @@ if (usingNode()) {
 }
 
 /* Ok you can look now */
+
 export type sheetRow = { [key: string]: string };
 export type sheet = sheetRow[];
 
@@ -72,14 +71,33 @@ export const writeJSON = (path: string, obj: { [key: string]: any }) => {
     writeFile(path, JSON.stringify(obj));
 }
 
-export const pitcherPath = "./src/baseballLogic/pitchers.json";
+/**
+ * The path where the pitchers JSON is located
+ * @returns the path to the pitchers JSON from the root dir
+ */
+export const pitcherPath = (): string => {
+    return "./src/baseballLogic/pitchers.json";
+}
 
-const dataRoot = "./src/ml/data/";
-export const dataPaths: { [key: string]: string } = {
-    atBats: dataRoot + "atbats.ignore.csv",
-    pitches: dataRoot + "pitches.ignore.csv",
-    playerNames: dataRoot + "player_names.ignore.csv",
-    train: dataRoot + "train.ignore.csv",
-    valid: dataRoot + "valid.ignore.csv",
-    test: dataRoot + "test.ignore.csv",
+/**
+ * Returns the paths to all the spreadsheets
+ * @returns an object with all the paths to all the sheets
+ */
+export const dataPaths = (): {
+    atBats: string,
+    pitches: string,
+    playerNames: string,
+    train: string,
+    valid: string,
+    test: string
+} => {
+    const dataRoot = "./src/ml/data/";
+    return {
+        atBats: dataRoot + "atbats.ignore.csv",
+        pitches: dataRoot + "pitches.ignore.csv",
+        playerNames: dataRoot + "player_names.ignore.csv",
+        train: dataRoot + "train.ignore.csv",
+        valid: dataRoot + "valid.ignore.csv",
+        test: dataRoot + "test.ignore.csv",
+    };
 }

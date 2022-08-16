@@ -75,77 +75,49 @@ test('toggleOuts', () => {
 test('change count', () => {
     r();
     let state = getState();
-    for (let b = 0; b < 4; b++) {
-        for (let s = 0; s < 3; s++) {
-            bug.changeCount(b, s);
-            expect(state.balls).toBe(b);
-            expect(state.strikes).toBe(s);
-        }
+    for (let s = 0; s < 2; s++) {
+        expect(state.strikes).toBe(s);
+        bug.addStrike(1);
     }
-    r();
-    state = getState();
+    bug.addStrike(1);
     expect(state.strikes).toBe(0);
-    expect(state.balls).toBe(0);
-    state.strike();
-    expect(state.strikes).toBe(1);
+    expect(state.outs).toBe(1);
+    state.undo();
+    expect(state.strikes).toBe(2);
+    expect(state.outs).toBe(0);
 
-    bug.changeCount(0, 0);
+    for (let s = 0; s < 2; s++) {
+        bug.addStrike(-1);
+        expect(state.strikes).toBe(1 - s);
+    }
+
+    expect(state.strikes).toBe(0);
+    bug.addStrike(-1);
     expect(state.strikes).toBe(0);
     state.undo();
     expect(state.strikes).toBe(1);
-
-    state.undo();
-    state.single();
-    setState(state);
-    bug.changeCount(0, 0);
-    state.undo();
-    expect(state.bases).toEqual([false, false, false]);
-    
-    for (let b = 1; b < 4; b++) {
-        for (let s = 1; s < 3; s++) {
-            bug.changeCount(b, s);
-            state.undo();
-            setState(state);
-            expect(state.strikes).toBe(0);
-            expect(state.balls).toBe(0);
-        }
-    }
-
-    for (let s = 0; s < 3; s++) {
-        r();
-        state = getState();
-        expect(state.strikes).toBe(0);
-        expect(state.balls).toBe(0);
-        bug.changeCount(4, s);
-        expect(state.strikes).toBe(0);
-        expect(state.balls).toBe(0);
-        expect(state.lineSpot).toBe(1);
-        expect(state.bases).toEqual([true, false, false]);
-        expect(state.outs).toBe(0);
-    }
 
     for (let b = 0; b < 3; b++) {
-        r();
-        state = getState();
-        bug.changeCount(b, 3);
-        expect(state.strikes).toBe(0);
-        expect(state.balls).toBe(0);
-        expect(state.lineSpot).toBe(1);
-        expect(state.bases).toEqual([false, false, false]);
-        expect(state.outs).toEqual(1);
+        expect(state.balls).toBe(b);
+        bug.addBall(1);
+    }
+    bug.addBall(1);
+    expect(state.balls).toBe(0);
+    expect(state.bases).toEqual([true, false, false]);
+    state.undo();
+    expect(state.balls).toBe(3);
+    expect(state.bases).toEqual([false, false, false]);
+
+    for (let b = 0; b < 3; b++) {
+        bug.addBall(-1);
+        expect(state.balls).toBe(2 - b);
     }
 
-    r();
-    state = getState();
-    state.strike();
-    bug.changeCount(4, 3);
-    expect(state.strikes).toBe(1);
     expect(state.balls).toBe(0);
-    expect(state.bases).toEqual([false, false, false]);
-    expect(state.outs).toBe(0);
-    expect(state.lineSpot).toBe(0);
+    bug.addBall(-1);
+    expect(state.balls).toBe(0);
     state.undo();
-    expect(state.strikes).toBe(0);
+    expect(state.balls).toBe(1);
 });
 
 test('change pitcher', () => {

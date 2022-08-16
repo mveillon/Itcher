@@ -1,4 +1,5 @@
 import { MachineLearning } from "./MachineLearning.js";
+import { average } from "../calculations.js";
 
 export class AlwaysMean extends MachineLearning {
     private _mean: number;
@@ -17,15 +18,11 @@ export class AlwaysMean extends MachineLearning {
     }
 
     fit(features: number[][], targets: number[]): void {
-        this._mean = targets.reduce((a, b) => a + b, 0) / targets.length;
+        this._mean = average(targets);
     }
 
     predict(features: number[][]): number[] {
-        let res: number[] = [];
-        for (let i = 0; i < features.length; i++) {
-            res.push(this._mean);
-        }
-        return res;
+        return Array(features.length).fill(this._mean);
     }
 
     toObj(): { [key: string]: any } {

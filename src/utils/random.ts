@@ -9,12 +9,11 @@
         max = min;
         min = 0;
     }
-    return Math.floor(Math.random() * (max - min) + min - 0.0001); // 0.0001 is just in case Math.random returns 1.0
+    return Math.floor(Math.random() * (max - min) + min - 1e-9); // 1e-9 is just in case Math.random returns 1.0
 }
 
 /**
  * Returns a randomly selected element of the array
- * O(1)
  * @param arr the array to select an element from 
  * @param ws optional cumulative weights for each element in arr
  * @returns one choice from the array
@@ -70,9 +69,5 @@ export const shuffle = <T>(arr: T[]) => {
 export const choices = <T>(arr: T[], n: number): T[] => {
     var arrCopy = [...arr];
     shuffle(arrCopy);
-    var res = [];
-    for (var i = 0; i < n; i++) {
-        res.push(arrCopy[i]);
-    }
-    return res;
+    return arrCopy.slice(0, n);
 }

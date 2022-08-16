@@ -38,27 +38,6 @@ export const toggleOuts = (outInd: number) => {
 }
 
 /**
- * Changes the count to the user's input
- * @param balls how many balls there should be
- * @param strikes how many strikes there should be
- */
-export const changeCount = (balls: number, strikes: number) => {
-    const state = getState();
-    const validBall = balls < 4 && balls >= 0;
-    const validStrike = strikes < 3 && strikes >= 0;
-    if (
-        (validBall || validStrike) &&
-        (balls !== state.balls || strikes !== state.strikes)
-    ) {
-        state.backup();
-        if (validStrike) state.balls = balls;
-        if (validBall) state.strikes = strikes;
-        setState(state);
-        updateBug();
-    }
-}
-
-/**
  * Changes who's throwing
  * @param pitcherName the new pitcher
  */
@@ -161,7 +140,12 @@ export const updateBug = () => {
  */
 export const addStrike = (toAdd: number) => {
     const state = getState();
-    changeCount(state.balls, state.strikes + toAdd);
+    const newS = state.strikes + toAdd;
+    if (newS >= 0) {
+        state.backup();
+        state.strikes = newS;
+        setState(state);
+    }
 }
 
 /**
@@ -170,7 +154,12 @@ export const addStrike = (toAdd: number) => {
  */
 export const addBall = (toAdd: number) => {
     const state = getState();
-    changeCount(state.balls + toAdd, state.strikes);
+    const newB = state.balls + toAdd;
+    if (newB >= 0) {
+        state.backup();
+        state.balls = newB;
+        setState(state);
+    }
 }
 
 /**
