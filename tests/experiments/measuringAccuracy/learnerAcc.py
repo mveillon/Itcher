@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from typing import List
 from os import listdir
 
-root = "./tests/measuringAccuracy/"
+ROOT = "./tests/experiments/measuringAccuracy/"
 
 def mse(x: np.ndarray, y: np.ndarray) -> float:
     """Returns the mean squared error of x and y."""
@@ -21,8 +21,8 @@ def txt_to_np(path: str) -> np.ndarray:
 
 def plot_accuracy(learner_name: str) -> str:
     """Plots the accuracy and saves it to a path whose filename includes learner_name."""
-    targs = txt_to_np(root + 'targs.txt')
-    preds = txt_to_np(f'{root}preds/{learner_name}_preds.txt')
+    targs = txt_to_np(ROOT + 'targs.txt')
+    preds = txt_to_np(f'{ROOT}preds/{learner_name}_preds.txt')
 
     err = mse(targs, preds)
 
@@ -31,13 +31,13 @@ def plot_accuracy(learner_name: str) -> str:
     plt.xlabel('Actual run value')
     plt.ylabel('Predicted run value')
     plt.scatter(targs, preds)
-    plt.savefig(f'{root}plots/{learner_name}.png')
+    plt.savefig(f'{ROOT}plots/{learner_name}.png')
 
     return f'{learner_name}:\n\tmse = {err}'
 
 def plot_all():
     """Plots every learner's predictions and saves their accuracies."""
-    files = listdir(root + 'preds/')
+    files = listdir(ROOT + 'preds/')
     names = []
     for f in files:
         names.append(f.split('_')[0])
@@ -47,7 +47,7 @@ def plot_all():
         print(f'Plotting {name}...')
         err_strs.append(plot_accuracy(name))
 
-    with open(root + 'accuracy.txt', 'w') as acc:
+    with open(ROOT + 'accuracy.txt', 'w') as acc:
         acc.write('\n\n'.join(err_strs))
 
 if __name__ == '__main__':

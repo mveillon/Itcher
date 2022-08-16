@@ -1,5 +1,4 @@
 - better accuracy, possibly with different models
-    there is a node module for random forests
 
 - index.html add pitcher name, lineup, and next pitch
 

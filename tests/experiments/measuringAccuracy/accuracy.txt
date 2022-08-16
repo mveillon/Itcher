@@ -1,0 +1,41 @@
+EnsembleNeuralNet:
+	mse = 0.048482905497940966
+
+Regression:
+	mse = 0.04745596943221402
+
+KNNBall:
+	mse = 0.047648800734880724
+
+AlwaysMean:
+	mse = 0.04751409146681325
+
+NeuralNet:
+	mse = 0.05233510029059686
+
+EnsembleRandomForest:
+	mse = 0.04747985737752729
+
+EnsembleRegression:
+	mse = 6698.518652723046
+
+InteractionRegression:
+	mse = 0.04745630603788953
+
+EnsembleKNNBall:
+	mse = 0.047543260627825004
+
+EnsembleAlwaysMean:
+	mse = 0.04751409147426357
+
+EnsembleInteractionRegression:
+	mse = 0.04745624375218794
+
+EnsembleKNNkd:
+	mse = 0.04753272660635737
+
+KNNkd:
+	mse = 0.047627260314888197
+
+RandomForest:
+	mse = 0.04750727919676947

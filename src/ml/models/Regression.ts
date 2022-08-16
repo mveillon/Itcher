@@ -7,7 +7,7 @@ export class Regression extends MachineLearning {
 
     /**
      * Finds a line of best fit of nth degree to make predictions
-     * @param _degree the degree of the polynomial describing the trendline
+     * @param degree the degree of the polynomial describing the trendline
      */
     constructor(degree: number = 2) {
         super();

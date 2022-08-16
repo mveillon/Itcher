@@ -17,7 +17,7 @@
         "unit": "jest --config tests/jest.config.js --coverage",
         "test": "clear; npm run unit",
         "tobrowser": "tsc; browserify dist/main.js --standalone Main | derequire > builds/mainBundle.js",
-        "plot-models": "tsc; node tests/measuringAccuracy/learnerAcc.js; python3 tests/measuringAccuracy/learnerAcc.py",
+        "plot-models": "tsc; node tests/experiments/measuringAccuracy/learnerAcc.js; python3 tests/experiments/measuringAccuracy/learnerAcc.py",
         "run-server": "npm run tobrowser; live-server"
     },
     "devDependencies": {
@@ -33,6 +33,7 @@
         "jest": "^28.1.3",
         "jest-ts-webcompat-resolver": "^1.0.0",
         "ml-matrix": "^6.10.2",
+        "random-forest": "^0.0.7",
         "ts-jest": "^28.0.7",
         "typescript": "^4.7.4"
     },
