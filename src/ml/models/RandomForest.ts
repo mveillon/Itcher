@@ -4,11 +4,15 @@ import { MachineLearning } from "./MachineLearning.js";
 export class RandomForest extends MachineLearning {
     protected _forest: any;
 
-    constructor() {
+    /**
+     * An ensemble of decision trees, each trained on a subset of the data
+     * @param leafSize the minimum number of elements in each leaf. Default is 200
+     */
+    constructor(leafSize?: number) {
         super();
         this._forest = new rf.RandomForestRegressor({
             maxFeatures: 'auto',
-            minSamplesLeaf: 500,
+            minSamplesLeaf: leafSize || 200,
             nEstimators: 30,
         });
     }
@@ -35,8 +39,9 @@ export class RandomForest extends MachineLearning {
 
 /**
  * Factory function for a default RandomForest
+ * @param leafSize the minimum number of elements in each leaf. Default is 200
  * @returns default random forest
  */
-export const randomForest = (): RandomForest => {
-    return new RandomForest();
+export const randomForest = (leafSize?: number): RandomForest => {
+    return new RandomForest(leafSize);
 }

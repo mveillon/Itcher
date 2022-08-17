@@ -1,5 +1,7 @@
 - better accuracy, possibly with different models
 
+- UpdatingPriors doesn't work with RandomForest for some reason
+
 - index.html add pitcher name, lineup, and next pitch
 
 - add installation and running instructions to README

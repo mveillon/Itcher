@@ -18,9 +18,10 @@ const allFeatsTargs = (data: sheet): [number[][], number[]] => {
     let targets: number[] = [];
     for (const row of data) {
         const [f, t] = extractFeaturesTargets(row, allPitchers);
-        if (f.length === 0) continue;
-        features.push(f);
-        targets.push(t);
+        if (f.length > 0) {
+            features.push(f);
+            targets.push(t);
+        }
     }
 
     return [features, targets];

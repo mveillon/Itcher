@@ -1,7 +1,7 @@
 const trainTest = require("../../../dist/ml/trainTest");
+const mappings = require("../../../dist/ml/mappings");
 
 const AlwaysMean = require("../../../dist/ml/models/AlwaysMean");
-const DecisionTree = require("../../../dist/ml/models/DecisionTree");
 const Ensemble = require("../../../dist/ml/models/Ensemble");
 const KNNBall = require("../../../dist/ml/models/KNNBall");
 const KNNkd = require("../../../dist/ml/models/KNNkd");
@@ -9,7 +9,7 @@ const InteractionRegression = require("../../../dist/ml/models/InteractionRegres
 const NeuralNet = require("../../../dist/ml/models/NeuralNet");
 const RandomForest = require("../../../dist/ml/models/RandomForest");
 const Regression = require("../../../dist/ml/models/Regression");
-const SupportVectorMachine = require("../../../dist/ml/models/SupportVectorMachine");
+const UpdatingPriors = require("../../../dist/ml/models/UpdatingPriors");
 
 const fs = require('fs');
 const { performance } = require('perf_hooks');
@@ -26,21 +26,24 @@ const learnerPreds = async () => {
 
     const factories = {
         'AlwaysMean': AlwaysMean.alwaysMean,
-        // 'DecisionTree': DecisionTree.decisionTree,
         'KNNBall': KNNBall.knnBall,
         'KNNkd': KNNkd.knnKD,
         'InteractionRegression': InteractionRegression.interactionRegression,
         'NeuralNet': NeuralNet.neuralNet,
         'RandomForest': RandomForest.randomForest,
         'Regression': Regression.regression,
-        'SupportVectorMachine': SupportVectorMachine.svm,
     }
 
     let learners = {};
     for (const name in factories) {
         learners[name] = factories[name]();
         learners['Ensemble' + name] = new Ensemble.Ensemble(factories[name], numChildren);
+        learners['UP' + name] = new UpdatingPriors.UpdatingPriors(factories[name]);
     }
+    learners['UPNeuralNet'] = new UpdatingPriors.UpdatingPriors(
+        () => NeuralNet.neuralNet(mappings.numAttributes() - mappings.stateAttrs())
+    );
+    delete learners['UPRandomForest'];
 
     const [trainFeats, trainTargs] = trainTest.trainFeatsTargs();
     const [validFeats, validTargs] = trainTest.validFeatsTargs();  
@@ -58,7 +61,7 @@ const learnerPreds = async () => {
         const preds = learner.predict(validFeats);
         
         fs.writeFile(
-            `${root}preds/${learnerName}_preds.txt`, 
+            `${root}preds/${learnerName}.txt`, 
             preds.join(','), 
             err
         );

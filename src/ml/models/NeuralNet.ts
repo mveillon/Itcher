@@ -1,7 +1,6 @@
 import { MachineLearning } from "./MachineLearning.js";
 import { numAttributes } from "../mappings.js";
 import * as tf from "@tensorflow/tfjs-node";
-import { validFeatsTargs } from "../trainTest.js";
 import { flatten } from "../../utils/arrayOps.js";
 
 export class NeuralNet extends MachineLearning {
@@ -53,7 +52,6 @@ export class NeuralNet extends MachineLearning {
 
     async fit(features: number[][], targets: number[]) {
         if (features.length === 0) return;
-        const [validFeats, validTargs] = validFeatsTargs();
         await this._net.fit(
             tf.tensor(features),
             tf.tensor(targets),
@@ -62,7 +60,6 @@ export class NeuralNet extends MachineLearning {
                 epochs: 10, 
                 batchSize: 64,
                 verbose: 0,
-                validationData: [tf.tensor(validFeats), tf.tensor(validTargs)],
             }
         );
     }
@@ -95,6 +92,7 @@ export class NeuralNet extends MachineLearning {
  * @param numInputs the number of inputs to be fed to the first layer
  * @returns default neural net
  */
- export const neuralNet = (numInputs: number = numAttributes()): NeuralNet => {
+ export const neuralNet = (numInputs?: number): NeuralNet => {
+    numInputs = numInputs || numAttributes();
     return new NeuralNet(numInputs, 1024, 1);
 }

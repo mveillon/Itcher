@@ -22,15 +22,30 @@ def txt_to_np(path: str) -> np.ndarray:
 def plot_accuracy(learner_name: str) -> str:
     """Plots the accuracy and saves it to a path whose filename includes learner_name."""
     targs = txt_to_np(ROOT + 'targs.txt')
-    preds = txt_to_np(f'{ROOT}preds/{learner_name}_preds.txt')
+    preds = txt_to_np(f'{ROOT}preds/{learner_name}.txt')
 
     err = mse(targs, preds)
+
+    f = plt.figure()
+    ax = f.add_subplot(111)
 
     plt.clf()
     plt.title('Predicted run value vs actual')
     plt.xlabel('Actual run value')
     plt.ylabel('Predicted run value')
     plt.scatter(targs, preds)
+
+    _, ymax = plt.ylim()
+    plt.ylim(top = ymax * 1.3)
+    plt.text(
+        0.2, 
+        0.9, 
+        'mse = {:.6f}'.format(err), 
+        ha = 'center', 
+        va = 'center',
+        transform = ax.transAxes
+    )
+
     plt.savefig(f'{ROOT}plots/{learner_name}.png')
 
     return f'{learner_name}:\n\tmse = {err}'
@@ -40,7 +55,7 @@ def plot_all():
     files = listdir(ROOT + 'preds/')
     names = []
     for f in files:
-        names.append(f.split('_')[0])
+        names.append(f.rsplit('.', maxsplit = 1)[0])
 
     err_strs: List[str] = []
     for name in names:
