@@ -7,7 +7,6 @@ const KNNBall = require("../../../dist/ml/models/KNNBall");
 const KNNkd = require("../../../dist/ml/models/KNNkd");
 const InteractionRegression = require("../../../dist/ml/models/InteractionRegression");
 const NeuralNet = require("../../../dist/ml/models/NeuralNet");
-const RandomForest = require("../../../dist/ml/models/RandomForest");
 const Regression = require("../../../dist/ml/models/Regression");
 const UpdatingPriors = require("../../../dist/ml/models/UpdatingPriors");
 
@@ -30,7 +29,6 @@ const learnerPreds = async () => {
         'KNNkd': KNNkd.knnKD,
         'InteractionRegression': InteractionRegression.interactionRegression,
         'NeuralNet': NeuralNet.neuralNet,
-        'RandomForest': RandomForest.randomForest,
         'Regression': Regression.regression,
     }
 

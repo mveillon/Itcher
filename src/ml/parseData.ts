@@ -120,13 +120,13 @@ export const findAllPitchers = ()  => {
         }
     }
 
+    let toWrite: { [key: string]: pitcherJSON } = {};
+    for (const p in accum) {
+        toWrite[p] = accum[p].toObj();
+    }
     if (usingNode()) {
-        writeJSON(pitcherPath(), accum);
+        writeJSON(pitcherPath(), toWrite);
     } else {
-        let toWrite: { [key: string]: pitcherJSON } = {};
-        for (const p in accum) {
-            toWrite[p] = accum[p].toObj();
-        }
         localStorage.setItem('pitchers.json', JSON.stringify(toWrite));
     }
 }

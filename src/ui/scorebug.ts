@@ -1,7 +1,7 @@
 import { GameState, getState, setState } from "../baseballLogic/GameState.js";
 import { readAllPitchers } from "../baseballLogic/Pitcher.js";
 import { usingNode } from "../utils/usingNode.js";
-import { $ } from "../utils/utilities.js";
+import { $, nameLT } from "../utils/utilities.js";
 import { nextPitch } from "../ml/nextPitch.js";
 import { getLearner } from "../ml/models/getLearner.js";
 import { MachineLearning } from "../ml/models/MachineLearning.js";
@@ -129,6 +129,7 @@ export const updateBug = () => {
         }
 
         $('count-text').innerHTML = `${state.balls}-${state.strikes}`;
+        $('drop-button').innerHTML = 'Pitching: ' + state.pitcher.name;
 
         updateNext();
     }
@@ -165,11 +166,64 @@ export const addBall = (toAdd: number) => {
 }
 
 /**
+ * Toggles whether the dropdown to change the pitcher is active or not
+ */
+export const toggleDropdown = () => {
+    if (!usingNode()) {
+        $('pitcher-dropdown').classList.toggle('show');
+        const pInput = $('pitcher-input');
+        if (pInput === document.activeElement) {
+            pInput.blur();
+        } else {
+            pInput.focus();
+        }
+    }
+}
+
+/**
+ * Finds the pitcher that the user inputted
+ */
+export const filterPitcher = () => {
+    if (!usingNode()) {
+        const input = $('pitcher-input') as HTMLInputElement;
+        const filter = input.value.toLowerCase();
+        const div = $('pitcher-dropdown');
+        const buttons = div.getElementsByTagName('button');
+        for (let i = 0; i < buttons.length; i++) {
+            const pName = buttons[i].textContent || buttons[i].innerText;
+            if (pName.toLowerCase().indexOf(filter) > -1) {
+                buttons[i].style.display = '';
+            } else {
+                buttons[i].style.display = 'none';
+            }
+        }
+    }
+}
+
+/**
+ * Reads the pitchers from disk and adds the names to the dropdown menu
+ */
+const initPitcherDropdown = () => {
+    if (!usingNode()) {
+        const dropdown = $('pitcher-dropdown');
+        const names = Object.keys(readAllPitchers()).sort(nameLT);
+        for (const name of names) {
+            const newB = document.createElement('button');
+            newB.innerText = name;
+            newB.className = 'pitcher-name';
+            newB.onclick = () => changePitcher(name);
+            dropdown.appendChild(newB);
+        }
+    }
+}
+
+/**
  * Creates and trains the machine learning model responsible for choosing
  * the next pitch
  */
 export const initBug = async () => {
     setState(new GameState());
     // learner = await getLearner();
+    initPitcherDropdown();
     updateBug();
 }

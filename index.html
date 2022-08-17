@@ -3,8 +3,13 @@
     <head>
         <meta charset="utf-8" />
         <title>ML Pitch Chooser</title>
-        <link rel="stylesheet" type="text/css" href="./src/ui/styling.css">
+        
+        <link rel="stylesheet" type="text/css" href="./src/ui/styles/button.css">
+        <link rel="stylesheet" type="text/css" href="./src/ui/styles/input.css">
+        <link rel="stylesheet" type="text/css" href="./src/ui/styles/main.css">
+        <link rel="stylesheet" type="text/css" href="./src/ui/styles/scorebug.css">
         <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
+
         <script src="./builds/mainBundle.js"></script>
     </head>
 
@@ -39,6 +44,13 @@
                     <div class="button-row">
                         <button type="button" onclick="Main.doublePlay()" class="event-button">DP</button>
                         <button type="button" onclick="Main.undo()" class="event-button">Undo</button>
+                    </div>
+
+                    <div class="pitcher">
+                        <button onclick="Main.toggleDropdown()" class="pitcher-button" id="drop-button"></button>
+                        <div id="pitcher-dropdown" class="dropdown-content">
+                            <input type="text" id="pitcher-input" class="pitcher-input" onkeyup="Main.filterPitcher()">
+                        </div>
                     </div>
                 </div>
 

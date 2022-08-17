@@ -1,5 +1,7 @@
 import { GameState, getState, setState } from "../baseballLogic/GameState.js";
-import { updateBug } from "./scorebug.js";
+import { updateBug, changePitcher } from "./scorebug.js";
+import { usingNode } from "../utils/usingNode.js";
+import { $ } from "../utils/utilities.js";
 
 export const ball = () => {
     const state = getState();

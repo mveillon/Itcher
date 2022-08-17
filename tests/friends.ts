@@ -1,4 +1,3 @@
-import { DecisionTree } from "../src/ml/models/DecisionTree";
 import { MachineLearning } from "../src/ml/models/MachineLearning";
 import { Ensemble } from "../src/ml/models/Ensemble";
 import { KNNBall } from "../src/ml/models/KNNBall";
@@ -6,20 +5,6 @@ import { KNNkd } from "../src/ml/models/KNNkd";
 import { Regression } from "../src/ml/models/Regression";
 import { Matrix } from "../node_modules/ml-matrix/matrix.js";
 import { NeuralNet } from "../src/ml/models/NeuralNet";
-
-export class TreeFriend extends DecisionTree {
-    get tree() {
-        return this._tree;
-    }
-
-    get minCV(): number {
-        return this._minCV;
-    }
-
-    get minBranchSize() {
-        return this._minBranchSize;
-    }
-}
 
 export class EnsembleFriend extends Ensemble {
     get models() {

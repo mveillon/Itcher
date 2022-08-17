@@ -75,7 +75,7 @@ export class NeuralNet extends MachineLearning {
         );
 
         const res = (preds as tf.Tensor).arraySync();
-        return flatten(res) as number[];
+        return (res as number[][]).map(row => row[0]);
     }
 
     static fromObj(obj: { [key: string]: any }): MachineLearning {

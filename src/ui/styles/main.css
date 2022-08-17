@@ -1,0 +1,41 @@
+:root {
+    --font: "Optima";
+    --dominant: #181e29;
+    --secondary: #9bb1a0;
+    --accent: #a1c9a7;
+    --other-accent: #21302c;
+ }
+
+.header-div {
+    position: relative;
+    text-align: center;
+    color: var(--dominant);
+    background-color: var(--accent);
+    margin-top: -22px;
+    height: 100px;
+    margin-left: -8px;
+    margin-right: -8px;
+}
+
+h1 {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    font-family: var(--font);
+    font-size: 50px;
+    color: var(--other-accent);
+}
+
+body {
+    background-color: var(--dominant);
+}
+
+.col-parent {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+}
