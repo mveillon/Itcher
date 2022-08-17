@@ -18,7 +18,7 @@ class GameState {
         this._balls = 0;
         this._lineSpot = 0;
         this.pitcher = new Pitcher_js_1.Pitcher('Unknown (change me!)', '');
-        this.lineup = ['Unknown (change me!)'];
+        this.lineup = ['L', 'R', 'S', 'L', 'R', 'S', 'L', 'R', 'S'];
         this.lastStates = new LinkedList_js_1.List();
         this.bases = [false, false, false];
     }
@@ -817,7 +817,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initBug = exports.filterPitcher = exports.toggleDropdown = exports.addBall = exports.addStrike = exports.updateBug = exports.updateNext = exports.changeLineSpot = exports.changeLineup = exports.changePitcher = exports.toggleOuts = exports.toggleBase = void 0;
+exports.initBug = exports.toggleShowLineup = exports.filterPitcher = exports.toggleDropdown = exports.addBall = exports.addStrike = exports.updateBug = exports.updateNext = exports.changeLineSpot = exports.changeLineup = exports.changePitcher = exports.toggleOuts = exports.toggleBase = void 0;
 const GameState_js_1 = _dereq_("../baseballLogic/GameState.js");
 const Pitcher_js_1 = _dereq_("../baseballLogic/Pitcher.js");
 const usingNode_js_1 = _dereq_("../utils/usingNode.js");
@@ -886,11 +886,11 @@ const changeLineup = (newLineup) => {
         }
         if (!diff)
             return;
+        state.backup();
+        state.lineup = newLineup;
+        (0, GameState_js_1.setState)(state);
+        (0, exports.updateBug)();
     }
-    state.backup();
-    state.lineup = newLineup;
-    (0, GameState_js_1.setState)(state);
-    (0, exports.updateBug)();
 };
 exports.changeLineup = changeLineup;
 /**
@@ -945,6 +945,8 @@ const updateBug = () => {
         }
         (0, utilities_js_1.$)('count-text').innerHTML = `${state.balls}-${state.strikes}`;
         (0, utilities_js_1.$)('drop-button').innerHTML = 'Pitching: ' + state.pitcher.name;
+        (0, utilities_js_1.$)('lineup-button').innerHTML = `Batter: ${state.lineup[state.lineSpot]}`;
+        (0, utilities_js_1.$)('lineup-text').value = state.lineup.join(', ');
         (0, exports.updateNext)();
     }
 };
@@ -986,6 +988,8 @@ const toggleDropdown = () => {
     if (!(0, usingNode_js_1.usingNode)()) {
         (0, utilities_js_1.$)('pitcher-dropdown').classList.toggle('show');
         const pInput = (0, utilities_js_1.$)('pitcher-input');
+        pInput.value = '';
+        (0, exports.filterPitcher)();
         if (pInput === document.activeElement) {
             pInput.blur();
         }
@@ -1027,9 +1031,42 @@ const initPitcherDropdown = () => {
             const newB = document.createElement('button');
             newB.innerText = name;
             newB.className = 'pitcher-name';
-            newB.onclick = () => (0, exports.changePitcher)(name);
+            newB.onclick = () => {
+                (0, exports.toggleDropdown)();
+                (0, exports.changePitcher)(name);
+            };
             dropdown.appendChild(newB);
         }
+    }
+};
+/**
+ * Toggles the display of the current lineup
+ */
+const toggleShowLineup = () => {
+    if (!(0, usingNode_js_1.usingNode)()) {
+        const changeDiv = (0, utilities_js_1.$)('change-lineup');
+        const otherDisp = 'block';
+        const text = (0, utilities_js_1.$)('lineup-text');
+        if (changeDiv.style.display !== otherDisp) {
+            changeDiv.style.display = otherDisp;
+            text.focus();
+        }
+        else {
+            changeDiv.style.display = 'none';
+            text.blur();
+            sendLineup();
+        }
+    }
+};
+exports.toggleShowLineup = toggleShowLineup;
+/**
+ * Finds the value of the lineup form and sends that to the global state
+ */
+const sendLineup = () => {
+    if (!(0, usingNode_js_1.usingNode)()) {
+        const raw = (0, utilities_js_1.$)('lineup-text').value;
+        const lst = raw.toUpperCase().replace(/\s+/g, '').split(',');
+        (0, exports.changeLineup)(lst);
     }
 };
 /**

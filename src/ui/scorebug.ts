@@ -57,7 +57,7 @@ export const changePitcher = (pitcherName: string) => {
  * @param newLineup the new lineup
  */
 export const changeLineup = (newLineup: string[]) => {
-    const state = getState()
+    const state = getState();
     if (newLineup.length === state.lineup.length) {
         const allowed = ['R', 'L', 'S'];
         let diff = false;
@@ -66,12 +66,12 @@ export const changeLineup = (newLineup: string[]) => {
             diff ||= newLineup[i] !== state.lineup[i];
         }
         if (!diff) return;
-    }
 
-    state.backup();
-    state.lineup = newLineup;
-    setState(state);
-    updateBug();
+        state.backup();
+        state.lineup = newLineup;
+        setState(state);
+        updateBug();
+    }
 }
 
 /**
@@ -130,6 +130,8 @@ export const updateBug = () => {
 
         $('count-text').innerHTML = `${state.balls}-${state.strikes}`;
         $('drop-button').innerHTML = 'Pitching: ' + state.pitcher.name;
+        $('lineup-button').innerHTML = `Batter: ${state.lineup[state.lineSpot]}`;
+        ($('lineup-text') as HTMLInputElement).value = state.lineup.join(', ');
 
         updateNext();
     }
@@ -172,6 +174,8 @@ export const toggleDropdown = () => {
     if (!usingNode()) {
         $('pitcher-dropdown').classList.toggle('show');
         const pInput = $('pitcher-input');
+        (pInput as HTMLInputElement).value = '';
+        filterPitcher();
         if (pInput === document.activeElement) {
             pInput.blur();
         } else {
@@ -211,9 +215,43 @@ const initPitcherDropdown = () => {
             const newB = document.createElement('button');
             newB.innerText = name;
             newB.className = 'pitcher-name';
-            newB.onclick = () => changePitcher(name);
+            newB.onclick = () => {
+                toggleDropdown();
+                changePitcher(name);
+            }
             dropdown.appendChild(newB);
         }
+    }
+}
+
+/**
+ * Toggles the display of the current lineup
+ */
+export const toggleShowLineup = () => {
+    if (!usingNode()) {
+        const changeDiv = $('change-lineup');
+        const otherDisp = 'block';
+        const text = $('lineup-text');
+
+        if (changeDiv.style.display !== otherDisp) {
+            changeDiv.style.display = otherDisp;
+            text.focus();
+        } else {
+            changeDiv.style.display = 'none';
+            text.blur();
+            sendLineup();
+        }
+    }
+}
+
+/**
+ * Finds the value of the lineup form and sends that to the global state
+ */
+const sendLineup = () => {
+    if (!usingNode()) {
+        const raw = ($('lineup-text') as HTMLInputElement).value;
+        const lst = raw.toUpperCase().replace(/\s+/g, '').split(',');
+        changeLineup(lst);
     }
 }
 

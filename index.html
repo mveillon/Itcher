@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>ML Pitch Chooser</title>
-        
+
         <link rel="stylesheet" type="text/css" href="./src/ui/styles/button.css">
         <link rel="stylesheet" type="text/css" href="./src/ui/styles/input.css">
         <link rel="stylesheet" type="text/css" href="./src/ui/styles/main.css">
@@ -45,13 +45,6 @@
                         <button type="button" onclick="Main.doublePlay()" class="event-button">DP</button>
                         <button type="button" onclick="Main.undo()" class="event-button">Undo</button>
                     </div>
-
-                    <div class="pitcher">
-                        <button onclick="Main.toggleDropdown()" class="pitcher-button" id="drop-button"></button>
-                        <div id="pitcher-dropdown" class="dropdown-content">
-                            <input type="text" id="pitcher-input" class="pitcher-input" onkeyup="Main.filterPitcher()">
-                        </div>
-                    </div>
                 </div>
 
                 <div class="scorebug">
@@ -85,8 +78,20 @@
                 </div>
             </div>
 
-            <div class="next-pitch">
+            <div class="inputs">
+                <div class="pitcher">
+                    <button onclick="Main.toggleDropdown()" class="pitcher-button" id="drop-button"></button>
+                    <div id="pitcher-dropdown" class="dropdown-content">
+                        <input type="text" id="pitcher-input" class="pitcher-input" onkeyup="Main.filterPitcher()">
+                    </div>
+                </div>
 
+                <div class="lineup">
+                    <button class="lineup-button" id="lineup-button" onclick="Main.toggleShowLineup()"></button>
+                    <div class="change-lineup" id="change-lineup">
+                        <input type="text" class="lineup-text" id="lineup-text">
+                    </div>
+                </div>
             </div>
         </div>
     </body>

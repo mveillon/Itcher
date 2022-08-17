@@ -21,7 +21,7 @@ export class GameState {
         this._balls = 0;
         this._lineSpot = 0;
         this.pitcher = new Pitcher('Unknown (change me!)', '');
-        this.lineup = ['Unknown (change me!)'];
+        this.lineup = ['L', 'R', 'S', 'L', 'R', 'S', 'L', 'R', 'S'];
         this.lastStates = new List<GameState>();
         this.bases = [false, false, false];
     }
