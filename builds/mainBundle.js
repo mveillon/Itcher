@@ -817,7 +817,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initBug = exports.toggleShowLineup = exports.filterPitcher = exports.toggleDropdown = exports.addBall = exports.addStrike = exports.updateBug = exports.updateNext = exports.changeLineSpot = exports.changeLineup = exports.changePitcher = exports.toggleOuts = exports.toggleBase = void 0;
+exports.initBug = exports.sendLineSpot = exports.toggleShowLineup = exports.filterPitcher = exports.toggleDropdown = exports.addBall = exports.addStrike = exports.updateBug = exports.updateNext = exports.changeLineSpot = exports.changeLineup = exports.changePitcher = exports.toggleOuts = exports.toggleBase = void 0;
 const GameState_js_1 = _dereq_("../baseballLogic/GameState.js");
 const Pitcher_js_1 = _dereq_("../baseballLogic/Pitcher.js");
 const usingNode_js_1 = _dereq_("../utils/usingNode.js");
@@ -904,7 +904,7 @@ const changeLineSpot = (newSpot) => {
         state.lineSpot = newSpot;
     }
     (0, GameState_js_1.setState)(state);
-    (0, exports.updateBug)();
+    // not udpating bug because sendLineSpot does that for us
 };
 exports.changeLineSpot = changeLineSpot;
 let learner;
@@ -947,6 +947,7 @@ const updateBug = () => {
         (0, utilities_js_1.$)('drop-button').innerHTML = 'Pitching: ' + state.pitcher.name;
         (0, utilities_js_1.$)('lineup-button').innerHTML = `Batter: ${state.lineup[state.lineSpot]}`;
         (0, utilities_js_1.$)('lineup-text').value = state.lineup.join(', ');
+        (0, utilities_js_1.$)('change-linespot').value = (state.lineSpot + 1).toString();
         (0, exports.updateNext)();
     }
 };
@@ -1070,6 +1071,27 @@ const sendLineup = () => {
     }
 };
 /**
+ * Retrieves the user's lineup spot and updates the game state
+ */
+const sendLineSpot = () => {
+    if (!(0, usingNode_js_1.usingNode)()) {
+        const input = (0, utilities_js_1.$)('change-linespot');
+        const asInt = parseInt(input.value);
+        if (typeof asInt !== undefined) {
+            (0, exports.changeLineSpot)(asInt - 1);
+        }
+        (0, exports.updateBug)();
+    }
+};
+exports.sendLineSpot = sendLineSpot;
+/**
+ * Initializes the element the user uses to change the lineup and the linespot
+ */
+const initLineup = () => {
+    (0, utilities_js_1.$)('change-linespot').addEventListener('focusout', exports.sendLineSpot);
+    (0, utilities_js_1.$)('change-lineup').addEventListener('focusout', exports.toggleShowLineup);
+};
+/**
  * Creates and trains the machine learning model responsible for choosing
  * the next pitch
  */
@@ -1077,6 +1099,7 @@ const initBug = () => __awaiter(void 0, void 0, void 0, function* () {
     (0, GameState_js_1.setState)(new GameState_js_1.GameState());
     // learner = await getLearner();
     initPitcherDropdown();
+    initLineup();
     (0, exports.updateBug)();
 });
 exports.initBug = initBug;

@@ -85,7 +85,7 @@ export const changeLineSpot = (newSpot: number) => {
         state.lineSpot = newSpot;
     }
     setState(state);
-    updateBug();
+    // not udpating bug because sendLineSpot does that for us
 }
 
 let learner: MachineLearning;
@@ -132,6 +132,7 @@ export const updateBug = () => {
         $('drop-button').innerHTML = 'Pitching: ' + state.pitcher.name;
         $('lineup-button').innerHTML = `Batter: ${state.lineup[state.lineSpot]}`;
         ($('lineup-text') as HTMLInputElement).value = state.lineup.join(', ');
+        ($('change-linespot') as HTMLInputElement).value = (state.lineSpot + 1).toString();
 
         updateNext();
     }
@@ -256,6 +257,29 @@ const sendLineup = () => {
 }
 
 /**
+ * Retrieves the user's lineup spot and updates the game state
+ */
+export const sendLineSpot = () => {
+    if (!usingNode()) {
+        const input = ($('change-linespot') as HTMLInputElement);
+        const asInt = parseInt(input.value);
+        if (typeof asInt !== undefined) {
+            changeLineSpot(asInt - 1);
+        }
+
+        updateBug();
+    }
+}
+
+/**
+ * Initializes the element the user uses to change the lineup and the linespot
+ */
+const initLineup = () => {
+    $('change-linespot').addEventListener('focusout', sendLineSpot);
+    $('change-lineup').addEventListener('focusout', toggleShowLineup);
+}
+
+/**
  * Creates and trains the machine learning model responsible for choosing
  * the next pitch
  */
@@ -263,5 +287,6 @@ export const initBug = async () => {
     setState(new GameState());
     // learner = await getLearner();
     initPitcherDropdown();
+    initLineup();
     updateBug();
 }
