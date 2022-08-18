@@ -130,7 +130,11 @@ export const updateBug = () => {
         }
 
         $('count-text').innerHTML = `${state.balls}-${state.strikes}`;
-        $('drop-button').innerHTML = 'Pitching: ' + state.pitcher.name;
+
+        let pitcherName = 'Pitching: ' + state.pitcher.name;
+        if (state.pitcher.hand !== '') pitcherName += ` (${state.pitcher.hand})`;
+        $('drop-button').innerHTML =  pitcherName;
+
         $('lineup-button').innerHTML = `Batter: ${state.lineup[state.lineSpot]}`;
         ($('lineup-text') as HTMLInputElement).value = state.lineup.join(', ');
         ($('change-linespot') as HTMLInputElement).value = (state.lineSpot + 1).toString();
@@ -211,11 +215,12 @@ export const filterPitcher = () => {
  */
 const initPitcherDropdown = () => {
     if (!usingNode()) {
-        const dropdown = $('pitcher-dropdown');
-        const names = Object.keys(readAllPitchers()).sort(nameLT);
+        const dropdown = $('pitcher-names');
+        const allPs = readAllPitchers();
+        const names = Object.keys(allPs).sort(nameLT);
         for (const name of names) {
             const newB = document.createElement('button');
-            newB.innerText = name;
+            newB.innerText = name + ` (${allPs[name].hand})`;
             newB.className = 'pitcher-name';
             newB.onclick = () => {
                 toggleDropdown();

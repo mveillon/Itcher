@@ -137,7 +137,7 @@ test('change lineup', () => {
     resetState(false, false);
     const state = getState();
     const oldLine = state.lineup;
-    const newLine = ['R', 'L', 'S'];
+    const newLine = Array(oldLine.length).fill('R');
     bug.changeLineup(newLine);
     expect(state.lineup).toEqual(newLine);
     state.undo();

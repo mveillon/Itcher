@@ -1425,7 +1425,10 @@ const updateBug = () => {
             (0, utilities_js_1.$)(outIds[i]).src = `../../assets/${file}.png`;
         }
         (0, utilities_js_1.$)('count-text').innerHTML = `${state.balls}-${state.strikes}`;
-        (0, utilities_js_1.$)('drop-button').innerHTML = 'Pitching: ' + state.pitcher.name;
+        let pitcherName = 'Pitching: ' + state.pitcher.name;
+        if (state.pitcher.hand !== '')
+            pitcherName += ` (${state.pitcher.hand})`;
+        (0, utilities_js_1.$)('drop-button').innerHTML = pitcherName;
         (0, utilities_js_1.$)('lineup-button').innerHTML = `Batter: ${state.lineup[state.lineSpot]}`;
         (0, utilities_js_1.$)('lineup-text').value = state.lineup.join(', ');
         (0, utilities_js_1.$)('change-linespot').value = (state.lineSpot + 1).toString();
@@ -1507,11 +1510,12 @@ exports.filterPitcher = filterPitcher;
  */
 const initPitcherDropdown = () => {
     if (!(0, usingNode_js_1.usingNode)()) {
-        const dropdown = (0, utilities_js_1.$)('pitcher-dropdown');
-        const names = Object.keys((0, Pitcher_js_1.readAllPitchers)()).sort(utilities_js_1.nameLT);
+        const dropdown = (0, utilities_js_1.$)('pitcher-names');
+        const allPs = (0, Pitcher_js_1.readAllPitchers)();
+        const names = Object.keys(allPs).sort(utilities_js_1.nameLT);
         for (const name of names) {
             const newB = document.createElement('button');
-            newB.innerText = name;
+            newB.innerText = name + ` (${allPs[name].hand})`;
             newB.className = 'pitcher-name';
             newB.onclick = () => {
                 (0, exports.toggleDropdown)();

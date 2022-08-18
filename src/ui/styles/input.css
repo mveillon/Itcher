@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
-    margin-top: 50px;
+    margin-top: 30px;
     flex-wrap: nowrap;
 }
 
@@ -16,7 +16,7 @@
     box-sizing: border-box;
     font-size: 16px;
     padding: 5px 5px;
-    width: 194px;
+    width: 214px;
     border: none;
     text-align: center;
     margin-top: 3px;
@@ -30,9 +30,14 @@
 .dropdown-content {
     display: none;
     background-color: var(--secondary);
-    width: 200px;
+    width: 220px;
     z-index: 1;
     margin: auto;
+}
+
+.pitcher-names {
+    max-height: 200px;
+    overflow: auto;
 }
 
 .show {
