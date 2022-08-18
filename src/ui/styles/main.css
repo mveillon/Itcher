@@ -39,3 +39,7 @@ body {
     justify-content: space-between;
     align-items: flex-start;
 }
+
+.logo {
+    text-align: center;
+}
