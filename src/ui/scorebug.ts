@@ -100,7 +100,7 @@ export const updateNext = () => {
         Object.keys(getState().pitcher.pitches).length === 0) {
         return;
     }
-    $('next-pitch-text').innerHTML = 'Next pitch: ' + nextPitch(learner);
+    $('next-pitch').innerHTML = 'Next pitch: ' + nextPitch(learner);
 }
 
 /**

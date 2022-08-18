@@ -722,7 +722,9 @@ const random_js_1 = _dereq_("../utils/random.js");
  */
 const nextPitch = (learner) => {
     const state = (0, GameState_js_1.getState)();
-    const pitches = Object.keys(state.pitcher.pitches);
+    const pitches = Object.keys(state.pitcher.pitches).filter(name => {
+        return state.pitcher.pitches[name].timesThrown > 0.05;
+    });
     const feats = pitches.map((pitch) => (0, mappings_js_1.getFeature)(pitch, state));
     const rewards = learner.predict(feats);
     const weights = rewards.map(Math.tanh);
@@ -1398,7 +1400,7 @@ const updateNext = () => {
         Object.keys((0, GameState_js_1.getState)().pitcher.pitches).length === 0) {
         return;
     }
-    (0, utilities_js_1.$)('next-pitch-text').innerHTML = 'Next pitch: ' + (0, nextPitch_js_1.nextPitch)(learner);
+    (0, utilities_js_1.$)('next-pitch').innerHTML = 'Next pitch: ' + (0, nextPitch_js_1.nextPitch)(learner);
 };
 exports.updateNext = updateNext;
 /**

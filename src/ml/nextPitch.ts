@@ -10,7 +10,9 @@ import { MachineLearning } from "./models/MachineLearning.js";
  */
 export const nextPitch = (learner: MachineLearning): string => {
     const state = getState();
-    const pitches = Object.keys(state.pitcher.pitches);
+    const pitches = Object.keys(state.pitcher.pitches).filter(name => {
+        return state.pitcher.pitches[name].timesThrown > 0.05;
+    });
     const feats = pitches.map((pitch) => getFeature(pitch, state));
     const rewards = learner.predict(feats);
     const weights = rewards.map(Math.tanh);
