@@ -95,11 +95,12 @@ let learner: MachineLearning;
  * to reflect that
  */
 export const updateNext = () => {
-    if (typeof learner === 'undefined') {
+    if (
+        typeof learner === 'undefined' || 
+        Object.keys(getState().pitcher.pitches).length === 0) {
         return;
     }
-    const next = nextPitch(learner);
-    console.log(next);
+    $('next-pitch-text').innerHTML = 'Next pitch: ' + nextPitch(learner);
 }
 
 /**
@@ -276,7 +277,6 @@ export const sendLineSpot = () => {
  */
 const initLineup = () => {
     $('change-linespot').addEventListener('focusout', sendLineSpot);
-    $('change-lineup').addEventListener('focusout', toggleShowLineup);
 }
 
 /**
@@ -285,7 +285,7 @@ const initLineup = () => {
  */
 export const initBug = async () => {
     setState(new GameState());
-    // learner = await getLearner();
+    learner = await getLearner();
     initPitcherDropdown();
     initLineup();
     updateBug();

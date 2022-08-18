@@ -1,3 +1,1 @@
 - better accuracy, possibly with different models
-
-- index.html add lineup and next pitch

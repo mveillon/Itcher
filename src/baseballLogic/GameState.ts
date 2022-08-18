@@ -59,6 +59,7 @@ export class GameState {
     set outs(o: number) {
         if (o >= 3) {
             this._outs = 0;
+            this.bases = [false, false, false];
         } else {
             this._outs = o;
         }

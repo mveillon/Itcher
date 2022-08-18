@@ -54,6 +54,7 @@ class GameState {
     set outs(o) {
         if (o >= 3) {
             this._outs = 0;
+            this.bases = [false, false, false];
         }
         else {
             this._outs = o;
@@ -243,7 +244,7 @@ const setState = (newState) => {
 };
 exports.setState = setState;
 
-},{"../utils/LinkedList.js":10,"./Pitcher.js":3}],2:[function(_dereq_,module,exports){
+},{"../utils/LinkedList.js":16,"./Pitcher.js":3}],2:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Pitch = void 0;
@@ -363,7 +364,7 @@ const readAllPitchers = () => {
 };
 exports.readAllPitchers = readAllPitchers;
 
-},{"../ml/parseData.js":7,"../utils/files.js":11,"../utils/usingNode.js":13,"./Pitch.js":2}],4:[function(_dereq_,module,exports){
+},{"../ml/parseData.js":11,"../utils/files.js":18,"../utils/usingNode.js":20,"./Pitch.js":2}],4:[function(_dereq_,module,exports){
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -396,7 +397,147 @@ const init = () => {
 };
 module.exports = Object.assign(Object.assign({ init: init }, bug), buttons);
 
-},{"./ui/buttons.js":8,"./ui/scorebug.js":9}],5:[function(_dereq_,module,exports){
+},{"./ui/buttons.js":14,"./ui/scorebug.js":15}],5:[function(_dereq_,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.correlation = exports.sigmoid = exports.variance = exports.avgVar = exports.dot = exports.average = exports.squaredMag = exports.manhattanDistance = exports.squareDistance = exports.mse = void 0;
+const arrayOps_js_1 = _dereq_("../utils/arrayOps.js");
+/**
+ * Finds the mean squared error
+ * @param x the first array
+ * @param y the second array
+ * @returns the mean squared error of x and y
+ */
+const mse = (x, y) => {
+    const minLen = Math.min(x.length, y.length);
+    return minLen > 0 ? (0, exports.squareDistance)(x, y) / minLen : 0;
+};
+exports.mse = mse;
+/**
+ * Returns the distance between x and y, but squared for efficiency
+ * @param x the first vector
+ * @param y the second vector
+ * @returns the square of the Pythagorean distance between x and y
+ */
+const squareDistance = (x, y) => {
+    let total = 0;
+    for (let i = 0; i < Math.min(x.length, y.length); i++) {
+        total += Math.pow(x[i] - y[i], 2);
+    }
+    return total;
+};
+exports.squareDistance = squareDistance;
+/**
+ * Returns the manhattan distance or L1 norm of x and y
+ * @returns the manhattan distance of x and y
+ */
+const manhattanDistance = (x, y) => {
+    let total = 0;
+    for (let i = 0; i < Math.min(x.length, y.length); i++) {
+        total += Math.abs(x[i] - y[i]);
+    }
+    return total;
+};
+exports.manhattanDistance = manhattanDistance;
+/**
+ * Finds the square of the magnitude (distance from origin) of x
+ * @param x the vector to measure
+ * @returns the square (for efficiency reasons) of the magnitude
+ */
+const squaredMag = (x) => {
+    return x.reduce((prev, n) => prev + Math.pow(n, 2), 0);
+};
+exports.squaredMag = squaredMag;
+/**
+ * Returns the average of an array of numbers
+ * @param x the array to average
+ * @returns the mean of x
+ */
+const average = (x) => {
+    return (0, exports.avgVar)(x)[0];
+};
+exports.average = average;
+/**
+ * Returns the dot product of x and y
+ * @param x the first vector
+ * @param y the second vector
+ * @returns the dot product
+ */
+const dot = (x, y) => {
+    let res = 0;
+    for (let i = 0; i < Math.min(x.length, y.length); i++) {
+        res += x[i] * y[i];
+    }
+    return res;
+};
+exports.dot = dot;
+/**
+ * Finds the average and the variance of x
+ * @param x the array to measure
+ * @returns the average and variance of x
+ */
+const avgVar = (x) => {
+    const mean = (0, arrayOps_js_1.sumList)(x) / x.length;
+    let total = 0;
+    for (const n of x) {
+        total += Math.pow(n - mean, 2);
+    }
+    return [mean, total / x.length];
+};
+exports.avgVar = avgVar;
+/**
+ * Finds the variance of x
+ * @param x the array to measure
+ * @returns the variance of x
+ */
+const variance = (x) => {
+    return (0, exports.avgVar)(x)[1];
+};
+exports.variance = variance;
+/**
+ * Sigmoid function to floor x to somewhere between 0 and 1
+ * @param x the number to reduce
+ * @returns $1 / (1 + e^-x)$
+ */
+const sigmoid = (x) => {
+    return 1 / (1 + Math.exp(-x));
+};
+exports.sigmoid = sigmoid;
+/**
+ * Returns the pearson correlation between x and y
+ * @param x the first array
+ * @param y the second array
+ * @returns the correlation between x and y
+ */
+const correlation = (x, y) => {
+    let minLen;
+    if (x.length === y.length) {
+        minLen = x.length;
+    }
+    else if (x.length < y.length) {
+        minLen = x.length;
+        y = y.slice(0, minLen);
+    }
+    else {
+        minLen = y.length;
+        x = x.slice(0, minLen);
+    }
+    const xAvg = (0, exports.average)(x);
+    const yAvg = (0, exports.average)(y);
+    let num = 0;
+    let denom = [0, 0];
+    for (let i = 0; i < minLen; i++) {
+        const xDiff = x[i] - xAvg;
+        const yDiff = y[i] - yAvg;
+        num += xDiff * yDiff;
+        denom[0] += Math.pow(xDiff, 2);
+        denom[1] += Math.pow(yDiff, 2);
+    }
+    return num / Math.sqrt(denom[0] * denom[1]);
+};
+exports.correlation = correlation;
+
+},{"../utils/arrayOps.js":17}],6:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.stateAttrs = exports.getFeature = exports.numAttributes = void 0;
@@ -445,7 +586,129 @@ const stateAttrs = () => {
 };
 exports.stateAttrs = stateAttrs;
 
-},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitch.js":2}],6:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitch.js":2}],7:[function(_dereq_,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MachineLearning = void 0;
+const files_1 = _dereq_("../../utils/files");
+class MachineLearning {
+    /**
+     * Reads the machine learning model from the given path
+     * Allows for more efficient creation than training
+     * @param path the location of the saved model
+     * @returns the pre-trained model
+     */
+    static read(path) {
+        return this.fromObj((0, files_1.readJSON)(path));
+    }
+    /**
+     * Converts an object from a JSON file into an instance of this class
+     * The object is assumed to have been saved by the toObj method of this class
+     * @param obj the JSON object
+     * @returns the machine learning model
+     */
+    static fromObj(obj) {
+        throw new Error('Calling method of abstract class');
+    }
+    /**
+     * Writes the machine learning model to the given path
+     * Allows for more efficient creation later on than training
+     * @param path the location to save to
+     */
+    write(path) {
+        (0, files_1.writeJSON)(path, this.toObj());
+    }
+}
+exports.MachineLearning = MachineLearning;
+
+},{"../../utils/files":18}],8:[function(_dereq_,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.alwaysMean = exports.AlwaysMean = void 0;
+const MachineLearning_js_1 = _dereq_("./MachineLearning.js");
+const calculations_js_1 = _dereq_("../calculations.js");
+class AlwaysMean extends MachineLearning_js_1.MachineLearning {
+    /**
+     * Always predicts the mean of the targets supplied in training
+     * Useful as a control model
+     */
+    constructor() {
+        super();
+        this._mean = 0;
+    }
+    get mean() {
+        return this._mean;
+    }
+    fit(features, targets) {
+        this._mean = (0, calculations_js_1.average)(targets);
+    }
+    predict(features) {
+        return Array(features.length).fill(this._mean);
+    }
+    toObj() {
+        return { _mean: this._mean };
+    }
+    static fromObj(obj) {
+        let res = new AlwaysMean();
+        res._mean = obj['_mean'];
+        return res;
+    }
+}
+exports.AlwaysMean = AlwaysMean;
+/**
+ * Factory function for a default AlwaysMean
+ * @returns default always mean
+ */
+const alwaysMean = () => {
+    return new AlwaysMean();
+};
+exports.alwaysMean = alwaysMean;
+
+},{"../calculations.js":5,"./MachineLearning.js":7}],9:[function(_dereq_,module,exports){
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getLearner = void 0;
+const trainTest_js_1 = _dereq_("../trainTest.js");
+const alwaysMean_js_1 = _dereq_("./alwaysMean.js");
+/**
+ * Trains the machine learning network that will predict
+ * the expected reward given the current state and what pitch
+ * is being thrown.
+ * @returns a machine learning model for selecting pitches
+ */
+const getLearner = () => __awaiter(void 0, void 0, void 0, function* () {
+    // let res = knnKD();
+    // let res = regression();
+    let res = (0, alwaysMean_js_1.alwaysMean)();
+    // let res = neuralNet();
+    // let res = knnBall();
+    const numChildren = 8;
+    // let res = new Ensemble(knnKD, numChildren);
+    // let res = new Ensemble(regression, numChildren);
+    // let res = new Ensemble(alwaysMean, numChildren);
+    // let res = new Ensemble(neuralNet, numChildren);
+    // let res = new Ensemble(knnBall, numChildren);
+    // let res = new Ensemble([
+    //     knnKD(),
+    //     regression(),
+    //     neuralNet(),
+    //     knnBall(),
+    // ]);
+    yield (0, trainTest_js_1.trainLearner)(res);
+    return res;
+});
+exports.getLearner = getLearner;
+
+},{"../trainTest.js":13,"./alwaysMean.js":8}],10:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.nextPitch = void 0;
@@ -471,7 +734,7 @@ const nextPitch = (learner) => {
 };
 exports.nextPitch = nextPitch;
 
-},{"../baseballLogic/GameState.js":1,"../utils/random.js":12,"./mappings.js":5}],7:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"../utils/random.js":19,"./mappings.js":6}],11:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.pitchAbbreviations = exports.findAllPitchers = exports.getPlayType = exports.aidToPitcher = exports.abToPlat = exports.idToEvent = void 0;
@@ -718,7 +981,224 @@ const playTypes = () => {
     };
 };
 
-},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitch.js":2,"../baseballLogic/Pitcher.js":3,"../utils/files.js":11,"../utils/usingNode.js":13}],8:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitch.js":2,"../baseballLogic/Pitcher.js":3,"../utils/files.js":18,"../utils/usingNode.js":20}],12:[function(_dereq_,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.rewards = void 0;
+/**
+ * Finds the reward given the current reward and what happened
+ * Values courtesy of https://www.draysbay.com/platform/amp/2016/4/28/11521790/an-introduction-to-per-pitch-run-values
+ * @param res what happened
+ * @returns the run value of that pitch
+ */
+const rewards = (res, state) => {
+    let count;
+    switch (res) {
+        case 'k':
+            count = [
+                [0.037, 0.051, 0.15],
+                [0.035, 0.054, 0.171],
+                [0.062, 0.069, 0.209],
+                [0.117, 0.066, 0.294]
+            ];
+            break;
+        case 'b':
+            count = [
+                [-0.032, -0.024, -0.021],
+                [-0.088, -0.048, -0.038],
+                [-0.143, -0.064, -0.085],
+                [-0.051, -0.168, -0.234]
+            ];
+            break;
+        case 'kk':
+            // included for legacy reasons basically
+            return (0, exports.rewards)('k', state);
+            break;
+        case 'bb':
+            return (0, exports.rewards)('b', state);
+            break;
+        case '1b':
+            count = [
+                [-0.466, -0.483, -0.534],
+                [-0.412, -0.459, -0.513],
+                [-0.35, -0.414, -0.475],
+                [-0.207, -0.324, -0.39]
+            ];
+            break;
+        case '2b':
+            count = [
+                [-0.746, -0.783, -0.834],
+                [-0.712, -0.759, -0.813],
+                [-0.65, -0.714, -0.775],
+                [-0.507, -0.623, -0.689]
+            ];
+            break;
+        case '3b':
+            count = [
+                [-1.016, -1.053, -1.104],
+                [-0.982, -1.029, -1.083],
+                [-0.919, -0.984, -1.044],
+                [-0.777, -0.893, -0.959]
+            ];
+            break;
+        case 'hr':
+            count = [
+                [-1.4, -1.436, -1.487],
+                [-1.365, -1.413, -1.466],
+                [-1.303, -1.367, -1.428],
+                [-1.16, -1.277, -1.343]
+            ];
+            break;
+        case 'dp':
+            return (0, exports.rewards)('o', state) * 2;
+            break;
+        case 'o':
+            count = [
+                [0.31, 0.262, 0.196],
+                [0.355, 0.293, 0.223],
+                [0.436, 0.352, 0.273],
+                [0.622, 0.47, 0.384]
+            ];
+            break;
+        case 'f':
+            if (state.strikes === 2)
+                return 0;
+            else
+                return (0, exports.rewards)('k', state);
+            break;
+        default:
+            throw new Error(`Unexpected result: ${res}`);
+            break;
+    }
+    return count[state.balls][state.strikes];
+};
+exports.rewards = rewards;
+
+},{}],13:[function(_dereq_,module,exports){
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.trainFeatsTargs = exports.validFeatsTargs = exports.extractFeaturesTargets = exports.learnerMSE = exports.trainLearner = void 0;
+const parseData_js_1 = _dereq_("./parseData.js");
+const Pitcher_js_1 = _dereq_("../baseballLogic/Pitcher.js");
+const files_js_1 = _dereq_("../utils/files.js");
+const GameState_js_1 = _dereq_("../baseballLogic/GameState.js");
+const rewards_js_1 = _dereq_("./rewards.js");
+const mappings_js_1 = _dereq_("./mappings.js");
+const calculations_js_1 = _dereq_("./calculations.js");
+/**
+ * Splits the spreadsheet into features and targets
+ * @param data the read spreadsheet
+ * @returns the features of data and the targets
+ */
+const allFeatsTargs = (data) => {
+    const allPitchers = (0, Pitcher_js_1.readAllPitchers)();
+    let features = [];
+    let targets = [];
+    for (const row of data) {
+        const [f, t] = (0, exports.extractFeaturesTargets)(row, allPitchers);
+        if (f.length > 0) {
+            features.push(f);
+            targets.push(t);
+        }
+    }
+    return [features, targets];
+};
+/**
+ * Trains the learner on the appropriate dataset
+ */
+const trainLearner = (learner) => __awaiter(void 0, void 0, void 0, function* () {
+    // const trainData = usingNode() ? dataPaths.train : dataPaths.pitches;
+    const trainData = (0, files_js_1.dataPaths)().train;
+    const allData = (0, files_js_1.readSpreadSheet)(trainData);
+    const [features, targets] = allFeatsTargs(allData);
+    yield learner.fit(features, targets);
+});
+exports.trainLearner = trainLearner;
+/**
+ * Returns the mean squared error and the predictions of learner on the validation set
+ * @returns the mse
+ */
+const learnerMSE = (learner) => {
+    const validData = (0, files_js_1.readSpreadSheet)((0, files_js_1.dataPaths)().valid);
+    const [features, targets] = allFeatsTargs(validData);
+    const preds = learner.predict(features);
+    return [(0, calculations_js_1.mse)(preds, targets), preds];
+};
+exports.learnerMSE = learnerMSE;
+/**
+ * Extracts the set of features and the target from one row
+ * @param play one row of data
+ * @returns the features of that row and the target
+ */
+const extractFeaturesTargets = (play, allPitchers) => {
+    const aid = parseInt(play['ab_id']);
+    let result = play['code'];
+    let event = parseData_js_1.idToEvent.get(aid);
+    const pitch = (0, parseData_js_1.pitchAbbreviations)()[play['pitch_type']];
+    if (isNaN(aid) ||
+        typeof pitch === 'undefined' ||
+        result === '') {
+        return [[], 0];
+    }
+    if (typeof result === 'undefined') {
+        throw new Error(`Undefined result with event ${event} and aid ${aid}`);
+    }
+    if (typeof event === 'undefined') {
+        throw new Error(`Undefined event with result ${result} and aid ${aid}`);
+    }
+    let state = new GameState_js_1.GameState();
+    state.pitcher = (0, parseData_js_1.aidToPitcher)(aid, allPitchers);
+    if (typeof state.pitcher === 'undefined') {
+        return [[], 0];
+    }
+    state.bases = [
+        !!parseInt(play['on_1b']),
+        !!parseInt(play['on_2b']),
+        !!parseInt(play['on_3b'])
+    ];
+    state.lineSpot = 0;
+    if (parseData_js_1.abToPlat.get(aid)) {
+        state.lineup = [state.pitcher.hand];
+    }
+    else {
+        state.lineup = ['Z'];
+    }
+    state.balls = parseInt(play['b_count']);
+    state.strikes = parseInt(play['s_count']);
+    state.outs = parseInt(play['outs']);
+    result = (0, parseData_js_1.getPlayType)(result, event);
+    const target = (0, rewards_js_1.rewards)(result, state);
+    const features = (0, mappings_js_1.getFeature)(pitch, state);
+    return [features, target];
+};
+exports.extractFeaturesTargets = extractFeaturesTargets;
+/**
+ * Returns all the features and targets for validating an ML model
+ * @returns the features and the targets from 'valid.csv'
+ */
+const validFeatsTargs = () => {
+    return allFeatsTargs((0, files_js_1.readSpreadSheet)((0, files_js_1.dataPaths)().valid));
+};
+exports.validFeatsTargs = validFeatsTargs;
+/**
+ * Returns all the features and targets for training an ML model
+ * @returns the features and targets from 'train.csv'
+ */
+const trainFeatsTargs = () => {
+    return allFeatsTargs((0, files_js_1.readSpreadSheet)((0, files_js_1.dataPaths)().train));
+};
+exports.trainFeatsTargs = trainFeatsTargs;
+
+},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitcher.js":3,"../utils/files.js":18,"./calculations.js":5,"./mappings.js":6,"./parseData.js":11,"./rewards.js":12}],14:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.undo = exports.lineout = exports.flyout = exports.groundout = exports.doublePlay = exports.error = exports.out = exports.homeRun = exports.triple = exports.double = exports.single = exports.foul = exports.strike = exports.ball = void 0;
@@ -805,7 +1285,7 @@ const changeState = (state, meth) => {
     (0, scorebug_js_1.updateBug)();
 };
 
-},{"../baseballLogic/GameState.js":1,"./scorebug.js":9}],9:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"./scorebug.js":15}],15:[function(_dereq_,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -823,6 +1303,7 @@ const Pitcher_js_1 = _dereq_("../baseballLogic/Pitcher.js");
 const usingNode_js_1 = _dereq_("../utils/usingNode.js");
 const utilities_js_1 = _dereq_("../utils/utilities.js");
 const nextPitch_js_1 = _dereq_("../ml/nextPitch.js");
+const getLearner_js_1 = _dereq_("../ml/models/getLearner.js");
 /**
  * Toggles whether the base is occupied or not
  * @param baseInd which base to toggle
@@ -913,11 +1394,11 @@ let learner;
  * to reflect that
  */
 const updateNext = () => {
-    if (typeof learner === 'undefined') {
+    if (typeof learner === 'undefined' ||
+        Object.keys((0, GameState_js_1.getState)().pitcher.pitches).length === 0) {
         return;
     }
-    const next = (0, nextPitch_js_1.nextPitch)(learner);
-    console.log(next);
+    (0, utilities_js_1.$)('next-pitch-text').innerHTML = 'Next pitch: ' + (0, nextPitch_js_1.nextPitch)(learner);
 };
 exports.updateNext = updateNext;
 /**
@@ -1089,7 +1570,6 @@ exports.sendLineSpot = sendLineSpot;
  */
 const initLineup = () => {
     (0, utilities_js_1.$)('change-linespot').addEventListener('focusout', exports.sendLineSpot);
-    (0, utilities_js_1.$)('change-lineup').addEventListener('focusout', exports.toggleShowLineup);
 };
 /**
  * Creates and trains the machine learning model responsible for choosing
@@ -1097,14 +1577,14 @@ const initLineup = () => {
  */
 const initBug = () => __awaiter(void 0, void 0, void 0, function* () {
     (0, GameState_js_1.setState)(new GameState_js_1.GameState());
-    // learner = await getLearner();
+    learner = yield (0, getLearner_js_1.getLearner)();
     initPitcherDropdown();
     initLineup();
     (0, exports.updateBug)();
 });
 exports.initBug = initBug;
 
-},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitcher.js":3,"../ml/nextPitch.js":6,"../utils/usingNode.js":13,"../utils/utilities.js":14}],10:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitcher.js":3,"../ml/models/getLearner.js":9,"../ml/nextPitch.js":10,"../utils/usingNode.js":20,"../utils/utilities.js":21}],16:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.List = void 0;
@@ -1356,7 +1836,233 @@ class List {
 }
 exports.List = List;
 
-},{}],11:[function(_dereq_,module,exports){
+},{}],17:[function(_dereq_,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sumList = exports.ndMap = exports.allClose = exports.any = exports.all = exports.isClose = exports.argMax = exports.argMin = exports.argBest = exports.colAverage = exports.flatten = exports.scalarMul = exports.subArrays = exports.addArrays = void 0;
+/**
+ * Makes sure the two arrays are compatible for math operations
+ * @param a1 the first array
+ * @param a2 the second array
+ */
+const checkInputs = (a1, a2) => {
+    if ((typeof a1 !== typeof a2) ||
+        (Array.isArray(a1) && a1.length !== a2.length)) {
+        throw new Error(`Mismatched shapes: ${a1} and ${a2}`);
+    }
+};
+/**
+ * Adds the two n-dimensional matrices element-wise
+ * @param a1 the first matrix
+ * @param a2 the second matrix
+ * @returns their element-wise sum
+ */
+const addArrays = (a1, a2) => {
+    checkInputs(a1, a2);
+    if (typeof a1 === 'number') {
+        return a1 + a2;
+    }
+    let res = [];
+    for (let i = 0; i < a1.length; i++) {
+        res.push((0, exports.addArrays)(a1[i], a2[i]));
+    }
+    return res;
+};
+exports.addArrays = addArrays;
+/**
+ * Subtracts the two n-dimensional matrices element-wise
+ * @param a1 the first matrix
+ * @param a2 the second matrix
+ * @returns a1 - a2 element-wise
+ */
+const subArrays = (a1, a2) => {
+    return (0, exports.addArrays)(a1, (0, exports.scalarMul)(-1, a2));
+};
+exports.subArrays = subArrays;
+/**
+ * Multiplies every element of A by x and returns a new matrix
+ * @param x the scalar
+ * @param A the matrix to multiply
+ * @returns the result of x * A
+ */
+const scalarMul = (x, A) => {
+    if (typeof A === 'number') {
+        return x * A;
+    }
+    let res = [];
+    for (const row of A) {
+        res.push((0, exports.scalarMul)(x, row));
+    }
+    return res;
+};
+exports.scalarMul = scalarMul;
+/**
+ * Flattens the n-dimensional array into just one array
+ * @param A the array to flatten
+ */
+const flatten = (A) => {
+    if (typeof A === 'number') {
+        return A;
+    }
+    return [].concat(...A.map(exports.flatten));
+};
+exports.flatten = flatten;
+/**
+ * Returns the averages of the columns of A
+ * @param A the 2D matrix to average
+ * @returns the column-wise average of A
+ */
+const colAverage = (A) => {
+    if (A.length === 0)
+        return [];
+    let res = A[0];
+    for (let i = 1; i < A.length; i++) {
+        res = (0, exports.addArrays)(res, A[i]);
+    }
+    return (0, exports.scalarMul)(1 / A.length, res);
+};
+exports.colAverage = colAverage;
+/**
+ * Finds the index of the best element in x, based on comp
+ * @param x the array to look through
+ * @param comp how to compare the elements of x. Should return true if the first arg is "better"
+ * than the second
+ * @returns the index of the best element in x
+ */
+const argBest = (x, comp) => {
+    if (x.length === 0) {
+        throw new Error('Empty array');
+    }
+    let b = 0;
+    for (let i = 0; i < x.length; i++) {
+        if (comp(x[i], x[b])) {
+            b = i;
+        }
+    }
+    return b;
+};
+exports.argBest = argBest;
+/**
+ * Returns the index of the smallest elemeent of x
+ * @param x the array to look at
+ * @returns where the smallest element is
+ */
+const argMin = (x) => {
+    return (0, exports.argBest)(x, (a, b) => a < b);
+};
+exports.argMin = argMin;
+/**
+ * Returns the index of the largest elemeent of x
+ * @param x the array to look at
+ * @returns where the largest element is
+ */
+const argMax = (x) => {
+    return (0, exports.argBest)(x, (a, b) => a > b);
+};
+exports.argMax = argMax;
+/**
+ * Returns an array where `ith` element corresponds to whether `x[i]` is close enough to `y[i]`,
+ * where close enough means within floating-point error bars. Uses the formula `abs(x - y) <= atol + rtol * abs(y)`
+ * @param x the first array
+ * @param y the second array
+ * @param rtol the relative tolerance, which is multiplied by the elements of b
+ * @param atol the absolute tolerance. Should be non-zero when x and y have elements that are both zero
+ * @returns an ndArray of which values of x and y are close
+ */
+const isClose = (x, y, rtol = 1e-5, atol = 1e-8) => {
+    checkInputs(x, y);
+    if (typeof x === 'number') {
+        return Math.abs(x - y) <= atol + rtol * Math.abs(y);
+    }
+    let res = [];
+    for (let i = 0; i < x.length; i++) {
+        res.push((0, exports.isClose)(x[i], y[i], rtol, atol));
+    }
+    return res;
+};
+exports.isClose = isClose;
+/**
+ * Returns whether every element of bools is true.
+ * Returns false if bools is empty
+ * @param bools an n-dimensional array of booleans
+ * @returns whether all elements of bools is true
+ */
+const all = (bools) => {
+    if (typeof bools === 'boolean') {
+        return bools;
+    }
+    if (bools.length === 0)
+        return false;
+    for (const nested of bools) {
+        if (!(0, exports.all)(nested)) {
+            return false;
+        }
+    }
+    return true;
+};
+exports.all = all;
+/**
+ * Returns whether any element of bools is true.
+ * Returns false if bools is empty
+ * @param bools an n-dimensional array of booleans
+ * @returns whether any elements of bools is true
+ */
+const any = (bools) => {
+    if (typeof bools === 'boolean') {
+        return bools;
+    }
+    for (const nested of bools) {
+        if ((0, exports.all)(nested)) {
+            return true;
+        }
+    }
+    return false;
+};
+exports.any = any;
+/**
+ * Returns whether every element of x is close to every element of y, using the formula
+ * `abs(x - y) <= atol + rtol * abs(y)
+ * @param x the first array
+ * @param y the second array
+ * @param rtol the relative tolerance, which is multiplied by the elements of b
+ * @param atol the absolute tolerance. Should be non-zero when x and y have elements that are both zero
+ * @returns whether every element of x is close to every element of y
+ */
+const allClose = (x, y, rtol = 1e-5, atol = 1e-8) => {
+    return (0, exports.all)((0, exports.isClose)(x, y, rtol, atol));
+};
+exports.allClose = allClose;
+/**
+ * Maps func onto every element of x and returns a new array of the same shape as x
+ * @param x the ndArray of any type
+ * @param func a function that takes an element of x and returns something else
+ * @returns func mapped onto x
+ */
+const ndMap = (x, func) => {
+    if (Array.isArray(x)) {
+        let res = [];
+        for (const nested of x) {
+            res.push((0, exports.ndMap)(nested, func));
+        }
+        return res;
+    }
+    return func(x);
+};
+exports.ndMap = ndMap;
+/**
+ * Returns the sum of every element of the n-dimensional list
+ * @param x the array of numbers
+ * @returns the sum of every element in x
+ */
+const sumList = (x) => {
+    if (typeof x === 'number') {
+        return x;
+    }
+    return x.map(exports.sumList).reduce((a, b) => a + b, 0);
+};
+exports.sumList = sumList;
+
+},{}],18:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dataPaths = exports.pitcherPath = exports.writeJSON = exports.readJSON = exports.readSpreadSheet = exports.writeFile = exports.readFile = void 0;
@@ -1448,7 +2154,7 @@ const dataPaths = () => {
 };
 exports.dataPaths = dataPaths;
 
-},{"./usingNode.js":13}],12:[function(_dereq_,module,exports){
+},{"./usingNode.js":20}],19:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.choices = exports.shuffle = exports.choice = exports.randInt = void 0;
@@ -1522,7 +2228,7 @@ const choices = (arr, n) => {
 };
 exports.choices = choices;
 
-},{}],13:[function(_dereq_,module,exports){
+},{}],20:[function(_dereq_,module,exports){
 (function (process){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -1540,7 +2246,7 @@ const usingNode = () => {
 exports.usingNode = usingNode;
 
 }).call(this)}).call(this,_dereq_('_process'))
-},{"_process":15}],14:[function(_dereq_,module,exports){
+},{"_process":22}],21:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.nameLT = exports.upTo = exports.$ = exports.allPitchTypes = void 0;
@@ -1612,7 +2318,7 @@ const nameLT = (p1, p2) => {
 };
 exports.nameLT = nameLT;
 
-},{"./usingNode.js":13}],15:[function(_dereq_,module,exports){
+},{"./usingNode.js":20}],22:[function(_dereq_,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
