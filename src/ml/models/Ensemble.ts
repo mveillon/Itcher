@@ -1,7 +1,7 @@
 import { shuffle } from "../../utils/random.js";
 import { MachineLearning } from "./MachineLearning.js";
 import { readJSON } from "../../utils/files.js";
-import { colAverage, upTo } from "../../utils/arrayOps.js";
+import { colAverage, arange } from "../../utils/arrayOps.js";
 
 export class Ensemble extends MachineLearning {
     protected _models: MachineLearning[];
@@ -32,7 +32,7 @@ export class Ensemble extends MachineLearning {
     }
 
     async fit(features: number[][], targets: number[]) {
-        const inds: number[] = upTo(features.length);
+        const inds: number[] = arange(features.length);
         shuffle(inds);
         const perModel = Math.floor(inds.length / this._models.length);
 

@@ -1,10 +1,10 @@
 import { checkModel, defaultTimeout } from "./checkModel";
 import { AlwaysMean } from "../src/ml/models/AlwaysMean";
-import { upTo } from "../src/utils/arrayOps";
+import { arange } from "../src/utils/arrayOps";
 
 jest.setTimeout(defaultTimeout)
 test('right mean', () => {
-    const x: number[][] = upTo(20).map(n => [n]);
+    const x: number[][] = arange(20).map(n => [n]);
     let y: number[] = [];
     for (let i = 0; i < x.length; i++) {
         y.push(5);

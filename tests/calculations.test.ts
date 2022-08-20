@@ -1,5 +1,5 @@
 import { mse, squareDistance, manhattanDistance, squaredMag, dot, average, variance, sigmoid, correlation } from "../src/ml/calculations";
-import { upTo } from "../src/utils/arrayOps";
+import { arange } from "../src/utils/arrayOps";
 
 test('mse', () => {
     expect(mse([1, 1, 1], [1, 1, 1])).toBe(0);
@@ -62,7 +62,7 @@ test('variance', () => {
 });
 
 test('sigmoid', () => {
-    const s = upTo(100).map(sigmoid);
+    const s = arange(100).map(sigmoid);
     for (let i = 1; i < s.length; i++) {
         expect(s[i]).toBeGreaterThanOrEqual(0);
         expect(s[i]).toBeLessThanOrEqual(1);

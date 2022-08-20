@@ -15,8 +15,8 @@ import {
     full,
     getShape,
     copyArr,
-    upTo,
-    reshape
+    reshape,
+    arange
 } from "../src/utils/arrayOps";
 import { shuffle } from "../src/utils/random";
 
@@ -369,15 +369,6 @@ test('copy', () => {
     }
 })
 
-test('up to', () => {
-    expect(upTo(0)).toEqual([]);
-    const ten = upTo(10);
-    expect(ten.length).toBe(10);
-    for (let i = 0; i < 10; i++) {
-        expect(ten[i]).toBe(i);
-    }
-});
-
 test('reshape', () => {
     expect(reshape([1], [1])).toEqual([1]);
     expect(reshape([1, 2, 3, 4], [2, 2])).toEqual([[1, 2], [3, 4]]);
@@ -403,4 +394,14 @@ test('reshape', () => {
             [4, 5, 6]
         ]
     ]);
+});
+
+test('arange', () => {
+    expect(arange(0, 5, 1)).toEqual([0, 1, 2, 3, 4]);
+    expect(arange(5)).toEqual([0, 1, 2, 3, 4]);
+    expect(arange(-5, 0)).toEqual([-5, -4, -3, -2, -1]);
+    expect(arange(0, -5, -1)).toEqual([0, -1, -2, -3, -4]);
+    expect(allClose(arange(0, 2, 0.5), [0, 0.5, 1, 1.5])).toBe(true);
+    expect(allClose(arange(2, 0, -0.5), [2, 1.5, 1, 0.5])).toBe(true);
+    expect(() => arange(0, -5)).toThrow();
 });

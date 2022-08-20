@@ -1,13 +1,13 @@
 import { Regression } from "../src/ml/models/Regression";
 import { checkModel, defaultTimeout } from "./checkModel";
-import { upTo } from "../src/utils/arrayOps";
+import { arange } from "../src/utils/arrayOps";
 import { trainFeatsTargs, validFeatsTargs } from "../src/ml/trainTest";
 import { mse } from "../src/ml/calculations";
 import { RegressionFriend } from "./friends";
 
 jest.setTimeout(defaultTimeout);
 test('Regression', async () => {
-    const x: number[][] = upTo(20).map(n => [n]);
+    const x: number[][] = arange(20).map(n => [n]);
     const y: number[] = x.map(n => 5 + 3 * n[0] + 4 * Math.pow(n[0], 2));
 
     let reg = new RegressionFriend(2);

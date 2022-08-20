@@ -1,7 +1,7 @@
 import { Regression } from "./Regression.js";
 import { correlation } from "../calculations.js";
 import { Matrix } from "../../../node_modules/ml-matrix/matrix.js";
-import { upTo } from "../../utils/arrayOps.js";
+import { arange } from "../../utils/arrayOps.js";
 
 export class InteractionRegression extends Regression {
     protected _terms: number[][];
@@ -61,7 +61,7 @@ export class InteractionRegression extends Regression {
      */
     private fitInteraction(features: number[][], targets: number[]): Matrix {
         this._terms = [];
-        const combos = this.allCombos(upTo(features[0].length));
+        const combos = this.allCombos(arange(features[0].length));
 
         for (const c of combos) {
             if (c.length <= 1) continue;

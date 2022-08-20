@@ -1,8 +1,8 @@
 import { BinaryTree } from "../src/utils/BinaryTree";
-import { upTo } from "../src/utils/arrayOps";
+import { arange } from "../src/utils/arrayOps";
 
 test('int tree', () => {
-    const nums: number[] = upTo(32);
+    const nums: number[] = arange(32);
     const buildTree = (vals: number[]): BinaryTree<number> | number => {
         if (vals.length === 0) return -1;
         if (vals.length === 1) return vals[0];
