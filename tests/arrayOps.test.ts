@@ -11,7 +11,12 @@ import {
     isClose,
     allClose,
     ndMap,
-    sumList
+    sumList,
+    full,
+    getShape,
+    copyArr,
+    upTo,
+    reshape
 } from "../src/utils/arrayOps";
 import { shuffle } from "../src/utils/random";
 
@@ -297,4 +302,105 @@ test('sumList', () => {
             [7, 8, 9],
         ]
     ])).toBe(45);
+});
+
+test('full', () => {
+    expect(full([], 0)).toBe(0);
+    expect(full([1], 1)).toEqual([1]);
+    expect(full([2, 3], 2)).toEqual([[2, 2, 2], [2, 2, 2]]);
+    expect(full([1, 2, 3], 3)).toEqual([
+        [
+            [3, 3, 3], 
+            [3, 3, 3]
+        ]
+    ]);
+});
+
+test('getShape', () => {
+    expect(getShape(0)).toEqual([]);
+    expect(getShape([1])).toEqual([1]);
+    expect(getShape([1, 2, 3])).toEqual([3]);
+    expect(getShape([[1, 2, 3], [4, 5, 6]])).toEqual([2, 3]);
+    expect(getShape([
+        [
+            [1, 2, 3],
+            [4, 5, 6]
+        ],
+        [
+            [7, 8, 9],
+            [10, 11, 12]
+        ]
+    ])).toEqual([2, 2, 3]);
+});
+
+test('copy', () => {
+    const as = [
+        0,
+        [1, 2, 3],
+        [
+            [4, 5, 6],
+            [7, 8, 9]
+        ],
+        [
+            [
+                [10, 11, 12, 13],
+                [14, 15, 16, 17]
+            ],
+            [
+                [18, 19, 20, 21],
+                [22, 23, 24, 25]
+            ]
+        ]
+    ];
+    for (const a of as) {
+        const cop = copyArr(a);
+        expect(cop).toEqual(a);
+        let current = a;
+        let last: any;
+        while (Array.isArray(current)) {
+            last = current;
+            current = current[0];
+        }
+        if (Array.isArray(last)) {
+            last[0] += 1;
+            expect(cop).not.toEqual(a);
+        }
+        
+    }
+})
+
+test('up to', () => {
+    expect(upTo(0)).toEqual([]);
+    const ten = upTo(10);
+    expect(ten.length).toBe(10);
+    for (let i = 0; i < 10; i++) {
+        expect(ten[i]).toBe(i);
+    }
+});
+
+test('reshape', () => {
+    expect(reshape([1], [1])).toEqual([1]);
+    expect(reshape([1, 2, 3, 4], [2, 2])).toEqual([[1, 2], [3, 4]]);
+    expect(reshape([[1, 2], [3, 4]], [4])).toEqual([1, 2, 3, 4]);
+    expect(reshape([
+        [
+            [1, 2],
+            [3, 4],
+            [5, 6]
+        ]
+    ], [3, 2])).toEqual([
+        [1, 2],
+        [3, 4],
+        [5, 6]
+    ]);
+    expect(reshape([
+        [1, 2],
+        [3, 4],
+        [5, 6]
+    ], [1, 2, 3])).toEqual([
+        [
+            [1, 2, 3],
+            [4, 5, 6]
+        ]
+    ]);
 });

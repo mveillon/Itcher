@@ -1,3 +1,4 @@
+import { flatten, zeros } from "../utils/arrayOps.js";
 import { GameState } from "../baseballLogic/GameState.js";
 import { Pitch } from "../baseballLogic/Pitch.js";
 
@@ -21,17 +22,42 @@ export const numAttributes = (): number => {
  */
 export const getFeature = (pitch: string, state: GameState): number[] => {
     let pitchO = state.pitcher.pitches[pitch];
-    const radDirec = pitchO.spinDirection * Math.PI / 360;
-    const res = [
+    return pitchFeature(
+        state, 
+        pitchO.velo, 
+        pitchO.spinRate, 
+        pitchO.spinDirection,
+        pitchO.heatmap
+    );
+}
+
+/**
+ * Takes specific information about the pitch being thrown and returns the feature
+ * that an ML model can use
+ * @param state the current game state
+ * @param velo the velocity of the pitch
+ * @param spinRate the spinrate of the pitch
+ * @param direc the direction of the pitch's spin in degrees
+ * @returns one list of features
+ */
+export const pitchFeature = (
+    state: GameState, 
+    velo: number, 
+    spinRate: number, 
+    direc: number,
+    heatmap: number[][]
+    ): number[] => {
+    const radDirec = direc * Math.PI / 360;
+    return [
         state.balls,
         state.strikes,
         +state.pitcherPlatoon(),
-        pitchO.velo,
-        pitchO.spinRate,
+        velo,
+        spinRate,
         Math.cos(radDirec),
         Math.sin(radDirec),
+        ...flatten(heatmap) as number[]
     ];
-    return res;
 }
 
 /**
@@ -41,4 +67,27 @@ export const getFeature = (pitch: string, state: GameState): number[] => {
  */
 export const stateAttrs = (): number => {
     return 3;
+}
+
+/**
+ * Converts the pitch's x and y location to an n x n heatmap using one-hot encoding
+ * @param x the horizontal location
+ * @param y the vertical location. Called z in the dataset
+ * @param numCells the width and height of the heatmap in cells e.g. `numCells = 3` means
+ * a 3x3 heatmap with 9 total cells
+ * @returns a one hot encoding of the heatmap
+ */
+export const oneHotHeatmap = (
+    x: number, 
+    y: number, 
+    numCells: number
+    ): number[][] => {
+    y *= -1;
+    let res: number[][] = zeros([numCells, numCells]) as number[][];
+    const getInd = (loc: number): number => {
+        return Math.min(Math.max(Math.floor((loc + 1) * numCells / 2), 0), numCells - 1);
+    }
+
+    res[getInd(y)][getInd(x)] = 1;
+    return res;
 }

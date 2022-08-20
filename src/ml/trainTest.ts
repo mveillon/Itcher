@@ -1,11 +1,12 @@
-import { aidToPitcher, getPlayType, abToPlat, idToEvent, pitchAbbreviations } from "./parseData.js";
+import { aidToPitcher, getPlayType, abToPlat, idToEvent } from "./parseData.js";
 import { MachineLearning } from "./models/MachineLearning.js";
 import { readAllPitchers, Pitcher } from "../baseballLogic/Pitcher.js";
 import { dataPaths, readSpreadSheet, sheet, sheetRow } from "../utils/files.js";
 import { GameState } from "../baseballLogic/GameState.js";
 import { rewards } from "./rewards.js";
-import { getFeature } from "./mappings.js";
+import { pitchFeature, oneHotHeatmap } from "./mappings.js";
 import { mse } from "./calculations.js";
+import { heatmapSize } from "../baseballLogic/Pitch.js";
 
 /**
  * Splits the spreadsheet into features and targets
@@ -64,12 +65,14 @@ export const extractFeaturesTargets = (
     const aid = parseInt(play['ab_id']);
     let result = play['code'];
     let event = idToEvent.get(aid);    
-    const pitch = pitchAbbreviations()[play['pitch_type']];
+    const x = parseFloat(play['px']);
+    const z = parseFloat(play['pz']);   
 
     if (
         isNaN(aid) || 
-        typeof pitch === 'undefined' ||
-        result === ''
+        result === '' ||
+        isNaN(x) || 
+        isNaN(z)
     ) {
         return [[], 0];
     } 
@@ -81,7 +84,7 @@ export const extractFeaturesTargets = (
     }
     
     let state = new GameState();
-    state.pitcher = aidToPitcher(aid, allPitchers);    
+    state.pitcher = aidToPitcher(aid, allPitchers); 
     if (typeof state.pitcher === 'undefined') {
         return [[], 0];
     }
@@ -103,7 +106,17 @@ export const extractFeaturesTargets = (
 
     result = getPlayType(result, event);
     const target = rewards(result, state);
-    const features = getFeature(pitch, state);
+    const features = pitchFeature(
+        state,
+        parseFloat(play['start_speed']),
+        parseFloat(play['spin_rate']),
+        parseFloat(play['spin_dir']),
+        oneHotHeatmap(
+            x,
+            z, 
+            heatmapSize()
+        )
+    );
     
     return [features, target];
 }

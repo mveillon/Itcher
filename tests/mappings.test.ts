@@ -1,10 +1,12 @@
 import { GameState } from "../src/baseballLogic/GameState";
 import { 
     numAttributes, 
-    getFeature 
+    getFeature,
+    oneHotHeatmap
 } from "../src/ml/mappings";
 import { randInt } from "../src/utils/random";
 import { readAllPitchers } from "../src/baseballLogic/Pitcher";
+import { copyArr, zeros } from "../src/utils/arrayOps";
 
 test('getFeature', () => {
     const pitcher = readAllPitchers()['Felix Hernandez'];
@@ -38,4 +40,25 @@ test('getFeature', () => {
         }
     }
     expect(foundDiff).toEqual(Array(foundDiff.length).fill(true));
+});
+
+test('heatmap', () => {
+    const base: number[][] = zeros([3, 3]) as number[][];
+    let copy: number[][] = [];
+    const c = () => {
+        copy = copyArr(base) as number[][];
+    }
+    c();
+    copy[0][0] = 1;
+    expect(oneHotHeatmap(-2, 2, 3)).toEqual(copy);
+    c();
+    copy[2][2] = 1;
+    expect(oneHotHeatmap(2, -2, 3)).toEqual(copy);
+
+    const locs = [-1, 0, 1];
+    for (let i = 0; i < locs.length; i++) {
+        c();
+        copy[i][i] = 1;
+        expect(oneHotHeatmap(locs[i], -locs[i], locs.length)).toEqual(copy);
+    }
 });

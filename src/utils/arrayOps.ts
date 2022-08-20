@@ -8,10 +8,10 @@ export type boolArray = ndArray<boolean>;
  * @param a1 the first array
  * @param a2 the second array
  */
-const checkInputs = (a1: numArray, a2: numArray) => {
+const checkInputs = <T>(a1: ndArray<T>, a2: ndArray<T>) => {
     if (
-        (typeof a1 !== typeof a2) ||
-        (Array.isArray(a1) && a1.length !== (a2 as number[]).length)
+        (Array.isArray(a1) !== Array.isArray(a2)) ||
+        (Array.isArray(a1) && a1.length !== (a2 as T[]).length)
     ) {
         throw new Error(`Mismatched shapes: ${a1} and ${a2}`);
     }
@@ -69,12 +69,12 @@ export const scalarMul = (x: number, A: numArray): numArray => {
  * Flattens the n-dimensional array into just one array
  * @param A the array to flatten
  */
-export const flatten = (A: numArray): number | number[] => {
-    if (typeof A === 'number') {
+export const flatten = <T>(A: ndArray<T>): T | T[] => {
+    if (Array.isArray(A)) {
+        return [].concat(...A.map(flatten));
+    } else {
         return A;
     }
-    
-    return [].concat(...A.map(flatten));
 }
 
 /**
@@ -98,7 +98,7 @@ export const colAverage = (A: number[][]): number[] => {
  * than the second
  * @returns the index of the best element in x
  */
-export const argBest = (x: number[], comp: (a: number, b: number) => boolean) => {
+export const argBest = <T>(x: T[], comp: (a: T, b: T) => boolean): number => {
     if (x.length === 0) {
         throw new Error('Empty array');
     }
@@ -116,7 +116,7 @@ export const argBest = (x: number[], comp: (a: number, b: number) => boolean) =>
  * @param x the array to look at
  * @returns where the smallest element is
  */
-export const argMin = (x: number[]): number => {
+export const argMin = <T>(x: T[]): number => {
     return argBest(x, (a, b) => a < b);
 }
 
@@ -125,7 +125,7 @@ export const argMin = (x: number[]): number => {
  * @param x the array to look at
  * @returns where the largest element is
  */
-export const argMax = (x: number[]): number => {
+export const argMax = <T>(x: T[]): number => {
     return argBest(x, (a, b) => a > b);
 }
 
@@ -181,7 +181,7 @@ export const all = (bools: boolArray): boolean => {
         return bools;
     }
     for (const nested of bools) {
-        if (all(nested)) {
+        if (any(nested)) {
             return true;
         }
     }
@@ -228,4 +228,143 @@ export const sumList = (x: numArray): number => {
         return x;
     }
     return x.map(sumList).reduce((a, b) => a + b, 0);
+}
+
+/**
+ * Returns an array full of whatever the value is in any arbitrary shape
+ * @param shape the size of each dimension of the output
+ * @param value what value to fill the array with
+ * @returns an array with the given shape and every value equal to the given value
+ */
+export const full = <T>(shape: number[], value: T): ndArray<T> => {
+    if (shape.length === 0) {
+        return value;
+    }
+    let res: ndArray<T> = [];
+    const rest = shape.slice(1, shape.length);
+    for (let i = 0; i < shape[0]; i++) {
+        res.push(full(rest, value));
+    }
+
+    return res;
+}
+
+/**
+ * Returns the shape of the array, which should be of uniform dimension
+ * to allow for basically constant time calculation
+ * @param arr the array to measure
+ * @returns the shape of the array as an array
+ */
+export const getShape = <T>(arr: ndArray<T>): number[] => {
+    if (Array.isArray(arr)) {
+        let res = [arr.length];
+        if (arr.length === 0) return res;
+        return res.concat(getShape(arr[0]));
+    } else {
+        return [];
+    }
+} 
+
+/**
+ * Returns a shallow copy of arr. Changing any of the subarrays of the copy
+ * will not change the original, but changing a value within a subarray might
+ * change the same value in the original
+ * @param arr the array to copy
+ * @returns a shallow copy of arr with the same elements
+ */
+export const copyArr = <T>(arr: ndArray<T>): ndArray<T> => {
+    if (Array.isArray(arr)) {
+        let res: ndArray<T> = [];
+        for (let i = 0; i < arr.length; i++) {
+            res.push(copyArr(arr[i]));
+        }
+        return res;
+    } else {
+        return arr;
+    }
+}
+
+/**
+ * Convenience function to create an array full of zeros
+ * @param shape the shape of the array to create
+ * @returns an array of all zeros
+ */
+export const zeros = (shape: number[]): numArray => {
+    return full(shape, 0);
+}
+
+/**
+ * Convenience function to create an array full of ones
+ * @param shape the shape of the array to create
+ * @returns an array of all ones
+ */
+export const ones = (shape: number[]): numArray => {
+    return full(shape, 1);
+}
+
+/**
+ * Returns a sorted array with every int in the range [0, n)
+ * @param n 1 + the max number in the array
+ * @returns an array with every int up to n
+ */
+ export const upTo = (n: number): number[] => {
+    return [...Array(n).keys()];
+}
+
+/**
+ * Returns an array from start to stop with values separated by step. Same syntax as
+ * Python's `range` constructor, i.e. if stop is omitted, the array will go from 0 to
+ * stop, and step defaults to 1
+ * @param start the first element of the array, or the exclusive maximum if stop is omitted
+ * @param stop the exclusive max of the return array
+ * @param step the difference between the `i`th element and the `i + 1` of the return array
+ * @returns an array from start (inclusive) to stop (exclusive)
+ */
+export const arange = (start: number, stop?: number, step?: number): number[] => {
+    step = step || 1;
+    if (typeof stop === 'undefined') {
+        stop = start;
+        start = 0;
+    }
+
+    let res: number[] = [];
+    for (let n = start; n < stop; n += step) {
+        res.push(n);
+    }
+    return res;
+}
+
+/**
+ * Reshapes arr to be the given shape
+ * @param arr the array to reshape
+ * @param shape the shape of the output array
+ * @returns an array of the given shape with all the elements as arr in order
+ */
+export const reshape = <T>(arr: ndArray<T>, shape: number[]): ndArray<T> => {
+    if (!Array.isArray(arr)) {
+        throw new Error(`Scalars not allowed in reshape function: ${arr}`);
+    }
+
+    const flat: T[] = flatten(arr) as T[];
+    if (flat.length !== shape.reduce((a, b) => a * b, 1)) {
+        throw new Error(`Cannot broadcast array with shape ${getShape(arr)} to ${shape}`);
+    }
+
+    let res: ndArray<T> = full(shape, flat[0]);
+    let inds: number[] = zeros([shape.length]) as number[];
+
+    for (const val of flat) {
+        let current = res;
+        for (let i = 0; i < inds.length - 1; i++) {
+            current = (current as T[])[inds[i]];
+        }
+        (current as T[])[inds[inds.length - 1]] = val;
+
+        let i = inds.length - 1;
+        while (i >= 0 && ++inds[i] === shape[i]) {
+            inds[i--] = 0;
+        }
+    }
+    
+    return res;
 }
