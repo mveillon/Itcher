@@ -40,5 +40,5 @@ export const getFeature = (pitch: string, state: GameState): number[] => {
  * @returns the number of attributes dependent on the current game state
  */
 export const stateAttrs = (): number => {
-    return numAttributes() - 4;
+    return 3;
 }
