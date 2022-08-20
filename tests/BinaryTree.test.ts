@@ -1,5 +1,5 @@
 import { BinaryTree } from "../src/utils/BinaryTree";
-import { upTo } from "../src/utils/utilities";
+import { upTo } from "../src/utils/arrayOps";
 
 test('int tree', () => {
     const nums: number[] = upTo(32);

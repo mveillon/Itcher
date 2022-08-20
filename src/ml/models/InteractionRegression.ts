@@ -1,7 +1,7 @@
 import { Regression } from "./Regression.js";
 import { correlation } from "../calculations.js";
 import { Matrix } from "../../../node_modules/ml-matrix/matrix.js";
-import { upTo } from "../../utils/utilities.js";
+import { upTo } from "../../utils/arrayOps.js";
 
 export class InteractionRegression extends Regression {
     protected _terms: number[][];

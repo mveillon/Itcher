@@ -35,15 +35,6 @@ if (usingNode()) {
 }
 
 /**
- * Returns a sorted array with every int in the range [0, n)
- * @param n 1 + the max number in the array
- * @returns an array with every int up to n
- */
-export const upTo = (n: number): number[] => {
-    return [...Array(n).keys()];
-}
-
-/**
  * Use for sorting by last name. Returns a negative number if p1 is alphabetically 
  * less than p2, a positive number if p1 is alphabetically greater than p2, and returns
  * zero if they are the same. Can be used in `Array.sort`

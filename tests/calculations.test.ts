@@ -1,5 +1,5 @@
 import { mse, squareDistance, manhattanDistance, squaredMag, dot, average, variance, sigmoid, correlation } from "../src/ml/calculations";
-import { upTo } from "../src/utils/utilities";
+import { upTo } from "../src/utils/arrayOps";
 
 test('mse', () => {
     expect(mse([1, 1, 1], [1, 1, 1])).toBe(0);

@@ -1,8 +1,7 @@
 import { shuffle } from "../../utils/random.js";
 import { MachineLearning } from "./MachineLearning.js";
 import { readJSON } from "../../utils/files.js";
-import { upTo } from "../../utils/utilities.js";
-import { colAverage } from "../../utils/arrayOps.js";
+import { colAverage, upTo } from "../../utils/arrayOps.js";
 
 export class Ensemble extends MachineLearning {
     protected _models: MachineLearning[];
