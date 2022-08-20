@@ -70,11 +70,12 @@ export const stateAttrs = (): number => {
 }
 
 /**
- * Converts the pitch's x and y location to an n x n heatmap using one-hot encoding
+ * Converts the pitch's x and y location to an n x n heatmap using one-hot encoding.
+ * The `0`th and `numCells - 1`th indices correspond to outside of the strike zone
  * @param x the horizontal location
  * @param y the vertical location. Called z in the dataset
- * @param numCells the width and height of the heatmap in cells e.g. `numCells = 3` means
- * a 3x3 heatmap with 9 total cells
+ * @param numCells the width and height of the heatmap in cells e.g. `numCells = 3`
+ * means a 3x3 heatmap with 9 total cells
  * @returns a one hot encoding of the heatmap
  */
 export const oneHotHeatmap = (
@@ -84,8 +85,19 @@ export const oneHotHeatmap = (
     ): number[][] => {
     y *= -1;
     let res: number[][] = zeros([numCells, numCells]) as number[][];
+    const inZone = numCells - 2;
+    const cellWidth = 2 / inZone;
+    const translate = 1 + cellWidth;
     const getInd = (loc: number): number => {
-        return Math.min(Math.max(Math.floor((loc + 1) * numCells / 2), 0), numCells - 1);
+        return Math.min(
+            Math.max(
+                Math.floor(
+                    (loc + translate) / cellWidth
+                ), 
+                0
+            ), 
+            numCells - 1
+        );
     }
 
     res[getInd(y)][getInd(x)] = 1;

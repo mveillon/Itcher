@@ -1,6 +1,5 @@
 import { checkModel, defaultTimeout, training } from "./checkModel";
 import { KNNBall } from "../src/ml/models/KNNBall";
-import { trainLearner } from "../src/ml/trainTest";
 import { BinaryTree } from "../src/utils/BinaryTree";
 import { trainFeatsTargs, validFeatsTargs } from "../src/ml/trainTest";
 import { mse } from "../src/ml/calculations";
@@ -11,7 +10,8 @@ jest.setTimeout(defaultTimeout);
 test('train learner', async () => {
     if (training) {
         let knn = new BallFriend(8);
-        await trainLearner(knn);
+        const [feats, targs] = trainFeatsTargs();
+        await knn.fit(feats, targs);
         expect(knn.k).toBe(8);
         expect(typeof knn.features).not.toBe('undefined');
         expect(typeof knn.targets).not.toBe('undefined');
@@ -20,7 +20,7 @@ test('train learner', async () => {
         expect(knn.tree.left instanceof BinaryTree<number[][]>).toBe(true);
         expect(knn.tree.right instanceof BinaryTree<number[][]>).toBe(true);
 
-        expect(knn.features.length).toBeGreaterThan(10000);
+        expect(knn.features.length).toBe(feats.length);
         expect(knn.features[0].length).toBe(numAttributes());
         expect(knn.targets.length).toBe(knn.features.length);
 

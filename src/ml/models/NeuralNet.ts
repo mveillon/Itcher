@@ -1,7 +1,6 @@
 import { MachineLearning } from "./MachineLearning.js";
 import { numAttributes } from "../mappings.js";
 import * as tf from "@tensorflow/tfjs-node";
-import { flatten } from "../../utils/arrayOps.js";
 
 export class NeuralNet extends MachineLearning {
     protected _net: tf.Sequential;
@@ -94,5 +93,5 @@ export class NeuralNet extends MachineLearning {
  */
  export const neuralNet = (numInputs?: number): NeuralNet => {
     numInputs = numInputs || numAttributes();
-    return new NeuralNet(numInputs, 1024, 1);
+    return new NeuralNet(numInputs, 512, 1024, 512, 1);
 }

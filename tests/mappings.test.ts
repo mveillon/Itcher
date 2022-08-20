@@ -43,22 +43,22 @@ test('getFeature', () => {
 });
 
 test('heatmap', () => {
-    const base: number[][] = zeros([3, 3]) as number[][];
+    const base: number[][] = zeros([5, 5]) as number[][];
     let copy: number[][] = [];
     const c = () => {
         copy = copyArr(base) as number[][];
     }
     c();
     copy[0][0] = 1;
-    expect(oneHotHeatmap(-2, 2, 3)).toEqual(copy);
+    expect(oneHotHeatmap(-2, 2, 5)).toEqual(copy);
     c();
-    copy[2][2] = 1;
-    expect(oneHotHeatmap(2, -2, 3)).toEqual(copy);
+    copy[4][4] = 1;
+    expect(oneHotHeatmap(2, -2, 5)).toEqual(copy);
 
-    const locs = [-1, 0, 1];
+    const locs = [-0.9, 0, 0.9];
     for (let i = 0; i < locs.length; i++) {
         c();
-        copy[i][i] = 1;
-        expect(oneHotHeatmap(locs[i], -locs[i], locs.length)).toEqual(copy);
+        copy[i + 1][i + 1] = 1;
+        expect(oneHotHeatmap(locs[i], -locs[i], locs.length + 2)).toEqual(copy);
     }
 });

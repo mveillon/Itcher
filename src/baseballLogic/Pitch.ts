@@ -66,5 +66,5 @@ export class Pitch {
  * @returns how many cells by how many cells each heatmap is
  */
  export const heatmapSize = (): number => {
-    return 3;
+    return 5;
 }
