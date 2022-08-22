@@ -152,40 +152,51 @@ export const isClose = (x: numArray, y: numArray, rtol: number = 1e-5, atol: num
 }
 
 /**
- * Returns whether every element of bools is true. 
- * Returns false if bools is empty
- * @param bools an n-dimensional array of booleans
- * @returns whether all elements of bools is true
+ * Helper function for any and all. Goes through each subarray of bools and
+ * checks if any satisfy the criterion. If they do, this will return ifTrue.
+ * Otherwise, it returns !ifTrue
+ * @param bools the ndArray of booleans to look at
+ * @param criterion a function that determines when to early return
+ * @param ifTrue what to return when criterion returns tre
+ * @returns ifTrue if at least one subarray satisfies criterion, else !ifTrue
  */
-export const all = (bools: boolArray): boolean => {
+ const nestedSatisfies = (
+    bools: boolArray, 
+    criterion: (b: boolean) => boolean, 
+    ifTrue: boolean
+    ): boolean => {
     if (typeof bools === 'boolean') {
         return bools;
     }
     if (bools.length === 0) return false;
+
     for (const nested of bools) {
-        if (!all(nested)) {
-            return false;
+        if (criterion(nestedSatisfies(nested, criterion, ifTrue))) {
+            return ifTrue;
         }
     }
-    return true;
+
+    return !ifTrue;
+}
+
+/**
+ * Returns whether every element of bools is true. 
+ * Returns false if bools is empty
+ * @param bools an n-dimensional array of booleans
+ * @returns whether all elements of bools are true
+ */
+export const all = (bools: boolArray): boolean => {
+    return nestedSatisfies(bools, b => !all(b), false);
 }
 
 /**
  * Returns whether any element of bools is true.
  * Returns false if bools is empty
  * @param bools an n-dimensional array of booleans
- * @returns whether any elements of bools is true
+ * @returns whether any elements of bools are true
  */
  export const any = (bools: boolArray): boolean => {
-    if (typeof bools === 'boolean') {
-        return bools;
-    }
-    for (const nested of bools) {
-        if (any(nested)) {
-            return true;
-        }
-    }
-    return false;
+    return nestedSatisfies(bools, b => any(b), true);
 }
 
 /**
