@@ -160,7 +160,7 @@ export const isClose = (x: numArray, y: numArray, rtol: number = 1e-5, atol: num
  * @param ifTrue what to return when criterion returns tre
  * @returns ifTrue if at least one subarray satisfies criterion, else !ifTrue
  */
- const nestedSatisfies = (
+const nestedSatisfies = (
     bools: boolArray, 
     criterion: (b: boolean) => boolean, 
     ifTrue: boolean
@@ -314,6 +314,15 @@ export const ones = (shape: number[]): numArray => {
 }
 
 /**
+ * Returns a sorted array with every int in the range [0, n)
+ * @param n 1 + the max number in the array
+ * @returns an array with every int up to n
+ */
+ export const upTo = (n: number): number[] => {
+    return [...Array(n).keys()];
+}
+
+/**
  * Returns an array from start to stop with values separated by step. Same syntax as
  * Python's `range` constructor, i.e. if stop is omitted, the array will go from 0 to
  * stop, and step defaults to 1
@@ -328,16 +337,9 @@ export const arange = (start: number, stop?: number, step?: number): number[] =>
         stop = start;
         start = 0;
     }
-    if (Math.sign(stop - start) !== Math.sign(step)) {
-        throw new Error(`Infinite range from ${start} to ${stop} using step ${step} not allowed`);
-    }
 
-    let comp = (a: number, b: number): boolean => a < b;
-    if (step < 0) {
-        comp = (a, b) => a > b;
-    }
     let res: number[] = [];
-    for (let n = start; comp(n, stop); n += step) {
+    for (let n = start; n < stop; n += step) {
         res.push(n);
     }
     return res;

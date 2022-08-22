@@ -1,8 +1,10 @@
 import { readSpreadSheet, dataPaths, pitcherPath, writeJSON } from "../utils/files.js";
-import { Pitch } from "../baseballLogic/Pitch.js";
+import { Pitch, heatmapSize } from "../baseballLogic/Pitch.js";
 import { Pitcher, pitcherJSON } from "../baseballLogic/Pitcher.js";
 import { getState } from "../baseballLogic/GameState.js";
 import { usingNode } from "../utils/usingNode.js";
+import { oneHotHeatmap } from "./mappings.js";
+import { addArrays, scalarMul, zeros, any } from "../utils/arrayOps.js";
 
 export let idToEvent = new Map<number, string>();
 export let abToPlat = new Map<number, boolean>();
@@ -113,6 +115,7 @@ export const findAllPitchers = ()  => {
             pitchO.velo /= pitchO.timesThrown;
             pitchO.spinRate /= pitchO.timesThrown;
             pitchO.spinDirection /= pitchO.timesThrown;
+            pitchO.heatmap = scalarMul(1 / pitchO.timesThrown, pitchO.heatmap) as number[][];
         }
 
         for (const p in accum[player].pitches) {
@@ -181,18 +184,25 @@ const pitchersInSheet = (path: string, pitchers: { [key: string]: Pitcher }) => 
         const pitchName = abbrs[p['pitch_type']];
         if (typeof pitchName !== 'undefined') {
             if (!(pitchName in pitchers[playerName].pitches)) {
-                pitchers[playerName].pitches[pitchName] = new Pitch(pitchName);
+                pitchers[playerName].pitches[pitchName] =  new Pitch(pitchName);
             }
             const sRate = parseFloat(p['spin_rate']);
             const sDirec = parseFloat(p['spin_dir']);
             const velo = parseFloat(p['start_speed']);
-            if (isNaN(sRate) || isNaN(sDirec) || isNaN(velo)) continue;
+            const x = parseFloat(p['px']);
+            const z = parseFloat(p['pz']);
+            if (any([sRate, sDirec, velo, x, z].map(isNaN))) continue;
 
             const pitchObj = pitchers[playerName].pitches[pitchName];
             pitchObj.timesThrown += 1;
             pitchObj.velo += velo;
             pitchObj.spinRate += sRate;
             pitchObj.spinDirection += sDirec;
+            pitchObj.heatmap = addArrays(pitchObj.heatmap, oneHotHeatmap(
+                x,
+                z,
+                heatmapSize()
+            )) as number[][];
         }
     }
 }

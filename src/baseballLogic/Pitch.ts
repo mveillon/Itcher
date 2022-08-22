@@ -1,9 +1,12 @@
+import { zeros } from "../utils/arrayOps.js";
+
 export type pitchJSON = {
     name: string,
     timesThrown: number,
     velo: number,
     spinRate: number,
-    spinDirection: number
+    spinDirection: number,
+    heatmap: number[][]
 };
 
 export class Pitch {
@@ -12,6 +15,7 @@ export class Pitch {
     velo: number;
     spinRate: number;
     spinDirection: number;
+    heatmap: number[][];
 
     /**
      * Container class for one pitch of one pitcher
@@ -23,6 +27,7 @@ export class Pitch {
         this.velo = 0;
         this.spinRate = 0;
         this.spinDirection = 0;
+        this.heatmap = zeros([heatmapSize(), heatmapSize()]) as number[][];
     }
 
     /**
@@ -36,6 +41,7 @@ export class Pitch {
         res.velo = obj.velo;
         res.spinRate = obj.spinRate;
         res.spinDirection = obj.spinDirection;
+        res.heatmap = obj.heatmap;
         return res;
     }
 
@@ -49,7 +55,16 @@ export class Pitch {
             timesThrown: this.timesThrown,
             velo: this.velo,
             spinRate: this.spinRate,
-            spinDirection: this.spinDirection
+            spinDirection: this.spinDirection,
+            heatmap: this.heatmap,
         };
     }
+}
+
+/**
+ * The height and width of the heatmap of each pitch in cells
+ * @returns how many cells by how many cells each heatmap is
+ */
+ export const heatmapSize = (): number => {
+    return 5;
 }
