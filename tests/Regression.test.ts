@@ -1,20 +1,28 @@
 import { Regression } from "../src/ml/models/Regression";
 import { checkModel, defaultTimeout } from "./checkModel";
-import { arange } from "../src/utils/arrayOps";
+import { arange, full, isClose, any, reshape } from "../src/utils/arrayOps";
 import { trainFeatsTargs, validFeatsTargs } from "../src/ml/trainTest";
 import { mse } from "../src/ml/calculations";
 import { RegressionFriend } from "./friends";
 
 jest.setTimeout(defaultTimeout);
 test('Regression', async () => {
-    const x: number[][] = arange(20).map(n => [n]);
+    const x: number[][] = reshape(arange(20), [20, 1]) as number[][];
     const y: number[] = x.map(n => 5 + 3 * n[0] + 4 * Math.pow(n[0], 2));
 
     let reg = new RegressionFriend(2);
     await reg.fit(x, y);
     const w = [5, 3, 4];
     for (let i = 0; i < reg.w.rows; i++) {
-        expect(reg.w.get(i, 0)).toBeCloseTo(w[i]);
+        expect(any(
+            isClose(
+                full(
+                    [w.length], 
+                    reg.w.get(i, 0)), 
+                w)))
+            .toBe(true);
+
+        expect(any(isClose(full([w.length], w[i]), reg.w.to1DArray()))).toBe(true);
     }
     
     const preds = reg.predict(x);

@@ -134,6 +134,7 @@ export const correlation = (x: number[], y: number[]): number => {
         denom[1] += Math.pow(yDiff, 2);
     }
 
-    return num / Math.sqrt(denom[0] * denom[1]);
+    const prod = denom[0] * denom[1];
+    return prod === 0 ? 0 : num / Math.sqrt(prod);
 }
 

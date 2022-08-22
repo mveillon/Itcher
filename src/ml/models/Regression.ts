@@ -1,5 +1,6 @@
 import { MachineLearning } from "./MachineLearning.js";
 import { Matrix, inverse } from "../../../node_modules/ml-matrix/matrix.js";
+import { reshape } from "../../utils/arrayOps.js";
 
 export class Regression extends MachineLearning {
     protected _degree: number;
@@ -18,12 +19,12 @@ export class Regression extends MachineLearning {
     fit(features: number[][], targets: number[]): void {
         if (features.length === 0) return;
         const tarMat = Matrix.columnVector(targets);
-        const zs = this.fitZs(features, targets);
+        const zs = this.fillZs(features, targets);
 
         const zsT = zs.transpose();
 
         // (zs^T * zs)^-1 * (zs^T * tarMat)
-        const left = zsT.mmul(zs)
+        const left = zsT.mmul(zs);
         let inv: Matrix;
         try {
             inv = inverse(left);
@@ -36,8 +37,8 @@ export class Regression extends MachineLearning {
     predict(features: number[][]): number[] {
         if (features.length === 0) return [];
 
-        const res = this.predictZs(features).mmul(this._w);
-        return matToArray(res);
+        const res = this.fillZs(features).mmul(this._w);
+        return res.to1DArray();
     }
 
     static fromObj(obj: { [key: string]: any; }): Regression {
@@ -52,52 +53,31 @@ export class Regression extends MachineLearning {
             w: this._w
         };
     }
-
+    
     /**
-     * Augments the features array to include the polynomial terms
-     * @param features the set of attributes
-     * @param targets the rewards
-     * @returns an augmented feature array to use to find w
+     * Fills out the features array to include the additional terms required to make
+     * this model better than just linear regression
+     * @param features the 2D array of features
+     * @param targets the 1D array of targets. Not to be supplied during prediction
+     * @returns a matrix with all terms to use in training
      */
-    protected fitZs(features: number[][], targets: number[]): Matrix {
-        let zs = Matrix.ones(
-            features.length, 
-            features[0].length * this._degree + 1
-        );
-        
+    protected fillZs(features: number[][], targets?: number[]): Matrix {
+        let res: number[][] = [];
         for (let i = 0; i < features.length; i++) {
-            for (let j = 0; j < features[0].length; j++) {
+            let row: number[] = [];
+            for (let j = 0; j < features[i].length; j++) {
                 const point = features[i][j];
-                for (let d = 1; d < this._degree + 1; d++) {
-                    zs.set(i, j * this._degree + d, Math.pow(point, d));
+                let current = 1;
+                for (let d = 0; d < this._degree + 1; d++) {
+                    row.push(current);
+                    current *= point;
                 }
             }
+            res.push(row);
         }
 
-        return zs;
+        return new Matrix(res);
     }
-
-    /**
-     * Augments the features array to be compatible with w
-     * @param features the set of attributes
-     * @returns the augmented features
-     */
-    protected predictZs(features: number[][]): Matrix {
-        return this.fitZs(features, []);
-    }
-}
-
-/**
- * Convers the matrix (vector) to an array of numbers
- * @param mat a matrix. Should really be one-dimensional
- * @returns the vector as an Array
- */
-export const matToArray = (mat: Matrix): number[] => {
-    let res: number[] = [];
-    for (let i = 0; i < mat.rows; i++) {
-        res.push(mat.get(i, 0));
-    }
-    return res;
 }
 
 /**

@@ -86,3 +86,20 @@ export const rewards = (res: string, state: GameState): number => {
 
     return count[state.balls][state.strikes];
 }
+
+/**
+ * Returns the expected weight on base average (wOBA) given the
+ * current game state. Also courtesy of 
+ * https://www.draysbay.com/platform/amp/2016/4/28/11521790/an-introduction-to-per-pitch-run-values
+ * @param state the current game state
+ * @returns the expected wOBA
+ */
+export const woba = (state: GameState): number => {
+    const arr = [
+        [0.31,  0.262, 0.196],
+        [0.355, 0.293, 0.223],
+        [0.436, 0.352, 0.273],
+        [0.622, 0.47,  0.384]
+    ];
+    return arr[state.balls][state.strikes];
+}

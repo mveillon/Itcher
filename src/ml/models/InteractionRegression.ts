@@ -1,7 +1,7 @@
 import { Regression } from "./Regression.js";
 import { correlation } from "../calculations.js";
 import { Matrix } from "../../../node_modules/ml-matrix/matrix.js";
-import { arange } from "../../utils/arrayOps.js";
+import { arange, copyArr } from "../../utils/arrayOps.js";
 
 export class InteractionRegression extends Regression {
     protected _terms: number[][];
@@ -19,91 +19,52 @@ export class InteractionRegression extends Regression {
         this._minCorr = minCorr;
     }
 
-    protected fitZs(features: number[][], targets: number[]): Matrix {
-        const left = this.fitInteraction(features, targets);
-        return this.combine(left, super.fitZs(features, targets));
-    }
+    protected fillZs(features: number[][], targets?: number[]): Matrix {
+        this.getTerms(features, targets);
 
-    protected predictZs(features: number[][]): Matrix {
-        const left = this.predictInteraction(features);
-        return this.combine(left, super.predictZs(features));
-    }
-
-    /**
-     * Appends mat1 to mat2
-     * @param mat1 the left matrix
-     * @param mat2 the right matrix
-     * @returns the concatenated 2D matrix
-     */
-    private combine(mat1: Matrix, mat2: Matrix): Matrix {
         let res: number[][] = [];
-        const both = [mat1, mat2];
-        for (let i = 0; i < Math.min(mat1.rows, mat2.rows); i++) {
-            let row: number[] = [];
-            for (const m of both) {
-                for (let j = 0; j < m.columns; j++) {
-                    row.push(m.get(i, j));
+        for (const row of features) {
+            let currRow: number[] = [];
+            for (const c of this._terms) {
+                let prod = 1;
+                for (const t of c) {
+                    prod *= row[t];
                 }
+                currRow.push(prod);
             }
 
-            res.push(row);
+            res.push(currRow);
         }
 
         return new Matrix(res);
     }
 
     /**
-     * Helper for fitZs. 
-     * Finds all the interaction terms but not any of the single variate polynomials
-     * @param features the independent variables
-     * @param targets the dependent variables
-     * @returns the left half of the augmented features array
+     * Computes the correlations of all combinations of terms with degree
+     * less than or equal to this._degree and saves them to this._terms
+     * @param features the features to compute from
+     * @param targets the targets to use for correlations
      */
-    private fitInteraction(features: number[][], targets: number[]): Matrix {
-        this._terms = [];
+    private getTerms(features: number[][], targets: number[]) {
+        if (typeof this._terms !== 'undefined') return;
+        this._terms = [[]];
+
         const combos = this.allCombos(arange(features[0].length));
-
         for (const c of combos) {
-            if (c.length <= 1) continue;
-
-            let x: number[] = [];
-            for (let i = 0; i < features.length; i++) {
-                let total = 0;
-                for (const j of c) {
-                    total += features[i][j];
+            let trimmed: number[] = [];
+            for (const row of features) {
+                let prod = 1;
+                for (const t of c) {
+                    prod *= row[t];
                 }
-                x.push(total);
+                trimmed.push(prod);
             }
 
-            if (Math.abs(correlation(x, targets)) > this._minCorr) {
+            // console.log(`${c} => ${trimmed} (${Math.abs(correlation(trimmed, targets))})`);
+            if (Math.abs(correlation(trimmed, targets)) > this._minCorr) {
                 this._terms.push(c);
             }
         }
-
-        return this.predictInteraction(features);
-    }
-
-    /**
-     * Helper for predictZs. 
-     * Finds all the interaction terms but not any of the single variate polynomials
-     * @param features the independent variables
-     * @returns the left half of the augmented features array
-     */
-    private predictInteraction(features: number[][]): Matrix {
-        let res: number[][] = [];
-        for (let i = 0; i < features.length; i++) {
-            let row: number[] = [];
-            for (const c of this._terms) {
-                let total = 0;
-                for (const j of c) {
-                    total += features[i][j];
-                }
-                row.push(total);
-            }
-            res.push(row);
-        }
-
-        return new Matrix(res);
     }
 
     static fromObj(obj: { [key: string]: any }): InteractionRegression {
@@ -120,31 +81,26 @@ export class InteractionRegression extends Regression {
     }
 
     /**
-     * Finds all possible combinations of the given indices
-     * https://www.techiedelight.com/find-distinct-combinations-of-given-length/
+     * Finds all possible combinations of the given indices of length equal to
+     * size
      * @param inds the array to select elements from
+     * @param size the max size of each combination. Defaults to this._degree
      * @returns all combinations of the elements of inds
      */
-    private allCombos(inds: number[]): number[][] {
-        const helper = (
-            k: number, 
-            subarrays: Set<number[]>, 
-            out: number[], 
-            i: number
-        ) => {
-            if (k === 0) {
-                subarrays.add(out);
-                return;
-            }
+    private allCombos(inds: number[], size: number = this._degree): number[][] {
+        if (size === 0) return [[]];
+        const smaller = this.allCombos(inds, size - 1);
+        let res: number[][] = copyArr(smaller) as number[][];
 
-            for (let j = i; j < inds.length; j++) {
-                helper(k - 1, subarrays, out.concat(inds[j]), j + 1);
+        for (const i of inds) {
+            for (const s of smaller) {
+                if (s.length === size - 1) {
+                    res.push([i].concat(s));
+                }
             }
         }
 
-        let res = new Set<number[]>();
-        helper(this._degree, res, [], 0);
-        return [...res];
+        return res;
     }
 }
 

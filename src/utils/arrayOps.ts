@@ -338,8 +338,16 @@ export const arange = (start: number, stop?: number, step?: number): number[] =>
         start = 0;
     }
 
+    if (Math.sign(stop - start) !== Math.sign(step)) {
+        throw new Error(`Infinite range from ${start} to ${stop} using step ${step} not allowed.`);
+    }
+    let comp = (a: number, b: number): boolean => a < b;
+    if (step < 0) {
+        comp = (a, b) => a > b;
+    }
+
     let res: number[] = [];
-    for (let n = start; n < stop; n += step) {
+    for (let n = start; comp(n, stop); n += step) {
         res.push(n);
     }
     return res;
