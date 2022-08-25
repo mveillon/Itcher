@@ -2,7 +2,6 @@ import { MachineLearning } from "../src/ml/models/MachineLearning";
 import { Ensemble } from "../src/ml/models/Ensemble";
 import { KNNBall } from "../src/ml/models/KNNBall";
 import { KNNkd } from "../src/ml/models/KNNkd";
-import { InteractionRegression } from "../src/ml/models/InteractionRegression";
 import { Regression } from "../src/ml/models/Regression";
 import { Matrix } from "../node_modules/ml-matrix/matrix.js";
 import { NeuralNet } from "../src/ml/models/NeuralNet";
@@ -60,40 +59,6 @@ export class kdFriend extends KNNkd {
 }
 
 export class RegressionFriend extends Regression {
-    get w() {
-        return this._w;
-    }
-
-    get degree() {
-        return this._degree;
-    }
-
-    set w(val: Matrix) {
-        this._w = val;
-    }
-
-    set degree(val: number) {
-        this._degree = val;
-    }
-
-    static fromRegression(reg: Regression): RegressionFriend {
-        let res = new RegressionFriend();
-        const o = reg.toObj();
-        res.w = o['w'];
-        res.degree = o['degree'];
-        return res;
-    }
-}
-
-export class IRFriend extends InteractionRegression {
-    get terms() {
-        return this._terms;
-    }
-
-    set terms(val: number[][]) {
-        this._terms = val;
-    }
-
     get w() {
         return this._w;
     }

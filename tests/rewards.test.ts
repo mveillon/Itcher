@@ -2,8 +2,8 @@ import { rewards } from "../src/ml/rewards";
 import { GameState } from "../src/baseballLogic/GameState";
 
 test('rewards', () => {
-    for (let b = 0; b < 4; b++) {
-        for (let s = 0; s < 3; s++) {
+    for (let b = 0; b < 3; b++) {
+        for (let s = 0; s < 2; s++) {
             let state = new GameState();
             state.balls = b;
             state.strikes = s;

@@ -8,8 +8,8 @@ export const checkModel = async (model: MachineLearning) => {
     if (training) {
         await trainLearner(model);
         const [err, preds] = learnerMSE(model);
-        const minReward = -2;
-        const maxReward = 2;
+        const minReward = -2.5;
+        const maxReward = 2.5;
         for (const p of preds) {
             expect(p).toBeGreaterThanOrEqual(minReward);
             expect(p).toBeLessThanOrEqual(maxReward);

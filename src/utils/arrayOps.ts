@@ -360,30 +360,31 @@ export const arange = (start: number, stop?: number, step?: number): number[] =>
  * @returns an array of the given shape with all the elements as arr in order
  */
 export const reshape = <T>(arr: ndArray<T>, shape: number[]): ndArray<T> => {
+    const errStr = `Cannot broadcast array with shape ${getShape(arr)} to ${shape}`;
     if (!Array.isArray(arr)) {
         throw new Error(`Scalars not allowed in reshape function: ${arr}`);
     }
+    
+    if (shape.length === 0) {
+        if (arr.length === 1) {
+            return arr[0];
+        } else {
+            throw new Error(errStr);
+        }
+    }
 
     const flat: T[] = flatten(arr) as T[];
-    if (flat.length !== shape.reduce((a, b) => a * b, 1)) {
-        throw new Error(`Cannot broadcast array with shape ${getShape(arr)} to ${shape}`);
+    if (flat.length % shape[0] !== 0) {
+        throw new Error(errStr);
     }
 
-    let res: ndArray<T> = full(shape, flat[0]);
-    let inds: number[] = zeros([shape.length]) as number[];
-
-    for (const val of flat) {
-        let current = res;
-        for (let i = 0; i < inds.length - 1; i++) {
-            current = (current as T[])[inds[i]];
-        }
-        (current as T[])[inds[inds.length - 1]] = val;
-
-        let i = inds.length - 1;
-        while (i >= 0 && ++inds[i] === shape[i]) {
-            inds[i--] = 0;
-        }
+    const perBlock = Math.round(flat.length / shape[0]);
+    const restShape = shape.slice(1, shape.length);
+    let res: ndArray<T> = [];
+    for (let i = 0; i < flat.length; i += perBlock) {
+        const end = i + perBlock;
+        res.push(reshape(flat.slice(i, end), restShape));
     }
-    
+
     return res;
 }

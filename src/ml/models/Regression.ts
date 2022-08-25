@@ -1,6 +1,5 @@
 import { MachineLearning } from "./MachineLearning.js";
 import { Matrix, inverse } from "../../../node_modules/ml-matrix/matrix.js";
-import { reshape } from "../../utils/arrayOps.js";
 
 export class Regression extends MachineLearning {
     protected _degree: number;
@@ -19,7 +18,7 @@ export class Regression extends MachineLearning {
     fit(features: number[][], targets: number[]): void {
         if (features.length === 0) return;
         const tarMat = Matrix.columnVector(targets);
-        const zs = this.fillZs(features, targets);
+        const zs = this.fillZs(features);
 
         const zsT = zs.transpose();
 
@@ -58,10 +57,9 @@ export class Regression extends MachineLearning {
      * Fills out the features array to include the additional terms required to make
      * this model better than just linear regression
      * @param features the 2D array of features
-     * @param targets the 1D array of targets. Not to be supplied during prediction
      * @returns a matrix with all terms to use in training
      */
-    protected fillZs(features: number[][], targets?: number[]): Matrix {
+    private fillZs(features: number[][]): Matrix {
         let res: number[][] = [];
         for (let i = 0; i < features.length; i++) {
             let row: number[] = [];

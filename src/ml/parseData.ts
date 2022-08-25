@@ -1,10 +1,10 @@
 import { readSpreadSheet, dataPaths, pitcherPath, writeJSON } from "../utils/files.js";
 import { Pitch, heatmapSize } from "../baseballLogic/Pitch.js";
 import { Pitcher, pitcherJSON } from "../baseballLogic/Pitcher.js";
-import { getState } from "../baseballLogic/GameState.js";
+import { GameState } from "../baseballLogic/GameState.js";
 import { usingNode } from "../utils/usingNode.js";
 import { oneHotHeatmap } from "./mappings.js";
-import { addArrays, scalarMul, zeros, any } from "../utils/arrayOps.js";
+import { addArrays, scalarMul, any } from "../utils/arrayOps.js";
 
 export let idToEvent = new Map<number, string>();
 export let abToPlat = new Map<number, boolean>();
@@ -24,9 +24,10 @@ export const aidToPitcher = (aid: number, allPitchers: { [key: string]: Pitcher 
  * Returns a key into rewards based on the play type
  * @param result the result from the pitches sheet
  * @param event the event from the at bat spreadsheet
+ * @param state the current game state
  * @returns the play type as a key into rewards
  */
-export const getPlayType = (result: string, event: string): string => {
+export const getPlayType = (result: string, event: string, state: GameState): string => {
     const pTypes = playTypes();
     if (!(result in pTypes)) {
         throw new Error(`Unexpected result: ${result}`);
@@ -47,7 +48,6 @@ export const getPlayType = (result: string, event: string): string => {
         'Batter Interference',
     ]);
 
-    const state = getState();
     if (result === 'ibb') {
         return 'bb';
     } else if (result === 'b' && state.balls === 3) {

@@ -104,7 +104,7 @@ export const extractFeaturesTargets = (
     state.strikes = parseInt(play['s_count']);
     state.outs = parseInt(play['outs']);
 
-    result = getPlayType(result, event);
+    result = getPlayType(result, event, state);
     const target = rewards(result, state);
     const features = pitchFeature(
         state,

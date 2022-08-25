@@ -1,3 +1,5 @@
+import { copyArr } from "./arrayOps.js";
+
 /**
  * Returns a random integer in between min (inclusive) and max (exclusive)
  * @param min the lower bound
@@ -9,7 +11,7 @@
         max = min;
         min = 0;
     }
-    return Math.floor(Math.random() * (max - min) + min - 1e-9); // 1e-9 is just in case Math.random returns 1.0
+    return Math.floor(Math.random() * (max - min) + min);
 }
 
 /**
@@ -67,7 +69,7 @@ export const shuffle = <T>(arr: T[]) => {
  * @returns n random elements from arr
  */
 export const choices = <T>(arr: T[], n: number): T[] => {
-    var arrCopy = [...arr];
+    var arrCopy: T[] = copyArr(arr) as T[];
     shuffle(arrCopy);
     return arrCopy.slice(0, n);
 }

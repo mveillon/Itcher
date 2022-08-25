@@ -1,6 +1,7 @@
 import { flatten, zeros } from "../utils/arrayOps.js";
 import { GameState } from "../baseballLogic/GameState.js";
 import { Pitch } from "../baseballLogic/Pitch.js";
+import { woba } from "./rewards.js";
 
 /**
  * The total number of attributes in each feature
@@ -52,6 +53,9 @@ export const pitchFeature = (
         state.balls,
         state.strikes,
         +state.pitcherPlatoon(),
+        ...state.bases.map(b => +b),
+        state.outs,
+        woba(state),
         velo,
         spinRate,
         Math.cos(radDirec),
@@ -66,7 +70,7 @@ export const pitchFeature = (
  * @returns the number of attributes dependent on the current game state
  */
 export const stateAttrs = (): number => {
-    return 3;
+    return 8;
 }
 
 /**
