@@ -97,10 +97,11 @@ export const getPlayType = (result: string, event: string, state: GameState): st
 export const findAllPitchers = ()  => {
     let accum: { [key: string]: Pitcher } = {}; 
     const dPaths = dataPaths();
+    const rawName = 'raw.ignore.csv';
     const paths = [
-        dPaths.train,
-        dPaths.valid,
-        dPaths.test
+        dPaths.train + rawName,
+        dPaths.valid + rawName,
+        dPaths.test + rawName
     ];
 
     for (const pth of paths) {

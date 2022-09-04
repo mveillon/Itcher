@@ -1,19 +1,20 @@
 import { aidToPitcher, getPlayType, abToPlat, idToEvent } from "./parseData.js";
 import { MachineLearning } from "./models/MachineLearning.js";
 import { readAllPitchers, Pitcher } from "../baseballLogic/Pitcher.js";
-import { dataPaths, readSpreadSheet, sheet, sheetRow } from "../utils/files.js";
+import { dataPaths, readFile, sheet, sheetRow } from "../utils/files.js";
 import { GameState } from "../baseballLogic/GameState.js";
 import { rewards } from "./rewards.js";
 import { pitchFeature, oneHotHeatmap } from "./mappings.js";
 import { mse } from "./calculations.js";
 import { heatmapSize } from "../baseballLogic/Pitch.js";
+import { ndMap, reshape } from "../utils/arrayOps.js";
 
 /**
  * Splits the spreadsheet into features and targets
  * @param data the read spreadsheet
  * @returns the features of data and the targets
  */
-const allFeatsTargs = (data: sheet): [number[][], number[]] => {
+export const allFeatsTargs = (data: sheet): [number[][], number[]] => {
     const allPitchers = readAllPitchers();
     let features: number[][] = [];
     let targets: number[] = [];
@@ -32,10 +33,7 @@ const allFeatsTargs = (data: sheet): [number[][], number[]] => {
  * Trains the learner on the appropriate dataset
  */
  export const trainLearner = async (learner: MachineLearning) => {
-    // const trainData = usingNode() ? dataPaths.train : dataPaths.pitches;
-    const trainData = dataPaths().train;
-    const allData = readSpreadSheet(trainData);
-    const [features, targets] = allFeatsTargs(allData);
+    const [features, targets] = trainFeatsTargs()
 
     await learner.fit(features, targets);
 }
@@ -45,8 +43,7 @@ const allFeatsTargs = (data: sheet): [number[][], number[]] => {
  * @returns the mse
  */
 export const learnerMSE = (learner: MachineLearning): [number, number[]] => {
-    const validData = readSpreadSheet(dataPaths().valid);
-    const [features, targets] = allFeatsTargs(validData);
+    const [features, targets] = validFeatsTargs();
     
     const preds = learner.predict(features);
     return [mse(preds, targets), preds];
@@ -122,17 +119,49 @@ export const extractFeaturesTargets = (
 }
 
 /**
- * Returns all the features and targets for validating an ML model
- * @returns the features and the targets from 'valid.csv'
+ * Splits the data read from a CSV into a 2D array of floats
+ * @param data the raw string data from the CSV file
+ * @returns a float matrix
  */
-export const validFeatsTargs = (): [number[][], number[]] => {
-    return allFeatsTargs(readSpreadSheet(dataPaths().valid));
+const splitCSV = (data: string): number[][] => {
+    return ndMap(
+        data.split('\n').map(r => r.split(',')),
+        parseFloat
+    ) as number[][];
+}
+
+/**
+ * Reads the features csv and targets csv from dirName
+ * @param dirName the path from the root directory to the relevant files
+ * @returns the features and targets array
+ */
+const fromDir = (dirName: string): [number[][], number[]] => {
+    return [
+        splitCSV(readFile(dirName + 'feats.ignore.csv', 'utf-8')),
+        splitCSV(readFile(dirName + 'targs.ignore.csv', 'utf-8')).flat()
+    ];
 }
 
 /**
  * Returns all the features and targets for training an ML model
  * @returns the features and targets from 'train.csv'
  */
-export const trainFeatsTargs = (): [number[][], number[]] => {
-    return allFeatsTargs(readSpreadSheet(dataPaths().train));
+ export const trainFeatsTargs = (): [number[][], number[]] => {
+    return fromDir(dataPaths().train);
+}
+
+/**
+ * Returns all the features and targets for validating an ML model
+ * @returns the features and the targets from 'valid.csv'
+ */
+export const validFeatsTargs = (): [number[][], number[]] => {
+    return fromDir(dataPaths().valid);
+}
+
+/**
+ * Returns all the features and targets for testing an ML model
+ * @returns the features and targets from 'test.csv'
+ */
+export const testFeatsTargs = (): [number[][], number[]] => {
+    return fromDir(dataPaths().test);
 }

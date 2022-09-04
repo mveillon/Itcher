@@ -91,13 +91,14 @@ export const dataPaths = (): {
     valid: string,
     test: string
 } => {
-    const dataRoot = "./src/ml/data/";
+    const rawRoot = "./src/allData/";
+    const processedRoot = "./src/ml/data/";
     return {
-        atBats: dataRoot + "atbats.ignore.csv",
-        pitches: dataRoot + "pitches.ignore.csv",
-        playerNames: dataRoot + "player_names.ignore.csv",
-        train: dataRoot + "train.ignore.csv",
-        valid: dataRoot + "valid.ignore.csv",
-        test: dataRoot + "test.ignore.csv",
+        atBats: rawRoot + "atbats.ignore.csv",
+        pitches: rawRoot + "pitches.ignore.csv",
+        playerNames: rawRoot + "player_names.ignore.csv",
+        train: processedRoot + "train/",
+        valid: processedRoot + "valid/",
+        test: processedRoot + "test/",
     };
 }

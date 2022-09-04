@@ -1,5 +1,4 @@
 const trainTest = require("../../../dist/ml/trainTest");
-const mappings = require("../../../dist/ml/mappings");
 
 const AlwaysMean = require("../../../dist/ml/models/AlwaysMean");
 const Ensemble = require("../../../dist/ml/models/Ensemble");

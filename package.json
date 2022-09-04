@@ -14,11 +14,12 @@
     "repository": "github:mveillon/Itcher",
     "private": true,
     "scripts": {
-        "unit": "clear; python3 src/ml/data/split_data.py -r 10000; jest --config tests/jest.config.js --coverage",
+        "unit": "clear; python3 src/ml/data/split_data.py -r 10000; npm run save-sheets; jest --config tests/jest.config.js --coverage",
         "test": "npm run unit",
-        "tobrowser": "tsc; browserify dist/main.js --standalone Main | derequire > builds/mainBundle.js",
-        "plot-models": "tsc; python3 src/ml/data/split_data.py -r 500000; node tests/experiments/measuringAccuracy/learnerAcc.js; python3 tests/experiments/measuringAccuracy/learnerAcc.py",
-        "run-server": "npm run tobrowser; live-server --ignore='**/*.ts'"
+        "tobrowser": "tsc; npm run save-sheets; browserify dist/main.js --standalone Main | derequire > builds/mainBundle.js",
+        "plot-models": "tsc; python3 src/ml/data/split_data.py -r 500000; npm run save-sheets; node tests/experiments/measuringAccuracy/learnerAcc.js; python3 tests/experiments/measuringAccuracy/learnerAcc.py",
+        "run-server": "npm run tobrowser; live-server --ignore='**/*.ts'",
+        "save-sheets": "tsc; node src/ml/data/savingFeats.js"
     },
     "devDependencies": {
         "@babel/cli": "^7.18.9",

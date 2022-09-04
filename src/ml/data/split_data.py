@@ -5,7 +5,7 @@ from os.path import exists
 from argparse import ArgumentParser
 from math import ceil
 
-ROOT_DIR = 'src/ml/data/'
+ROOT_DIR = 'src/'
 EXTENSION = '.ignore.csv'
 NUM_ATTRS = 40
 
@@ -35,6 +35,10 @@ def split(data: List[str], splits: List[float]) -> Tuple[np.ndarray, np.ndarray,
     test_set = all_data[valid_end:]
     return train_set, valid_set, test_set
 
+def get_sheet_path(direc: str) -> str:
+    """Returns the path to the raw spreadsheet at the given direc name."""
+    return f'{ROOT_DIR}ml/data/{direc}/raw{EXTENSION}'
+
 def save_splits(train: np.ndarray, valid: np.ndarray, test: np.ndarray):
     """Appends the datasets to the pre-existing spreadsheets."""
     paths = {
@@ -42,9 +46,9 @@ def save_splits(train: np.ndarray, valid: np.ndarray, test: np.ndarray):
         'valid': valid,
         'test': test
     }
-    for pth in paths:
-        with open(ROOT_DIR + pth + EXTENSION, 'a') as f:
-            lines = [ ','.join(line) for line in paths[pth] ]
+    for direc in paths:
+        with open(get_sheet_path(direc), 'a') as f:
+            lines = [ ','.join(line) for line in paths[direc] ]
             f.write(''.join(lines))
 
 def clear_splits(header: str):
@@ -54,8 +58,8 @@ def clear_splits(header: str):
         'valid',
         'test'
     )
-    for pth in paths:
-        sheet_path = ROOT_DIR + pth + EXTENSION
+    for direc in paths:
+        sheet_path = get_sheet_path(direc)
         if exists(sheet_path): remove(sheet_path)
         with open(sheet_path, 'w') as f:
             f.write(header)
@@ -78,7 +82,7 @@ def batch_manager(
     data = np.empty((batch_size,), dtype='U256')
     i = 0
     batch_ind = 0
-    pth = ROOT_DIR + 'pitches.ignore.csv'
+    pth = ROOT_DIR + 'allData/pitches.ignore.csv'
 
     with open(pth, 'r') as f:
         clear_splits(f.readline())
