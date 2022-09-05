@@ -1,6 +1,6 @@
 import { checkModel, defaultTimeout } from "./checkModel";
 import { AlwaysMean } from "../src/ml/models/AlwaysMean";
-import { arange } from "../src/utils/arrayOps";
+import { arange } from "../src/utils/numJS";
 
 jest.setTimeout(defaultTimeout)
 test('right mean', () => {

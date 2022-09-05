@@ -16,9 +16,18 @@ import {
     getShape,
     copyArr,
     reshape,
-    arange
-} from "../src/utils/arrayOps";
-import { shuffle } from "../src/utils/random";
+    arange,
+    arrEqual,
+    arrLT,
+    arrLTEq,
+    arrGT,
+    arrGTEq,
+    arrOr,
+    arrAnd,
+    arrNot,
+    allEqual
+} from "../src/utils/numJS";
+import { shuffle, randInt } from "../src/utils/random";
 
 test('add arrays', () => {
     expect(addArrays(1, 2)).toBe(3);
@@ -404,4 +413,169 @@ test('arange', () => {
     expect(allClose(arange(0, 2, 0.5), [0, 0.5, 1, 1.5])).toBe(true);
     expect(allClose(arange(2, 0, -0.5), [2, 1.5, 1, 0.5])).toBe(true);
     expect(() => arange(0, -5)).toThrow();
+});
+
+test('array comparing', () => {
+    let a: number[] = [];
+    let b: number[] = [];
+    for (let i = 0; i < 24; i++) {
+        a.push(randInt(24));
+        b.push(randInt(24));
+    }
+    expect(getShape(a)).toEqual(getShape(b));
+
+    const fs = [
+        {
+            arr: arrEqual,
+            c: (x: number, y: number): boolean => x === y
+        },
+        {
+            arr: arrLT,
+            c: (x: number, y: number): boolean => x < y
+        },
+        {
+            arr: arrGT,
+            c: (x: number, y: number): boolean => x > y
+        },
+        {
+            arr: arrLTEq,
+            c: (x: number, y: number): boolean => x <= y
+        },
+        {
+            arr: arrGTEq,
+            c: (x: number, y: number): boolean => x >= y
+        },
+    ];
+
+    for (const pair of fs) {
+        const compared: boolean[] = pair.arr(a, b) as boolean[];
+        expect(getShape(compared)).toEqual(getShape(a));
+        for (let i = 0; i < compared.length; i++) {
+            expect(compared[i]).toBe(pair.c(a[i], b[i]));
+        }
+    }
+
+    const a2d: number[][] = reshape(a, [6, 4]) as number[][];
+    const b2d: number[][] = reshape(b, [6, 4]) as number[][];
+    expect(getShape(a2d)).toEqual(getShape(b2d));
+    for (const pair of fs) {
+        const compared: boolean[][] = pair.arr(a2d, b2d) as boolean[][];
+        expect(getShape(compared)).toEqual(getShape(a2d));
+        for (let i = 0; i < compared.length; i++) {
+            for (let j = 0; j < compared[i].length; j++) {
+                expect(compared[i][j]).toBe(pair.c(a2d[i][j], b2d[i][j]));
+            }
+        }
+    }
+
+    const a3d: number[][][] = reshape(a, [2, 3, 4]) as number[][][];
+    const b3d: number[][][] = reshape(b, [2, 3, 4]) as number[][][];
+    expect(getShape(a3d)).toEqual(getShape(b3d));
+    for (const pair of fs) {
+        const compared: boolean[][][] = pair.arr(a3d, b3d) as boolean[][][];
+        expect(getShape(compared)).toEqual(getShape(a3d));
+        for (let i = 0; i < compared.length; i++) {
+            for (let j = 0; j < compared[i].length; j++) {
+                for (let k = 0; k < compared[i][j].length; k++) {
+                    expect(compared[i][j][k]).toBe(pair.c(a3d[i][j][k], b3d[i][j][k]));
+                }
+            }
+        }
+    }
+});
+
+test('array boolean compares', () => {
+    let a: boolean[] = [];
+    let b: boolean[] = [];
+    for (let i = 0; i < 24; i++) {
+        a.push(!!randInt(2));
+        b.push(!!randInt(2));
+    }
+    expect(getShape(a)).toEqual(getShape(b));
+
+    const fs = [
+        {
+            arr: arrOr,
+            c: (x: boolean, y: boolean): boolean => x || y
+        },
+        {
+            arr: arrAnd,
+            c: (x: boolean, y: boolean): boolean => x && y
+        }
+    ];
+
+    for (const pair of fs) {
+        const compared: boolean[] = pair.arr(a, b) as boolean[];
+        expect(getShape(compared)).toEqual(getShape(a));
+        for (let i = 0; i < compared.length; i++) {
+            expect(compared[i]).toBe(pair.c(a[i], b[i]));
+        }
+    }
+    const notted = arrNot(a);
+    expect(getShape(notted)).toEqual(getShape(a));
+    expect(any(arrEqual(a, notted))).toBe(false);
+
+    const a2d: boolean[][] = reshape(a, [6, 4]) as boolean[][];
+    const b2d: boolean[][] = reshape(b, [6, 4]) as boolean[][];
+    expect(getShape(a2d)).toEqual(getShape(b2d));
+    for (const pair of fs) {
+        const compared: boolean[][] = pair.arr(a2d, b2d) as boolean[][];
+        expect(getShape(compared)).toEqual(getShape(a2d));
+        for (let i = 0; i < compared.length; i++) {
+            for (let j = 0; j < compared[i].length; j++) {
+                expect(compared[i][j]).toBe(pair.c(a2d[i][j], b2d[i][j]));
+            }
+        }
+    }
+    const not2d = arrNot(a2d);
+    expect(getShape(not2d)).toEqual(getShape(a2d));
+    expect(any(arrEqual(a2d, not2d))).toBe(false);
+
+    const a3d: boolean[][][] = reshape(a, [2, 3, 4]) as boolean[][][];
+    const b3d: boolean[][][] = reshape(b, [2, 3, 4]) as boolean[][][];
+    expect(getShape(a3d)).toEqual(getShape(b3d));
+    for (const pair of fs) {
+        const compared: boolean[][][] = pair.arr(a3d, b3d) as boolean[][][];
+        expect(getShape(compared)).toEqual(getShape(a3d));
+        for (let i = 0; i < compared.length; i++) {
+            for (let j = 0; j < compared[i].length; j++) {
+                for (let k = 0; k < compared[i][j].length; k++) {
+                    expect(compared[i][j][k]).toBe(pair.c(a3d[i][j][k], b3d[i][j][k]));
+                }
+            }
+        }
+    }
+    const not3d = arrNot(a3d);
+    expect(getShape(not3d)).toEqual(getShape(a3d));
+    expect(any(arrEqual(a3d, not3d))).toBe(false);
+});
+
+test('broadcasting', () => {
+    const a = reshape(arange(24), [2, 3, 4]);
+    const b = 5;
+    const c = addArrays(a, b);
+    const exp = addArrays(a, full(getShape(a), b));
+    expect(getShape(c)).toEqual(getShape(a));
+    expect(allEqual(exp, c)).toBe(true);
+    const d = addArrays(b, a);
+    expect(getShape(d)).toEqual(getShape(a));
+    expect(allEqual(exp, d)).toBe(true);
+
+    let e: boolean[] = [];
+    for (let i = 0; i < 24; i++) {
+        e.push(!!randInt(2));
+    }
+    let f: boolean[][][] = reshape(e, [2, 3, 4]) as boolean[][][];
+
+    expect(all(arrOr(e, true))).toBe(true);
+    expect(any(arrAnd(e, false))).toBe(false);
+    expect(all(arrOr(true, e))).toBe(true);
+    expect(any(arrAnd(false, e))).toBe(false);
+
+    const ored = arrOr(e, f);
+    expect(getShape(ored)).toEqual(getShape(f));
+    expect(allEqual(ored, f)).toBe(true);
+    expect(all(arrEqual(ored, e))).toBe(true);
+    expect(allEqual(f, ored)).toBe(true);
+    expect(all(arrEqual(ored, e))).toBe(true);
 });

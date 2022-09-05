@@ -4,7 +4,7 @@ import { Pitcher, pitcherJSON } from "../baseballLogic/Pitcher.js";
 import { GameState } from "../baseballLogic/GameState.js";
 import { usingNode } from "../utils/usingNode.js";
 import { oneHotHeatmap } from "./mappings.js";
-import { addArrays, scalarMul, any } from "../utils/arrayOps.js";
+import { addArrays, scalarMul, any } from "../utils/numJS.js";
 
 export let idToEvent = new Map<number, string>();
 export let abToPlat = new Map<number, boolean>();

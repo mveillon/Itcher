@@ -1,4 +1,4 @@
-import { zeros } from "../utils/arrayOps.js";
+import { zeros } from "../utils/numJS.js";
 
 export type pitchJSON = {
     name: string,

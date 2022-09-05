@@ -6,7 +6,7 @@ import {
 } from "../src/ml/mappings";
 import { randInt } from "../src/utils/random";
 import { readAllPitchers } from "../src/baseballLogic/Pitcher";
-import { copyArr, zeros } from "../src/utils/arrayOps";
+import { copyArr, zeros } from "../src/utils/numJS";
 
 test('getFeature', () => {
     const pitcher = readAllPitchers()['Felix Hernandez'];

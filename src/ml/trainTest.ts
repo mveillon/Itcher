@@ -7,7 +7,7 @@ import { rewards } from "./rewards.js";
 import { pitchFeature, oneHotHeatmap } from "./mappings.js";
 import { mse } from "./calculations.js";
 import { heatmapSize } from "../baseballLogic/Pitch.js";
-import { ndMap, reshape } from "../utils/arrayOps.js";
+import { ndMap, reshape } from "../utils/numJS.js";
 
 /**
  * Splits the spreadsheet into features and targets

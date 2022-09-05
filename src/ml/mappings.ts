@@ -1,4 +1,4 @@
-import { flatten, zeros } from "../utils/arrayOps.js";
+import { flatten, zeros } from "../utils/numJS.js";
 import { GameState } from "../baseballLogic/GameState.js";
 import { Pitch } from "../baseballLogic/Pitch.js";
 

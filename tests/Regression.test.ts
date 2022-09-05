@@ -1,6 +1,6 @@
 import { Regression } from "../src/ml/models/Regression";
 import { checkModel, defaultTimeout } from "./checkModel";
-import { arange, full, isClose, any, reshape } from "../src/utils/arrayOps";
+import { arange, full, isClose, any, reshape } from "../src/utils/numJS";
 import { trainFeatsTargs, validFeatsTargs } from "../src/ml/trainTest";
 import { mse } from "../src/ml/calculations";
 import { RegressionFriend } from "./friends";

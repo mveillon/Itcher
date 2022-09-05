@@ -10,7 +10,7 @@ import {
     arange, 
     scalarMul,
     sumList
-} from "../src/utils/arrayOps";
+} from "../src/utils/numJS";
 
 const randIters = 10_000
 
@@ -52,7 +52,6 @@ test('choice', () => {
         wDists[w]++;
     }
 
-    console.log(dists);
     expect(allClose(
         dists, 
         full([dists.length], randIters / dists.length), 

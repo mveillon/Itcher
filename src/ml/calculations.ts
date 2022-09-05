@@ -1,4 +1,4 @@
-import { sumList } from "../utils/arrayOps.js";
+import { sumList } from "../utils/numJS.js";
 
 /**
  * Finds the mean squared error

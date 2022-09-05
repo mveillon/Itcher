@@ -1,5 +1,5 @@
 import { BinaryTree } from "../src/utils/BinaryTree";
-import { arange } from "../src/utils/arrayOps";
+import { arange } from "../src/utils/numJS";
 
 test('int tree', () => {
     const nums: number[] = arange(32);

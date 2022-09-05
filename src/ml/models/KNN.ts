@@ -1,7 +1,7 @@
 import { MachineLearning } from "./MachineLearning.js";
 import { BinaryTree } from "../../utils/BinaryTree.js";
 import { average } from "../calculations.js"
-import { arange } from "../../utils/arrayOps.js";
+import { arange } from "../../utils/numJS.js";
 
 export abstract class KNN extends MachineLearning {
     protected _features: number[][];

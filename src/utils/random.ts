@@ -1,4 +1,4 @@
-import { copyArr, arange } from "./arrayOps.js";
+import { copyArr, arange } from "./numJS.js";
 
 /**
  * Returns a random integer in between min (inclusive) and max (exclusive)
