@@ -162,7 +162,7 @@ export const isClose = (x: numArray, y: numArray, rtol: number = 1e-5, atol: num
  */
 const nestedSatisfies = (
     bools: boolArray, 
-    criterion: (b: boolean) => boolean, 
+    criterion: (b: ndArray<boolean>) => boolean, 
     ifTrue: boolean
     ): boolean => {
     if (typeof bools === 'boolean') {
@@ -171,7 +171,7 @@ const nestedSatisfies = (
     if (bools.length === 0) return false;
 
     for (const nested of bools) {
-        if (criterion(nestedSatisfies(nested, criterion, ifTrue))) {
+        if (criterion(nested)) {
             return ifTrue;
         }
     }
@@ -311,15 +311,6 @@ export const zeros = (shape: number[]): numArray => {
  */
 export const ones = (shape: number[]): numArray => {
     return full(shape, 1);
-}
-
-/**
- * Returns a sorted array with every int in the range [0, n)
- * @param n 1 + the max number in the array
- * @returns an array with every int up to n
- */
- export const upTo = (n: number): number[] => {
-    return [...Array(n).keys()];
 }
 
 /**

@@ -55,22 +55,12 @@ export const pitchFeature = (
         +state.pitcherPlatoon(),
         ...state.bases.map(b => +b),
         state.outs,
-        woba(state),
         velo,
         spinRate,
         Math.cos(radDirec),
         Math.sin(radDirec),
         ...flatten(heatmap) as number[]
     ];
-}
-
-/**
- * The number of attributes in each feature row that are NOT dependent
- * on the pitch being thrown
- * @returns the number of attributes dependent on the current game state
- */
-export const stateAttrs = (): number => {
-    return 8;
 }
 
 /**

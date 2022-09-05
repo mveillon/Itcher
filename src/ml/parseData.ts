@@ -1,4 +1,4 @@
-import { readSpreadSheet, dataPaths, pitcherPath, writeJSON } from "../utils/files.js";
+import { readSpreadSheet, dataPaths, pitcherPath, writeJSON, readJSON } from "../utils/files.js";
 import { Pitch, heatmapSize } from "../baseballLogic/Pitch.js";
 import { Pitcher, pitcherJSON } from "../baseballLogic/Pitcher.js";
 import { GameState } from "../baseballLogic/GameState.js";
@@ -95,43 +95,47 @@ export const getPlayType = (result: string, event: string, state: GameState): st
  * Goes through the train, validation, and testing sets and finds all pitchers present
  */
 export const findAllPitchers = ()  => {
-    let accum: { [key: string]: Pitcher } = {}; 
-    const dPaths = dataPaths();
-    const rawName = 'raw.ignore.csv';
-    const paths = [
-        dPaths.train + rawName,
-        dPaths.valid + rawName,
-        dPaths.test + rawName
-    ];
-
-    for (const pth of paths) {
-        pitchersInSheet(pth, accum);
-    }
-    
-    for (const player in accum) {
-        let total = 0;
-        for (const p in accum[player].pitches) {
-            const pitchO = accum[player].pitches[p];
-            total += pitchO.timesThrown;
-            pitchO.velo /= pitchO.timesThrown;
-            pitchO.spinRate /= pitchO.timesThrown;
-            pitchO.spinDirection /= pitchO.timesThrown;
-            pitchO.heatmap = scalarMul(1 / pitchO.timesThrown, pitchO.heatmap) as number[][];
-        }
-
-        for (const p in accum[player].pitches) {
-            accum[player].pitches[p].timesThrown /= total;
-        }
-    }
-
-    let toWrite: { [key: string]: pitcherJSON } = {};
-    for (const p in accum) {
-        toWrite[p] = accum[p].toObj();
-    }
     if (usingNode()) {
+        let accum: { [key: string]: Pitcher } = {}; 
+        const dPaths = dataPaths();
+        const rawName = 'raw.ignore.csv';
+        const paths = [
+            dPaths.train + rawName,
+            dPaths.valid + rawName,
+            dPaths.test + rawName
+        ];
+
+        for (const pth of paths) {
+            pitchersInSheet(pth, accum);
+        }
+        
+        for (const player in accum) {
+            let total = 0;
+            for (const p in accum[player].pitches) {
+                const pitchO = accum[player].pitches[p];
+                total += pitchO.timesThrown;
+                pitchO.velo /= pitchO.timesThrown;
+                pitchO.spinRate /= pitchO.timesThrown;
+                pitchO.spinDirection /= pitchO.timesThrown;
+                pitchO.heatmap = scalarMul(1 / pitchO.timesThrown, pitchO.heatmap) as number[][];
+            }
+
+            for (const p in accum[player].pitches) {
+                accum[player].pitches[p].timesThrown /= total;
+            }
+        }
+
+        let toWrite: { [key: string]: pitcherJSON } = {};
+        for (const p in accum) {
+            toWrite[p] = accum[p].toObj();
+        }
+
         writeJSON(pitcherPath(), toWrite);
     } else {
-        localStorage.setItem('pitchers.json', JSON.stringify(toWrite));
+        localStorage.setItem(
+            'pitchers.json', 
+            JSON.stringify(readJSON(pitcherPath()))
+        )
     }
 }
 

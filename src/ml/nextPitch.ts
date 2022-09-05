@@ -6,6 +6,7 @@ import { MachineLearning } from "./models/MachineLearning.js";
 /**
  * Given the current game state, computes the next pitch to throw
  * Current game state is in global "state" variable
+ * @param learner the ML model to use for predictions
  * @returns what pitch to throw
  */
 export const nextPitch = (learner: MachineLearning): string => {
