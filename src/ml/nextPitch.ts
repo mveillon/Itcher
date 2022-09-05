@@ -2,6 +2,7 @@ import { getFeature } from "./mappings.js";
 import { getState } from "../baseballLogic/GameState.js";
 import { choice } from "../utils/random.js";
 import { MachineLearning } from "./models/MachineLearning.js";
+import { sigmoid } from "./calculations.js";
 
 /**
  * Given the current game state, computes the next pitch to throw
@@ -16,7 +17,7 @@ export const nextPitch = (learner: MachineLearning): string => {
     });
     const feats = pitches.map((pitch) => getFeature(pitch, state));
     const rewards = learner.predict(feats);
-    const weights = rewards.map(Math.tanh);
+    const weights = rewards.map(sigmoid);
 
     let cum = [weights[0]];
     for (let i = 1; i < rewards.length; i++) {

@@ -1,5 +1,5 @@
-const trainTest = require("../../../dist/ml/trainTest");
-const files = require("../../../dist/utils/files");
+const { allFeatsTargs } = require("../../../dist/ml/trainTest");
+const { readSpreadSheet, writeFile } = require("../../../dist/utils/files");
 
 const ROOT = './src/ml/data/'
 
@@ -15,8 +15,8 @@ const saveSheets = (feats, targs, name) => {
         return sheet.map(row => row.join()).join('\n');
     }
 
-    files.writeFile(dirName + '/feats.ignore.csv', toStr(feats));    
-    files.writeFile(dirName + '/targs.ignore.csv', targs.join('\n'));
+    writeFile(dirName + '/feats.ignore.csv', toStr(feats));    
+    writeFile(dirName + '/targs.ignore.csv', targs.join('\n'));
 }
 
 /**
@@ -29,8 +29,8 @@ const saveAll = () => {
         'test'
     ];
     for (const d of dirs) {
-        const [feats, targs] = trainTest.allFeatsTargs(
-            files.readSpreadSheet(ROOT + d + '/raw.ignore.csv')
+        const [feats, targs] = allFeatsTargs(
+            readSpreadSheet(ROOT + d + '/raw.ignore.csv')
         );
         saveSheets(feats, targs, d);
     }

@@ -909,6 +909,7 @@ exports.nextPitch = void 0;
 const mappings_js_1 = _dereq_("./mappings.js");
 const GameState_js_1 = _dereq_("../baseballLogic/GameState.js");
 const random_js_1 = _dereq_("../utils/random.js");
+const calculations_js_1 = _dereq_("./calculations.js");
 /**
  * Given the current game state, computes the next pitch to throw
  * Current game state is in global "state" variable
@@ -922,7 +923,7 @@ const nextPitch = (learner) => {
     });
     const feats = pitches.map((pitch) => (0, mappings_js_1.getFeature)(pitch, state));
     const rewards = learner.predict(feats);
-    const weights = rewards.map(Math.tanh);
+    const weights = rewards.map(calculations_js_1.sigmoid);
     let cum = [weights[0]];
     for (let i = 1; i < rewards.length; i++) {
         cum.push(cum[i - 1] + weights[i]);
@@ -931,7 +932,7 @@ const nextPitch = (learner) => {
 };
 exports.nextPitch = nextPitch;
 
-},{"../baseballLogic/GameState.js":1,"../utils/random.js":21,"./mappings.js":6}],13:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"../utils/random.js":21,"./calculations.js":5,"./mappings.js":6}],13:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.pitchAbbreviations = exports.findAllPitchers = exports.getPlayType = exports.aidToPitcher = exports.abToPlat = exports.idToEvent = void 0;
@@ -1279,7 +1280,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.testFeatsTargs = exports.validFeatsTargs = exports.trainFeatsTargs = exports.extractFeaturesTargets = exports.learnerMSE = exports.trainLearner = exports.allFeatsTargs = void 0;
+exports.completeFeatsTargs = exports.testFeatsTargs = exports.validFeatsTargs = exports.trainFeatsTargs = exports.extractFeaturesTargets = exports.learnerMSE = exports.trainLearner = exports.allFeatsTargs = void 0;
 const parseData_js_1 = _dereq_("./parseData.js");
 const Pitcher_js_1 = _dereq_("../baseballLogic/Pitcher.js");
 const files_js_1 = _dereq_("../utils/files.js");
@@ -1418,6 +1419,22 @@ const testFeatsTargs = () => {
     return fromDir((0, files_js_1.dataPaths)().test);
 };
 exports.testFeatsTargs = testFeatsTargs;
+/**
+ * Returns the concatenation of the training, validation, and testing sets
+ * @returns all features and targets from all sets
+ */
+const completeFeatsTargs = () => {
+    const arrs = [
+        (0, exports.trainFeatsTargs)(),
+        (0, exports.validFeatsTargs)(),
+        (0, exports.testFeatsTargs)()
+    ];
+    return [
+        [].concat(...arrs.map(a => a[0])),
+        [].concat(...arrs.map(a => a[1]))
+    ];
+};
+exports.completeFeatsTargs = completeFeatsTargs;
 
 },{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitch.js":2,"../baseballLogic/Pitcher.js":3,"../utils/arrayOps.js":19,"../utils/files.js":20,"./calculations.js":5,"./mappings.js":6,"./parseData.js":13,"./rewards.js":14}],16:[function(_dereq_,module,exports){
 "use strict";
@@ -2252,7 +2269,7 @@ const any = (bools) => {
 exports.any = any;
 /**
  * Returns whether every element of x is close to every element of y, using the formula
- * `abs(x - y) <= atol + rtol * abs(y)
+ * `abs(x - y) <= atol + rtol * abs(y)`
  * @param x the first array
  * @param y the second array
  * @param rtol the relative tolerance, which is multiplied by the elements of b
@@ -2552,13 +2569,15 @@ const choice = (arr, ws) => {
         throw new Error('Empty array not allowed in choice function');
     }
     if (typeof ws === 'undefined') {
-        ws = [];
-        for (let i = 0; i < arr.length; i++) {
-            ws.push(i);
-        }
+        ws = (0, arrayOps_js_1.arange)(1, arr.length + 1);
     }
     if (ws.length !== arr.length) {
         throw new Error(`Incompatible sizes between ${arr} and ${ws}: ${arr.length} vs ${ws.length}`);
+    }
+    for (let i = 1; i < ws.length; i++) {
+        if (ws[i] < ws[i - 1]) {
+            throw new Error(`Cumulative weights must be monotonically increasing: ${ws}`);
+        }
     }
     const seed = Math.random() * ws[ws.length - 1];
     for (let i = 0; i < arr.length; i++) {

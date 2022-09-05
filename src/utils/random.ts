@@ -1,4 +1,4 @@
-import { copyArr } from "./arrayOps.js";
+import { copyArr, arange } from "./arrayOps.js";
 
 /**
  * Returns a random integer in between min (inclusive) and max (exclusive)
@@ -26,16 +26,21 @@ export const choice = <T>(arr: T[], ws?: number[]): T => {
     }
 
     if (typeof ws === 'undefined') {
-        ws = [];
-        for (let i = 0; i < arr.length; i++) {
-            ws.push(i);
-        }
+        ws = arange(1, arr.length + 1);
     }
 
     if (ws.length !== arr.length) {
         throw new Error(
             `Incompatible sizes between ${arr} and ${ws}: ${arr.length} vs ${ws.length}`
         );
+    }
+
+    for (let i = 1; i < ws.length; i++) {
+        if (ws[i] < ws[i - 1]) {
+            throw new Error(
+                `Cumulative weights must be monotonically increasing: ${ws}`
+            );
+        }
     }
 
     const seed = Math.random() * ws[ws.length - 1];

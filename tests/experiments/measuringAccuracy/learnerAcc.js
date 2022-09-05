@@ -1,13 +1,13 @@
-const trainTest = require("../../../dist/ml/trainTest");
+const { trainFeatsTargs, validFeatsTargs } = require("../../../dist/ml/trainTest");
 
-const AlwaysMean = require("../../../dist/ml/models/AlwaysMean");
-const Ensemble = require("../../../dist/ml/models/Ensemble");
-const KNNBall = require("../../../dist/ml/models/KNNBall");
-const KNNkd = require("../../../dist/ml/models/KNNkd");
-const NeuralNet = require("../../../dist/ml/models/NeuralNet");
-const Regression = require("../../../dist/ml/models/Regression");
+const { alwaysMean } = require("../../../dist/ml/models/AlwaysMean");
+const { Ensemble } = require("../../../dist/ml/models/Ensemble");
+const { knnBall } = require("../../../dist/ml/models/KNNBall");
+const { knnKD } = require("../../../dist/ml/models/KNNkd");
+const { neuralNet } = require("../../../dist/ml/models/NeuralNet");
+const { regression } = require("../../../dist/ml/models/Regression");
 
-const fs = require('fs');
+const { writeFile } = require('fs');
 const { performance } = require('perf_hooks');
 
 /**
@@ -21,24 +21,24 @@ const learnerPreds = async () => {
     const numChildren = 4;
 
     const factories = {
-        'AlwaysMean': AlwaysMean.alwaysMean,
-        'KNNBall': KNNBall.knnBall,
-        'KNNkd': KNNkd.knnKD,
-        'NeuralNet': NeuralNet.neuralNet,
-        'Regression': Regression.regression,
+        'AlwaysMean': alwaysMean,
+        'KNNBall': knnBall,
+        'KNNkd': knnKD,
+        'NeuralNet': neuralNet,
+        'Regression': regression,
     }
 
     let learners = {};
     for (const name in factories) {
         learners[name] = factories[name]();
-        learners['Ensemble' + name] = new Ensemble.Ensemble(factories[name], numChildren);
+        learners['Ensemble' + name] = new Ensemble(factories[name], numChildren);
     }
 
-    const [trainFeats, trainTargs] = trainTest.trainFeatsTargs();
-    const [validFeats, validTargs] = trainTest.validFeatsTargs();  
+    const [trainFeats, trainTargs] = trainFeatsTargs();
+    const [validFeats, validTargs] = validFeatsTargs();  
     const root = "./tests/experiments/measuringAccuracy/";
     const err = (error) => { if (error) console.log(error); };
-    fs.writeFile(root + "targs.txt", validTargs.join(','), err);
+    writeFile(root + "targs.txt", validTargs.join(','), err);
 
     for (const learnerName in learners) {
         let learner = learners[learnerName];
@@ -49,7 +49,7 @@ const learnerPreds = async () => {
         console.log(`\tTesting...`);
         const preds = learner.predict(validFeats);
         
-        fs.writeFile(
+        writeFile(
             `${root}preds/${learnerName}.txt`, 
             preds.join(','), 
             err

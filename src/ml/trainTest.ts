@@ -165,3 +165,19 @@ export const validFeatsTargs = (): [number[][], number[]] => {
 export const testFeatsTargs = (): [number[][], number[]] => {
     return fromDir(dataPaths().test);
 }
+
+/**
+ * Returns the concatenation of the training, validation, and testing sets
+ * @returns all features and targets from all sets
+ */
+export const completeFeatsTargs = (): [number[][], number[]] => {
+    const arrs = [
+        trainFeatsTargs(),
+        validFeatsTargs(),
+        testFeatsTargs()
+    ];
+    return [
+        [].concat(...arrs.map(a => a[0])),
+        [].concat(...arrs.map(a => a[1]))
+    ];
+}

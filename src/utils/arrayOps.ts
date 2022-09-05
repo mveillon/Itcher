@@ -201,7 +201,7 @@ export const all = (bools: boolArray): boolean => {
 
 /**
  * Returns whether every element of x is close to every element of y, using the formula
- * `abs(x - y) <= atol + rtol * abs(y)
+ * `abs(x - y) <= atol + rtol * abs(y)`
  * @param x the first array
  * @param y the second array
  * @param rtol the relative tolerance, which is multiplied by the elements of b

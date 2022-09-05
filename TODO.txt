@@ -1,1 +1,1 @@
-- better accuracy, possibly with different models
+-the pitches nextPitch selects have a lower reward than the actual pitches the pitchers throw
