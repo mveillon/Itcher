@@ -107,12 +107,7 @@ export const extractFeaturesTargets = (
         state,
         parseFloat(play['start_speed']),
         parseFloat(play['spin_rate']),
-        parseFloat(play['spin_dir']),
-        oneHotHeatmap(
-            x,
-            z, 
-            heatmapSize()
-        )
+        parseFloat(play['spin_dir'])
     );
     
     return [features, target];

@@ -7,3 +7,4 @@ export * from "./numJS/copyArr.js";
 export * from "./numJS/ndMap.js";
 export * from "./numJS/shapes.js";
 export * from "./numJS/types.js";
+export * from "./numJS/indexing.js";

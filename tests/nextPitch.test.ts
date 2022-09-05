@@ -1,4 +1,4 @@
-import { nextPitch } from "../src/ml/nextPitch";
+import { nextPitch, getWs } from "../src/ml/nextPitch";
 import { getState, resetState, setState } from "../src/baseballLogic/GameState";
 import { readAllPitchers } from "../src/baseballLogic/Pitcher";
 import { getLearner } from "../src/ml/models/getLearner";
@@ -19,6 +19,11 @@ test('next pitch', async () => {
                 state.strikes = s;
                 state.lineup[0] = p ? 'R' : 'L';
                 setState(state);
+                const ws = getWs(learner, Object.keys(pitcher.pitches));
+                for (const w of ws) {
+                    expect(w).toBeGreaterThanOrEqual(0);
+                }
+
                 const pitch = nextPitch(learner);
                 const contained = pitch in pitcher.pitches;
                 if (!contained) {

@@ -25,9 +25,10 @@ import {
     arrOr,
     arrAnd,
     arrNot,
-    allEqual
+    allEqual,
+    arrIndex
 } from "../src/utils/numJS";
-import { shuffle, randInt } from "../src/utils/random";
+import { shuffle, randArr } from "../src/utils/random";
 
 test('add arrays', () => {
     expect(addArrays(1, 2)).toBe(3);
@@ -416,12 +417,8 @@ test('arange', () => {
 });
 
 test('array comparing', () => {
-    let a: number[] = [];
-    let b: number[] = [];
-    for (let i = 0; i < 24; i++) {
-        a.push(randInt(24));
-        b.push(randInt(24));
-    }
+    const a: number[] = randArr([24], 24) as number[];
+    const b: number[] = randArr([24], 24) as number[];
     expect(getShape(a)).toEqual(getShape(b));
 
     const fs = [
@@ -485,12 +482,8 @@ test('array comparing', () => {
 });
 
 test('array boolean compares', () => {
-    let a: boolean[] = [];
-    let b: boolean[] = [];
-    for (let i = 0; i < 24; i++) {
-        a.push(!!randInt(2));
-        b.push(!!randInt(2));
-    }
+    const a: boolean[] = (randArr([24], 2) as number[]).map(n => !!n);
+    const b: boolean[] = (randArr([24], 2) as number[]).map(n => !!n);
     expect(getShape(a)).toEqual(getShape(b));
 
     const fs = [
@@ -561,10 +554,7 @@ test('broadcasting', () => {
     expect(getShape(d)).toEqual(getShape(a));
     expect(allEqual(exp, d)).toBe(true);
 
-    let e: boolean[] = [];
-    for (let i = 0; i < 24; i++) {
-        e.push(!!randInt(2));
-    }
+    const e: boolean[] = (randArr([24], 2) as number[]).map(n => !!n);
     let f: boolean[][][] = reshape(e, [2, 3, 4]) as boolean[][][];
 
     expect(all(arrOr(e, true))).toBe(true);
@@ -579,3 +569,52 @@ test('broadcasting', () => {
     expect(allEqual(f, ored)).toBe(true);
     expect(all(arrEqual(ored, e))).toBe(true);
 });
+
+test('array indexing', () => {
+    const arr: number[] = randArr([24], 10) as number[];
+    const numInds: number[] = randArr([10], arr.length) as number[];
+    const boolInds: boolean[] = (randArr([arr.length], 2) as number[]).map(n => !!n);
+
+    const arrNum: number[] = arrIndex(arr, numInds) as number[];
+    for (let i = 0; i < arrNum.length; i++) {
+        expect(arrNum[i]).toBe(arr[numInds[i]]);
+    }
+
+    const arrBool: number[] = arrIndex(arr, boolInds) as number[];
+    expect(arrBool.length).toBe(sumList(boolInds.map(b => +b)));
+    let next = 0;
+    for (let i = 0; i < boolInds.length; i++) {
+        if (boolInds[i]) {
+            expect(arrBool[next++]).toBe(arr[i]);
+        }
+    }
+
+    const a2d: number[][] = reshape(arr, [6, 4]) as number[][];
+    const aBool2d: number[][] = arrIndex(a2d, boolInds) as number[][];
+    const numInds2d: number[][] = randArr([10, 2], 4) as number[][];
+
+    const aNum2d: number[] = arrIndex(a2d, numInds2d) as number[];
+    for (let i = 0; i < numInds2d.length; i++) {
+        expect(aNum2d[i]).toBe(a2d[numInds2d[i][0]][numInds2d[i][1]]);
+    }
+
+    expect(getShape(aBool2d).length).toBe(2);
+    let nextI = 0;
+    for (let i = 0; i < a2d.length; i++) {
+        let nextJ = 0;
+        for (let j = 0; j < a2d[i].length; j++) {
+            if (boolInds[j + i * a2d[i].length]) {
+                expect(aBool2d[nextI][nextJ++]).toBe(a2d[i][j]);
+            }
+        }
+        nextI += +!!nextJ;
+    }
+
+    const smallNumInds: number[] = randArr([10], a2d.length) as number[];
+    const aNum1d: number[][] = arrIndex(a2d, smallNumInds) as number[][];
+    expect(getShape(aNum1d)).toEqual([smallNumInds.length, a2d[0].length]);
+    for (let i = 0; i < aNum1d.length; i++) {
+        expect(aNum1d[i]).toEqual(a2d[smallNumInds[i]]);
+    }
+});
+

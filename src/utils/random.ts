@@ -1,4 +1,4 @@
-import { copyArr, arange } from "./numJS.js";
+import { copyArr, arange, arrGTEq, all, numArray, reshape } from "./numJS.js";
 
 /**
  * Returns a random integer in between min (inclusive) and max (exclusive)
@@ -35,6 +35,12 @@ export const choice = <T>(arr: T[], ws?: number[]): T => {
         );
     }
 
+    if (!all(arrGTEq(ws, 0))) {
+        throw new Error(
+            `Negative cumulative weights not allowed: ${ws}`
+        );
+    }
+    
     for (let i = 1; i < ws.length; i++) {
         if (ws[i] < ws[i - 1]) {
             throw new Error(
@@ -77,4 +83,21 @@ export const choices = <T>(arr: T[], n: number): T[] => {
     var arrCopy: T[] = copyArr(arr) as T[];
     shuffle(arrCopy);
     return arrCopy.slice(0, n);
+}
+
+/**
+ * Creates an array of random integers with the given shape
+ * @param shape the shape of the output array
+ * @param min the minimum possible integer. If max is `undefined`, this will
+ * be the maximum possible integer, with `min` being `0`
+ * @param max the maximum possible integer. If not specified, see above
+ * @returns an array of random integers, each ranging from `[min, max)`
+ */
+export const randArr = (shape: number[], min: number, max?: number): numArray => {
+    const size = shape.reduce((a, b) => a * b, 1);
+    let flat: number[] = [];
+    for (let i = 0; i < size; i++) {
+        flat.push(randInt(min, max));
+    }
+    return reshape(flat, shape);
 }

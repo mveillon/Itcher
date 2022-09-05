@@ -16,10 +16,11 @@
     "scripts": {
         "unit": "clear; python3 src/ml/data/split_data.py -r 10000; npm run save-sheets; jest --config tests/jest.config.js",
         "test": "npm run unit",
-        "tobrowser": "tsc; python3 src/ml/data/split_data.py -r 100000; npm run save-sheets; browserify dist/main.js --standalone Main | derequire > builds/mainBundle.js",
-        "plot-models": "tsc; python3 src/ml/data/split_data.py -r 500000; npm run save-sheets; node tests/experiments/measuringAccuracy/learnerAcc.js; python3 tests/experiments/measuringAccuracy/learnerAcc.py",
+        "tobrowser": "python3 src/ml/data/split_data.py -r 100000; npm run save-sheets; browserify dist/main.js --standalone Main | derequire > builds/mainBundle.js",
+        "plot-models": "python3 src/ml/data/split_data.py -r 500000; npm run save-sheets; node tests/experiments/measuringAccuracy/learnerAcc.js; python3 tests/experiments/measuringAccuracy/learnerAcc.py",
         "run-server": "npm run tobrowser; live-server --ignore='**/*.ts'",
-        "save-sheets": "tsc; node src/ml/data/savingFeats.js"
+        "save-sheets": "tsc; node src/ml/data/savingFeats.js",
+        "value-gained": "python3 src/ml/data/split_data.py -r 1000000; npm run save-sheets; node tests/experiments/valueGained/valueGained.js"
     },
     "devDependencies": {
         "@babel/cli": "^7.18.9",

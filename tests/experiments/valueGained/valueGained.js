@@ -71,12 +71,10 @@ const getValue = (row) => {
     }
     const preds = learner.predict(allFeats);
 
-    const toWoba = prob => avgGood * prob + avgBad * (1 - prob);
+    const selected = preds[pitches.indexOf(nextPitch(learner))];
+    const optimal = Math.max(...preds);
 
-    const selected = toWoba(preds[pitches.indexOf(nextPitch(learner))]);
-    const optimal = toWoba(Math.max(...preds));
-
-    return [actual, selected, optimal];
+    return [+(actual > 0), selected, optimal];
 }
 
 /**
@@ -110,9 +108,9 @@ const allValues = async () => {
 `Average wOBA of good event: ${avgGood}
 Average wOBA of bad event: ${avgBad}
 
-Average wOBA of actual pitch: ${avgs[0]}
-Average wOBA of selected pitch: ${avgs[1]}
-Average wOBA of optimal pitch: ${avgs[2]}`
+Average probability of good event of actual pitch: ${avgs[0]}
+Average probability of good event of selected pitch: ${avgs[1]}
+Average probability of good event of optimal pitch: ${avgs[2]}`
     );
 }
 

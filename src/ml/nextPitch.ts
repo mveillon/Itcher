@@ -15,6 +15,17 @@ export const nextPitch = (learner: MachineLearning): string => {
     const pitches = Object.keys(state.pitcher.pitches).filter(name => {
         return state.pitcher.pitches[name].timesThrown > 0.05;
     });
+    return choice(pitches, getWs(learner, pitches));
+}
+
+/**
+ * Returns the cumulative weights for each given pitch
+ * @param learner the ML model to use to predict the value of each pitch
+ * @param pitches the pitches to weight
+ * @returns the cumulative weights for each pitch
+ */
+export const getWs = (learner: MachineLearning, pitches: string[]): number[] => {
+    const state = getState();
     const feats = pitches.map((pitch) => getFeature(pitch, state));
     const rewards = learner.predict(feats);
     const weights = rewards.map(sigmoid);
@@ -23,5 +34,5 @@ export const nextPitch = (learner: MachineLearning): string => {
     for (let i = 1; i < rewards.length; i++) {
         cum.push(cum[i - 1] + weights[i]);
     }
-    return choice(pitches, cum);
+    return cum;
 }

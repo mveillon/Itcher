@@ -13,7 +13,10 @@ import { ndArray, numArray } from "./types.js";
  * @param a2 the second array
  * @returns both arrays reshaped to have the same shape
  */
-export const broadcast = <T>(a1: ndArray<T>, a2: ndArray<T>): [ndArray<T>, ndArray<T>] => {
+export const broadcast = <T, U>(
+    a1: ndArray<T>, 
+    a2: ndArray<U>
+): [ndArray<T>, ndArray<U>] => {
     const shape1 = getShape(a1);
     const shape2 = getShape(a2);
     const getTotal = (shape: number[]): number => shape.reduce((a, b) => a * b, 1);
