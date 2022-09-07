@@ -1,12 +1,9 @@
-import * as bug from "./ui/scorebug.js";
-import * as buttons from "./ui/buttons.js";
+import { initBug } from "./ui/scorebug.js";
+import { usingNode } from "./utils/usingNode.js";
 
-const init = () => {
-    bug.initBug();
+export const init = () => {
+    if (!usingNode()) initBug();
 }
 
-module.exports = {
-    init: init,
-    ...bug,
-    ...buttons
-}
+export * from "./ui/buttons.js";
+export * from "./ui/scorebug.js";

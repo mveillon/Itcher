@@ -7,7 +7,7 @@ import {
     validFeats,
     validTargs
 } from "./checkModel";
-import { KNNBall } from "../src/ml/models/KNNBall";
+import { KNNBall, knnBall } from "../src/ml/models/KNNBall";
 import { BinaryTree } from "../src/utils/BinaryTree";
 import { mse } from "../src/ml/calculations";
 import { BallFriend } from "./friends";
@@ -40,7 +40,7 @@ test('train learner', async () => {
 });
 
 test('overall sensibility', async () => {
-    await checkModel(new KNNBall(8));
+    await checkModel(knnBall());
 });
 
 const searching = false;

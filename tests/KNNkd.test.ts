@@ -1,4 +1,4 @@
-import { KNNkd } from "../src/ml/models/KNNkd";
+import { KNNkd, knnKD } from "../src/ml/models/KNNkd";
 import { 
     checkModel, 
     defaultTimeout, 
@@ -76,7 +76,7 @@ test('train learner', async () => {
 });
 
 test('overall sensibility', async () => {
-    await checkModel(new KNNkd(8));
+    await checkModel(knnKD());
 });
 
 const searching = false;

@@ -70,17 +70,26 @@ export const broadcast = <T, U>(
 /**
  * Returns an array full of whatever the value is in any arbitrary shape
  * @param shape the size of each dimension of the output
- * @param value what value to fill the array with
+ * @param value what value to fill the array with. If undefined, the values
+ * will be filled with the return value of valueGen
+ * @param valueGen a function that generates values to fill the array with. Only
+ * called if value is undefined
  * @returns an array with the given shape and every value equal to the given value
  */
- export const full = <T>(shape: number[], value: T): ndArray<T> => {
+export const full = <T>(shape: number[], value?: T, valueGen?: () => T): ndArray<T> => {
     if (shape.length === 0) {
+        if (typeof value === 'undefined') {
+            if (typeof valueGen === 'undefined') {
+                throw new Error('Both of value and valueGen cannot be undefined');
+            }
+            return valueGen();
+        }
         return value;
     }
     let res: ndArray<T> = [];
     const rest = shape.slice(1, shape.length);
     for (let i = 0; i < shape[0]; i++) {
-        res.push(full(rest, value));
+        res.push(full(rest, value, valueGen));
     }
 
     return res;

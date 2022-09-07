@@ -65,25 +65,18 @@ export const getPlayType = (result: string, event: string, state: GameState): st
             switch (event) {
                 case 'Single':
                     return '1b';
-                    break;
                 case 'Double':
                     return'2b';
-                    break;
                 case 'Triple':
                     return '3b';
-                    break;
                 case 'Home Run':
                     return 'hr';
-                    break;
                 case 'Fielders Choice':
                     return '1b';
-                    break;
                 case 'Catcher Interference':
                     return '1b';
-                    break;
                 default:
                     throw new Error(`Unexpected hit type ${event}`);
-                    break;
             }
         }   
     }
@@ -242,7 +235,7 @@ export const pitchAbbreviations = (): { [key: string]: string } => {
  * used by dispatch
  * @returns a mapping from spreadsheet abbreviations to ones used by this code
  */
-const playTypes = (): { [key: string]: string } => {
+export const playTypes = (): { [key: string]: string } => {
     return {
         B: 'b',
         '*B': 'b', 

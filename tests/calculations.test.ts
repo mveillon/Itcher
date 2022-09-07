@@ -76,4 +76,5 @@ test('correlation', () => {
     expect(correlation([0, 1], [1, 2, 3])).toBeCloseTo(1);
     expect(correlation([0, 1, 2], [1, 2])).toBeCloseTo(1);
     expect(correlation([1, 2, 3], [4, 3, 4])).toBeCloseTo(0);
+    expect(correlation([1, 2, 3], [1, 1, 1])).toBeCloseTo(0);
 });

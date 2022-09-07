@@ -1,6 +1,4 @@
-import { testFeatsTargs } from "../src/ml/trainTest";
 import { readFile, dataPaths } from "../src/utils/files";
-import { trainFeats, trainTargs, validFeats, validTargs } from "./checkModel";
 
 test('data sensibility', () => {
     const raw = readFile(dataPaths().train + 'raw.ignore.csv', 'utf-8');
@@ -11,25 +9,5 @@ test('data sensibility', () => {
     const firstLen = rows[0].split(',').length;
     for (const r of rows) {
         expect(r.split(',').length).toBe(firstLen);
-    }
-
-    const datasets: [number[][], number[]][] = [
-        [trainFeats, trainTargs],
-        [validFeats, validTargs],
-        testFeatsTargs()
-    ];
-
-    for (const data of datasets) {
-        const [feats, targs] = data;
-        expect(feats.length).toBe(targs.length);
-        const width = feats[0].length;
-
-        for (const row of feats) {
-            expect(row.length).toBe(width);
-            for (const cell of row) {
-                expect(typeof cell).toBe('number');
-                expect(cell).not.toBeNaN();
-            }
-        }
     }
 });

@@ -4,6 +4,8 @@ const checkEmpty = (lst: List<any>) => {
     expect(lst.length).toBe(0);
     expect(() => lst.popLeft()).toThrow(Error);
     expect(() => lst.popRight()).toThrow(Error);
+    expect(() => lst.peekLeft()).toThrow(Error);
+    expect(() => lst.peekRight()).toThrow(Error);
 }
 
 test('Adding and peeking left and right', () => {
@@ -84,5 +86,9 @@ test('Popping left and right', () => {
         expect(l.popRight()).toBe(c);
     }
     checkEmpty(l);
+});
 
+test('string', () => {
+    const l = new List([1, 2, 3]);
+    expect(l.toString()).toBe('(1, 2, 3)');
 });

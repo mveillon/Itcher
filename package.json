@@ -14,7 +14,7 @@
     "repository": "github:mveillon/Itcher",
     "private": true,
     "scripts": {
-        "unit": "clear; python3 src/ml/data/split_data.py -r 10000; npm run save-sheets; jest --config ./jest.config.js --no-cache",
+        "unit": "clear; python3 src/ml/data/split_data.py -r 10000; npm run save-sheets; jest --config ./jest.config.js",
         "test": "npm run unit",
         "tobrowser": "python3 src/ml/data/split_data.py -r 100000; npm run save-sheets; browserify dist/main.js --standalone Main | derequire > builds/mainBundle.js",
         "plot-models": "python3 src/ml/data/split_data.py -r 500000; npm run save-sheets; node tests/experiments/measuringAccuracy/learnerAcc.js; python3 tests/experiments/measuringAccuracy/learnerAcc.py",

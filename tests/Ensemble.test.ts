@@ -2,9 +2,12 @@ import { Ensemble } from "../src/ml/models/Ensemble";
 import { checkModel, defaultTimeout } from "./checkModel";
 import { KNNkd } from "../src/ml/models/KNNkd";
 import { EnsembleFriend, kdFriend } from "./friends";
+import { full } from "../src/utils/numJS";
 
 jest.setTimeout(defaultTimeout);
 test('Ensemble', async () => {
+    expect(() => new Ensemble(() => new kdFriend(2))).toThrowError();
+
     const mod = new EnsembleFriend(() => new kdFriend(2), 4);
     for (let i = 0; i < 4; i++) {
         expect(mod.models[i] instanceof kdFriend).toBe(true);
@@ -41,5 +44,7 @@ test('Ensemble', async () => {
 });
 
 test('overall sensibility', async () => {
-    await checkModel(new Ensemble(() => new KNNkd(5), 4));
+    await checkModel(
+        new Ensemble(full([4], undefined, () => new KNNkd(5)) as KNNkd[])
+    );
 });

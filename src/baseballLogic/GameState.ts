@@ -125,7 +125,9 @@ export class GameState {
      * @param numBases how many bases the runners should move
      */
     private nBaseHit(numBases: number) {
-        if (numBases === 0) return;
+        if (numBases === 0) {
+            throw new Error('numBases must be greater than zero');
+        };
         this.backup();
         this.newBatter();
 

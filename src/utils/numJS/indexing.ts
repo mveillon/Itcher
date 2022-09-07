@@ -89,8 +89,4 @@ export const arrIndex = <T>(
     } else if (typeof current === 'boolean') {
         return boolIndex(arr, inds as boolArray);
     }
-
-    throw new Error(
-        `Unexpected index type: ${inds}`
-    );
 }

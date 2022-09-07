@@ -2,7 +2,8 @@ import {
     randInt,
     choice,
     shuffle,
-    randArr
+    randArr,
+    choices
 } from "../src/utils/random";
 import { 
     zeros, 
@@ -36,6 +37,11 @@ test('randInt', () => {
 });
 
 test('choice', () => {
+    expect(() => choice([], [])).toThrow(Error);
+    expect(() => choice([1], [])).toThrow(Error);
+    expect(() => choice([1, 2, 3], [-1, 2, 3])).toThrow(Error);
+    expect(() => choice([1, 2, 3], [1, 0, 2])).toThrow(Error);
+    
     let dists: number[] = zeros([10]) as number[];
     let wDists: number[] = zeros([dists.length]) as number[];
     let fwDists: number[] = zeros([dists.length]) as number[];
@@ -122,5 +128,23 @@ test('rand array', () => {
     expect(getShape(d)).toEqual([2, 3, 4]);
     expect(all(arrGTEq(d, 5))).toBe(true);
     expect(all(arrLT(d, 10))).toBe(true);
+});
+
+test('choices', () => {
+    const a: number[] = arange(12);
+    let counts: number[] = zeros([a.length]) as number[];
+
+    for (let i = 0; i < randIters; i++) {
+        const c = choices(a, 3);
+        for (const n of c) {
+            counts[n]++;
+        }
+    }
+
+    expect(allClose(
+        counts, 
+        3 * randIters / a.length,
+        0.3
+    )).toBe(true);
 });
 

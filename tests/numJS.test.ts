@@ -26,7 +26,9 @@ import {
     arrAnd,
     arrNot,
     allEqual,
-    arrIndex
+    arrIndex,
+    zeros,
+    ones
 } from "../src/utils/numJS";
 import { shuffle, randArr } from "../src/utils/random";
 
@@ -152,9 +154,14 @@ test('colAverage', () => {
     for (let i = 0; i < avgs.length; i++) {
         expect(avgs[i]).toBeCloseTo(trueVals[i]);
     }
+
+    expect(colAverage([])).toEqual([]);
 });
 
 test('argMin/Max', () => {
+    expect(() => argMin([])).toThrow(Error);
+    expect(() => argMin([])).toThrow(Error);
+    
     const a = [1, 2, 3, 4];
     expect(argMax(a)).toBe(a.length - 1);
     expect(argMin(a)).toBe(0);
@@ -315,6 +322,7 @@ test('sumList', () => {
 });
 
 test('full', () => {
+    expect(() => full([])).toThrow(Error);
     expect(full([], 0)).toBe(0);
     expect(full([1], 1)).toEqual([1]);
     expect(full([2, 3], 2)).toEqual([[2, 2, 2], [2, 2, 2]]);
@@ -380,6 +388,10 @@ test('copy', () => {
 })
 
 test('reshape', () => {
+    expect(() => reshape(5, [])).toThrow(Error);
+    expect(() => reshape([1, 2], [])).toThrow(Error);
+    expect(() => reshape([1, 2, 3, 4], [3])).toThrow(Error);
+
     expect(reshape([1], [1])).toEqual([1]);
     expect(reshape([1, 2, 3, 4], [2, 2])).toEqual([[1, 2], [3, 4]]);
     expect(reshape([[1, 2], [3, 4]], [4])).toEqual([1, 2, 3, 4]);
@@ -544,12 +556,16 @@ test('array boolean compares', () => {
 });
 
 test('broadcasting', () => {
+    expect(() => addArrays([0, 1, 2], [0, 1])).toThrow(Error);
+
     const a = reshape(arange(24), [2, 3, 4]);
     const b = 5;
     const c = addArrays(a, b);
     const exp = addArrays(a, full(getShape(a), b));
+    const exp2 = addArrays(full(getShape(a), b), a);
     expect(getShape(c)).toEqual(getShape(a));
     expect(allEqual(exp, c)).toBe(true);
+    expect(allEqual(exp, exp2)).toBe(true);
     const d = addArrays(b, a);
     expect(getShape(d)).toEqual(getShape(a));
     expect(allEqual(exp, d)).toBe(true);
@@ -568,10 +584,25 @@ test('broadcasting', () => {
     expect(all(arrEqual(ored, e))).toBe(true);
     expect(allEqual(f, ored)).toBe(true);
     expect(all(arrEqual(ored, e))).toBe(true);
+
+    const g = reshape(a, [2, 12]);
+    const h = subArrays(a, g);
+    expect(getShape(h)).toEqual(getShape(a));
+
+    const i = arange(12);
+    const j = reshape(i, [3, 4]);
+    const k = reshape(i, [4, 3]);
+    const l = addArrays(j, k);
+    expect(getShape(l)).toEqual(getShape(j));
 });
 
 test('array indexing', () => {
+    expect(() => arrIndex(5, [0])).toThrow(Error);
+    expect(() => arrIndex([1, 2, 3], [[0, 1]])).toThrow(Error);
+    expect(() => arrIndex([1, 2, 3], [[[0, 1]]])).toThrow(Error);
+
     const arr: number[] = randArr([24], 10) as number[];
+    expect(arrIndex(arr, 0)).toBe(arr[0]);
     const numInds: number[] = randArr([10], arr.length) as number[];
     const boolInds: boolean[] = (randArr([arr.length], 2) as number[]).map(n => !!n);
 
@@ -618,3 +649,13 @@ test('array indexing', () => {
     }
 });
 
+test('zeros and ones', () => {
+    const arrs = [
+        zeros([20]),
+        ones([20])
+    ];
+    for (let i = 0; i < arrs.length; i++) {
+        expect(all(arrEqual(arrs[i], i))).toBe(true);
+        expect(getShape(arrs[i])).toEqual([20]);
+    }
+});

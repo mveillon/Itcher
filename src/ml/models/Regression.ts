@@ -40,19 +40,6 @@ export class Regression extends MachineLearning {
         return res.to1DArray();
     }
 
-    static fromObj(obj: { [key: string]: any; }): Regression {
-        let res = new Regression(obj['degree']);
-        res._w = obj['w'];
-        return res;
-    }
-
-    toObj(): { [key: string]: any; } {
-        return {
-            degree: this._degree,
-            w: this._w
-        };
-    }
-
     /**
      * Fills out the features array to include the additional terms required to make
      * this model better than just linear regression

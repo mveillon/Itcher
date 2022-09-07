@@ -50,14 +50,7 @@ export class Pitch {
      * @returns a JSON
      */
     toObj(): pitchJSON {
-        return {
-            name: this.name,
-            timesThrown: this.timesThrown,
-            velo: this.velo,
-            spinRate: this.spinRate,
-            spinDirection: this.spinDirection,
-            heatmap: this.heatmap,
-        };
+        return JSON.parse(JSON.stringify(this)) as pitchJSON;
     }
 }
 

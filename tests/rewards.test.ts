@@ -21,4 +21,14 @@ test('rewards', () => {
             }
         }
     }
+
+    let state = new GameState();
+    let r = rewards('f', state);
+    expect(r).toBeGreaterThan(0);
+    expect(r).toBeLessThan(3);
+    state.strikes = 2;
+    r = rewards('f', state);
+    expect(r).toBe(0);
+
+    expect(() => rewards('fake result', state)).toThrowError();
 })

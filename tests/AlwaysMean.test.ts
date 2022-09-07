@@ -1,5 +1,5 @@
 import { checkModel, defaultTimeout } from "./checkModel";
-import { AlwaysMean } from "../src/ml/models/AlwaysMean";
+import { alwaysMean, AlwaysMean } from "../src/ml/models/AlwaysMean";
 import { arange, reshape } from "../src/utils/numJS";
 
 jest.setTimeout(defaultTimeout);
@@ -10,7 +10,7 @@ test('right mean', async () => {
         y.push(5);
     }
 
-    let aMean = new AlwaysMean();
+    let aMean = alwaysMean();
     await aMean.fit(x, y);
     expect(aMean.mean).toBeCloseTo(5);
 

@@ -1,4 +1,4 @@
-import { NeuralNet } from "../src/ml/models/NeuralNet";
+import { neuralNet, NeuralNet } from "../src/ml/models/NeuralNet";
 import { 
     checkModel, 
     defaultTimeout,
@@ -12,7 +12,15 @@ import { numAttributes } from "../src/ml/mappings";
 jest.setTimeout(defaultTimeout);
 
 test('overall sensibility', async () => {
-    await checkModel(new NeuralNet(numAttributes(), 1024, 1));
+    await checkModel(neuralNet());
+});
+
+test('different layer sizes', async () => {
+    const bad = new NeuralNet(numAttributes(), 1);
+    await bad.fit(trainFeats, trainTargs);
+    const preds = bad.predict(validFeats);
+    expect(validTargs.length).toBe(preds.length);
+    expect(() => new NeuralNet(numAttributes())).toThrowError();
 });
 
 const searching = false;

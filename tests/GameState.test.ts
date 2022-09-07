@@ -116,6 +116,11 @@ test('base hits', () => {
         }
         clearBases();
     }
+
+    gs.error();
+    expect(gs.bases).toEqual([true, false, false]);
+    expect(gs.outs).toBe(0);
+    checkNewBat(gs, batter++);
 });
 
 test('outs', () => {
@@ -173,4 +178,48 @@ test('undo', () => {
     expect(gs.pitcher.name).toBe('original name');
 });
 
+test('backups', () => {
+    let gs = new GameState();
 
+    for (let i = 0; i < GameState.maxBackups; i++) {
+        gs.strike();
+        expect(gs.strikes).toBe((i + 1) % 3);
+    }
+
+    expect(gs.lastStates.length).toBe(GameState.maxBackups);
+    gs.ball();
+    expect(gs.lastStates.length).toBe(GameState.maxBackups);
+    expect(gs.balls).toBe(1);
+    gs.undo();
+    expect(gs.balls).toBe(0);
+    gs.ball();
+
+    for (let i = 0; i < GameState.maxBackups; i++) {
+        const oldBalls = gs.balls;
+        gs.undo()
+        gs.ball();
+        expect(gs.balls).toBe(oldBalls);
+    }
+
+    for (let i = 0; i < GameState.maxBackups; i++) {
+        expect(gs.lastStates.length).toBe(GameState.maxBackups - i);
+        gs.undo();
+    }
+});
+
+test('count incrementing', () => {
+    let gs = new GameState();
+    gs.strikes = 3;
+    expect(gs.strikes).toBe(0);
+    expect(gs.outs).toBe(1);
+    gs.balls = 10;
+    expect(gs.balls).toBe(0);
+    expect(gs.bases).toEqual([true, false, false]);
+
+    gs.strikes = -1;
+    expect(gs.strikes).toBe(0);
+    expect(gs.outs).toBe(1);
+    gs.balls = -1;
+    expect(gs.balls).toBe(0);
+    expect(gs.bases).toEqual([true, false, false]);
+})

@@ -47,21 +47,24 @@ test('dispatch', () => {
     expect(state.strikes).toBe(0);
     expect(state.balls).toBe(0);
 
-    const hits = ['1b', '2b', '3b'];
-    for (const h of hits) {
+    const hits = ['1b', '2b', '3b', 'hr'];
+    for (let h = 0; h < hits.length; h++) {
         dispatch('k');
         state = getState();
         expect(state.strikes).toBe(1);
-        dispatch(h);
+        dispatch(hits[h]);
         state = getState();
         expect(state.strikes).toBe(0);
-        expect(state.bases).not.toEqual([false, false, false]);
+        let bases = [false, false, false];
+        if (h < bases.length) bases[h] = true;
+        expect(state.bases).toEqual(bases);
         dispatch('undo');
         state = getState();
         expect(state.bases).toEqual([false, false, false]);
         dispatch('undo');
         state = getState();
     }
+
 
     expect(state.outs).toBe(2);
     dispatch('o');
@@ -70,4 +73,6 @@ test('dispatch', () => {
     dispatch('dp');
     state = getState();
     expect(state.outs).toBe(2);
+
+    expect(() => dispatch('fake result')).toThrowError();
 });

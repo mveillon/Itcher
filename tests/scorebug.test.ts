@@ -153,3 +153,23 @@ test('change linespot', () => {
     expect(state.lineSpot).toBe(0);
 });
 
+test('add strike/ball', () => {
+    resetState();
+    let s = getState();
+    bug.addStrike(-1);
+    s = getState();
+    expect(s.strikes).toBe(0);
+    bug.addBall(-1);
+    s = getState();
+    expect(s.balls).toBe(0);
+    bug.addStrike(1);
+    s = getState();
+    expect(s.strikes).toBe(1);
+    s.undo();
+    expect(s.strikes).toBe(0);
+    bug.addBall(1);
+    s = getState();
+    expect(s.balls).toBe(1);
+    s.undo();
+    expect(s.balls).toBe(0);
+});

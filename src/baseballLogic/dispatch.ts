@@ -47,7 +47,6 @@ export const dispatch = (result: string) => {
             break;
         default:
             throw new Error(`Unexpected result ${result}`);
-            break;
     }
     setState(state);
 }

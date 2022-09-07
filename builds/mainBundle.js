@@ -390,25 +390,17 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
 }));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const bug = __importStar(_dereq_("./ui/scorebug.js"));
-const buttons = __importStar(_dereq_("./ui/buttons.js"));
+const scorebug_js_1 = _dereq_("./ui/scorebug.js");
 const init = () => {
-    bug.initBug();
+    (0, scorebug_js_1.initBug)();
 };
-module.exports = Object.assign(Object.assign({ init: init }, bug), buttons);
+module.exports.init = init;
+__exportStar(_dereq_("./ui/buttons.js"), exports);
+__exportStar(_dereq_("./ui/scorebug.js"), exports);
 
 },{"./ui/buttons.js":17,"./ui/scorebug.js":18}],5:[function(_dereq_,module,exports){
 "use strict";
@@ -922,7 +914,7 @@ const EnsembleClassifier_js_1 = _dereq_("./EnsembleClassifier.js");
  * the expected reward given the current state and what pitch
  * is being thrown.
  * @param numChildren the number of children to use in the ensemble method.
- * Default is 1000
+ * Default is 20
  * @returns a machine learning model for selecting pitches
  */
 const getLearner = (numChildren = 20) => __awaiter(void 0, void 0, void 0, function* () {
