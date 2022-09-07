@@ -17,22 +17,12 @@ export class AlwaysMean extends MachineLearning {
         return this._mean;
     }
 
-    fit(features: number[][], targets: number[]): void {
+    protected async fitAsync(features: number[][], targets: number[]) {
         this._mean = average(targets);
     }
 
     predict(features: number[][]): number[] {
         return Array(features.length).fill(this._mean);
-    }
-
-    toObj(): { [key: string]: any } {
-        return { _mean: this._mean };
-    }
-
-    static fromObj(obj: { [key: string]: any }): AlwaysMean {
-        let res = new AlwaysMean();
-        res._mean = obj['_mean'];
-        return res;
     }
 }
 

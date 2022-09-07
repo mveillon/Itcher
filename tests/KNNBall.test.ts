@@ -1,7 +1,14 @@
-import { checkModel, defaultTimeout, training } from "./checkModel";
+import { 
+    checkModel, 
+    defaultTimeout, 
+    training,
+    trainFeats,
+    trainTargs,
+    validFeats,
+    validTargs
+} from "./checkModel";
 import { KNNBall } from "../src/ml/models/KNNBall";
 import { BinaryTree } from "../src/utils/BinaryTree";
-import { trainFeatsTargs, validFeatsTargs } from "../src/ml/trainTest";
 import { mse } from "../src/ml/calculations";
 import { BallFriend } from "./friends";
 import { numAttributes } from "../src/ml/mappings";
@@ -10,8 +17,7 @@ jest.setTimeout(defaultTimeout);
 test('train learner', async () => {
     if (training) {
         let knn = new BallFriend(8);
-        const [feats, targs] = trainFeatsTargs();
-        await knn.fit(feats, targs);
+        await knn.fit(trainFeats, trainTargs);
         expect(knn.k).toBe(8);
         expect(typeof knn.features).not.toBe('undefined');
         expect(typeof knn.targets).not.toBe('undefined');
@@ -20,7 +26,7 @@ test('train learner', async () => {
         expect(knn.tree.left instanceof BinaryTree<number[][]>).toBe(true);
         expect(knn.tree.right instanceof BinaryTree<number[][]>).toBe(true);
 
-        expect(knn.features.length).toBe(feats.length);
+        expect(knn.features.length).toBe(trainFeats.length);
         expect(knn.features[0].length).toBe(numAttributes());
         expect(knn.targets.length).toBe(knn.features.length);
 
@@ -41,9 +47,6 @@ const searching = false;
 test ('best hypers', async () => {
     if (searching) {
         // k = 14 => 0.053
-        const [trainFeats, trainTargs] = trainFeatsTargs();
-        const [validFeats, validTargs] = validFeatsTargs();
-
         const errs: number[] = [];  
         for (let k = 2; k < 15; k++) {
             let knn = new KNNBall(k);

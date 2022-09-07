@@ -1,5 +1,5 @@
 # Itcher
-This codebase uses machine learning to select what pitch the pitcher should throw next based on the game state. 
+This codebase uses machine learning to select what pitch the pitcher should throw next based on the game state and information about the pitcher's repertoire.
 
 The models have been trained using pitch by pitch data from 2019 found [here](https://www.kaggle.com/datasets/pschale/mlb-pitch-data-20152018?resource=download).
 
@@ -7,7 +7,7 @@ The models have been trained using pitch by pitch data from 2019 found [here](ht
 To install, first download the code. Because of the requirements of some of the dependencies, the path to the root must not have any spaces. We recommend leaving it in your Downloads folder or placing it in your Desktop or Documents folder. Then open Terminal and `cd` into the root directory (you can drag the folder from Finder to Terminal to copy the absolute path). Run `npm install` to install all the dependencies and run `npm run run-server` to start the local host and open the HTML in your browser.
 
 # Windows
-Not yet supported because I don't have a Windows machine. 
+Not yet supported because I don't have a Windows machine ¯\\\_(ツ)\_/¯. 
 
 # Usage
 
@@ -25,4 +25,29 @@ The pitch recommendation is refreshed every time the state changes, and will alw
 # How It Works
 At a high level, this codebase goes through each pitch the current pitcher can throw and combines information about that pitch (average velocity, spin rate, etc.) with the current game state to predict how good of an outcome will result from throwing that pitch. Once that information is aggregated, those predictions can be used as weights in the random selection of the next pitch to throw. If the machine learning says a 4-seam fastball will be better for the pitcher than a curveball, then the code will be more likely to suggest a 4-seamer than the curveball. It will not always suggest a 4-seamer though, because the predictability would undermine the optimality. 
 
-The way the machine learning works is not completely intuitive, because the intuitive methods frankly did not perform well at all. The parent model is an ensemble of polynomial regression models, each trained on a subset of the pitch-by-pitch data from Kaggle. What makes the machinery unintuitive is these polynomial regression models are actually trained as *classifiers*, each predicting, given the current game state and information about the pitch being thrown, whether the pitch will result in a *good* outcome or a *bad* outcome. The parent model averages these classifications to approximate the probability of a good outcome, and these aggregations are used as the weights for the random selection.
+The way the machine learning works is not completely intuitive, because the intuitive methods frankly did not perform well at all. The parent model is an ensemble of polynomial regression models, each trained on a subset of the pitch-by-pitch data from Kaggle. What makes the machinery unintuitive is these polynomial regression models are actually trained as *classifiers*, each predicting, given the current game state and information about the pitch being thrown, whether the pitch will result in a *good* outcome or a *bad* outcome. The bagging parent model averages these classifications to approximate the probability of a good outcome, and these aggregations are used as the weights for the random selection.
+
+# Why Use This
+Long story short, this code provides better optimality as well as better randomness. 
+
+Starting with the randomness, numerous studies have embarked on the project of predicting what pitch the opposing pitcher will throw next. [This study](https://towardsai.net/p/machine-learning/baseball-pitch-prediction) by Towards AI was able to predict the correct pitch type 67.35% of the time. Moreover, this study was predicting specific pitch types, i.e. 4-seam fastball and 2-seam fastball were considered different pitches. Many batters would likely see great improvement even if they only knew whether the next pitch would be a fastball as opposed to a breaking ball, and a machine learning model with that simpler task would likely perform even better. 
+
+This code would be impossible to predict reliably because it uses a much truer randomness than what an MLB pitcher/catcher/manager can come up with while also trying to pay attention to everything else happening in the game. The average probability of Itcher selecting the pitch it ends up selecting is ____, which provides a hard ceiling for the accuracy of any human or machine trying to predict it.
+
+Along with the randomness, the pitches this model suggests would perform better than the pitches selected in the dataset. Sticking to the framework of measuring outcomes based on the binary of whether they were good or bad for the pitcher, unsurprisingly, as currently chosen, a given pitch is good for the pitcher about 50% of the time. The specific figure is 51.2%. Based on the machine learning's valuation, the pitch the model selects would give the pitcher a good outcome 59.4% of the time.
+
+However, we still have to factor in the model's inaccuracy. The model uses a bagging ensemble, which means the 0.594 roughly translates to 594 models predicting a good outcome while 1000 - 594 = 406 models predict a bad outcome (we don't actually use 1000 models but this is just for illustration). If 75% of those 594 "good" models are right, that results in 0.75 * 594 = 445.5 good outcomes, and 0.25 * 594 = 148.5 bad outcomes. When we do the same with the "bad" models, we get 0.75 * 406 = 304.5 =  bad outcomes and 0.25 * 406 = 101.5 good outcomes. This means, adjusting for the inaccuracy, we get about 445.5 + 101.5 = 547 good outcomes, i.e. a 54.7% chance of a good outcome. This estimate is more conservative, which makes sense since it is taking the model's output with a grain of salt. 
+
+We can convert these figures to a run value by measuring the wOBA before and after the pitch, and then using that to find the wRAA over a full season. Note that the training data is originally categorized into "good" and "bad" events based on this difference in wOBA, although the magnitude is lost. 
+
+For pitches that resulted in a "good" event, the average wOBA difference before and after is -0.145 (negative is good for the pitcher). Pitches that resulted in a "bad" event averaged a wOBA difference of 0.155. The selected pitch thus has an average wOBA difference of 0.512 * -0.145 + (1 - 0.512) * 0.155 = 0.0014, which is unsurprisingly basically zero. On the other hand, this code's selected pitch has an average wOBA difference of 0.547 * -0.145 + (1 - 0.547) * 0.155 = -0.0091. 
+
+In the data this project uses, there were 3.87 pitches per plate appearance, meaning over the course of one plate appearance, this code provides a difference in wOBA of -0.0091 * 3.87 = -0.035217.
+
+The league-average pitch by definition allows the league-average wOBA. This project uses 2019 data, and in 2019 the league-wide wOBA was 0.320, the wOBA scale was 1.157, and the number of runs per plate appearance was 0.126 (all figures from [fangraphs](https://www.fangraphs.com/guts.aspx?type=cn)). A plate apperance using pitches selected from Itcher would thus have a wOBA of 0.320 - 0.035217 = 0.284783. 
+
+In 2019, the average team faced 38.39 batters per game (from [here](https://www.baseball-reference.com/leagues/majors/pitch.shtml)), meaning 38.39 * 162 = 6219.18 per season. To see how valuable a 0.284 wOBA over 6219.18 plate appearances is, it's easiest to convert the figures to wRAA. Using [this formula](https://library.fangraphs.com/offense/wraa/), we find wRAA = ((0.284 - 0.320) / 1.157) * 6219.18 = -193.50947474, which is to say that a team using Itcher over a full season would allow something on the order of 193.5 runs fewer than the same team not using Itcher. 
+
+Fangraphs calculates the amount of runs per win using the formula [here](https://library.fangraphs.com/misc/war/converting-runs-to-wins/). In 2019, this figure was 4.83 * 1.5 + 3 = 10.245 (runs per game from [here](https://www.baseball-reference.com/leagues/majors/pitch.shtml)), meaning that runs saved figure trainslates to 193.50947474 / 10.245 = 18.8881869 wins over a full season. 
+
+Using Itcher provides a team with 18.9 extra wins. If Itcher were a free agent, it would be worth $6.37 million per win * 18.9 wins = $120.393 million dollars in 2022, for just one year. (Dollars per win from [here](https://blogs.fangraphs.com/what-did-teams-pay-per-win-in-free-agency/).)

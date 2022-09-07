@@ -7,7 +7,6 @@
       "noLib":false,
       "emitDecoratorMetadata":true,
       "experimentalDecorators":true,
-      "sourceMap":true,
       "pretty":true,
       "allowUnreachableCode":true,
       "allowUnusedLabels":true,
@@ -20,7 +19,9 @@
       "noEmitHelpers":false,
       "esModuleInterop": true,
       "allowJs":true,
-      "skipLibCheck": true
+      "skipLibCheck":true,
+      "inlineSourceMap":true,
+      "inlineSources":true
    },
    "include":[ 
       "src/**/*.ts"

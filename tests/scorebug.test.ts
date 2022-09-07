@@ -1,4 +1,4 @@
-import { getState, setState, resetState } from "../src/baseballLogic/GameState";
+import { getState, resetState } from "../src/baseballLogic/GameState";
 import * as bug from "../src/ui/scorebug";
 
 const r = () => resetState(true, true, false);

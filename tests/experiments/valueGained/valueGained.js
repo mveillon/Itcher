@@ -1,4 +1,4 @@
-const { nextPitch } = require("../../../dist/ml/nextPitch");
+const { nextPitch, getWs } = require("../../../dist/ml/nextPitch");
 const { getLearner } = require("../../../dist/ml/models/getLearner");
 const { getState, setState } = require("../../../dist/baseballLogic/GameState");
 const { extractFeaturesTargets, completeFeatsTargs } = require("../../../dist/ml/trainTest");
@@ -6,7 +6,7 @@ const { dataPaths, readSpreadSheet, writeFile } = require("../../../dist/utils/f
 const { readAllPitchers } = require("../../../dist/baseballLogic/Pitcher");
 const { aidToPitcher } = require("../../../dist/ml/parseData");
 const { getFeature } = require("../../../dist/ml/mappings");
-const { colAverage } = require("../../../dist/utils/arrayOps");
+const { colAverage, scalarMul, sumList } = require("../../../dist/utils/numJS");
 const { Pitcher } = require("../../../dist/baseballLogic/Pitcher");
 
 /**
@@ -70,11 +70,15 @@ const getValue = (row) => {
         allFeats.push(getFeature(p, state));
     }
     const preds = learner.predict(allFeats);
+    const ws = getWs(learner, pitches);
+    const pitchInd = pitches.indexOf(nextPitch(learner));
 
-    const selected = preds[pitches.indexOf(nextPitch(learner))];
+    const selected = preds[pitchInd];
     const optimal = Math.max(...preds);
+    const weight = pitchInd === 0 ? ws[0] : ws[pitchInd] - ws[pitchInd - 1];
+    const prob = weight / ws[ws.length - 1];
 
-    return [+(actual > 0), selected, optimal];
+    return [+(actual > 0), selected, optimal, prob];
 }
 
 /**
@@ -110,7 +114,9 @@ Average wOBA of bad event: ${avgBad}
 
 Average probability of good event of actual pitch: ${avgs[0]}
 Average probability of good event of selected pitch: ${avgs[1]}
-Average probability of good event of optimal pitch: ${avgs[2]}`
+Average probability of good event of optimal pitch: ${avgs[2]}
+
+Average probability of chosen pitch: ${avgs[3]}`
     );
 }
 

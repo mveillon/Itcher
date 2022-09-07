@@ -1,6 +1,8 @@
-Average wOBA of good event: 0.1452693687099457
-Average wOBA of bad event: -0.15518148865087186
+Average wOBA of good event: 0.1452693687099453
+Average wOBA of bad event: -0.15518148865087064
 
-Average probability of good event of actual pitch: 0.5139224888716857
-Average probability of good event of selected pitch: 0.5114715872316953
-Average probability of good event of optimal pitch: 0.5221561868028286
+Average probability of good event of actual pitch: 0.513313182924444
+Average probability of good event of selected pitch: 0.5937952804490374
+Average probability of good event of optimal pitch: 0.6948934037993562
+
+Average probability of chosen pitch: 0.18327513568242465

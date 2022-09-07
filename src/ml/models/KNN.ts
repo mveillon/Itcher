@@ -22,7 +22,7 @@ export abstract class KNN extends MachineLearning {
         this._tree = undefined;
     }
 
-    fit(features: number[][], targets: number[]): void {
+    protected async fitAsync(features: number[][], targets: number[]) {
         this._features = features;
         this._targets = targets;
 
@@ -57,16 +57,4 @@ export abstract class KNN extends MachineLearning {
      * @returns the binary tree, or the leaf node
      */
     protected abstract buildTree(inds: number[]): BinaryTree<number[]> | number[];
-        
-    static fromObj(obj: { [key: string]: any }): KNN {
-        throw new Error(
-            'KNN saving and loading currently not supported due to difficulty of serializing functions.'
-        );
-    }
-
-    toObj(): { [key: string]: any } {
-        throw new Error(
-            'KNN saving and loading currently not supported due to difficulty of serializing functions.'
-        );
-    }
 }

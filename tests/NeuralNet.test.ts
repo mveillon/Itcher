@@ -1,7 +1,13 @@
 import { NeuralNet } from "../src/ml/models/NeuralNet";
-import { checkModel, defaultTimeout } from "./checkModel";
+import { 
+    checkModel, 
+    defaultTimeout,
+    trainFeats,
+    trainTargs,
+    validFeats,
+    validTargs
+} from "./checkModel";
 import { mse } from "../src/ml/calculations";
-import { trainFeatsTargs, validFeatsTargs } from "../src/ml/trainTest";
 import { numAttributes } from "../src/ml/mappings";
 jest.setTimeout(defaultTimeout);
 
@@ -13,9 +19,6 @@ const searching = false;
 test('best hypers', async () => {
     //layer sizes of 64,16,16 => 0.047741495995480485
     if (searching) {
-        const [trainFeats, trainTargs] = trainFeatsTargs();
-        const [validFeats, validTargs] = validFeatsTargs();
-
         let best = Infinity;
         let bestLayers: number[] = [];
         for (let numHidden = 1; numHidden < 4; numHidden++) {

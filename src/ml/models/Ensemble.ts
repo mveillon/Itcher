@@ -1,7 +1,6 @@
 import { shuffle } from "../../utils/random.js";
 import { MachineLearning } from "./MachineLearning.js";
-import { readJSON } from "../../utils/files.js";
-import { colAverage, arange } from "../../utils/numJS.js";
+import { colAverage, arange, arrIndex } from "../../utils/numJS.js";
 
 export class Ensemble extends MachineLearning {
     protected _models: MachineLearning[];
@@ -9,11 +8,11 @@ export class Ensemble extends MachineLearning {
     /**
      * A model that combines the predictions of several different models to make its predictions
      * @param models either a function that generates a new untrained ML model or a list of untrained models
-     * @param numModels how many models to use. Not necessary if _models is an array
+     * @param numModels how many models to use. Not necessary if models is an array
      */
     constructor(
         models: (() => MachineLearning) | MachineLearning[], 
-        numModels?: number
+        numModels?: number,
     ) {
         super();
         if (typeof models === 'function') {
@@ -31,56 +30,39 @@ export class Ensemble extends MachineLearning {
         }
     }
 
-    async fit(features: number[][], targets: number[]) {
+    /**
+     * Trains each child model on the given features and targets
+     * @param features the dependent variables to train on
+     * @param targets the response variables 
+     * @param perModel what fraction of samples to send to each child model. Default
+     * is to `1 / this._models.length`
+     */
+    protected async fitAsync(features: number[][], targets: number[], perModel?: number) {
+        perModel = perModel || (1 / this._models.length);
+        const sampsPer = Math.floor(features.length * perModel);
+
         const inds: number[] = arange(features.length);
         shuffle(inds);
-        const perModel = Math.floor(inds.length / this._models.length);
+        let featureCuts: number[][][] = [];
+        let targetCuts: number[][] = [];
 
         for (let m = 0; m < this._models.length; m++) {
-            const start = m * perModel;
-            const end = m === this._models.length - 1 ? inds.length : start + perModel;
-            let featureCut: number[][] = [];
-            let targetCut: number[] = [];
-            for (let i = start; i < end; i++) {
-                featureCut.push(features[inds[i]]);
-                targetCut.push(targets[inds[i]]);
-            }
-
-            await this._models[m].fit(featureCut, targetCut);
+            const start = m * sampsPer;
+            const end = start + sampsPer;
+            const indSlice = inds.slice(start, end);
+            featureCuts.push(arrIndex(features, indSlice) as number[][]);
+            targetCuts.push(arrIndex(targets, indSlice) as number[]);
         }
+
+        let fitPromises: Promise<void>[] = [];
+        for (let m = 0; m < this._models.length; m++) {
+            fitPromises.push(this._models[m].fit(featureCuts[m], targetCuts[m]));
+        }
+        await Promise.all(fitPromises);
     }
 
     predict(features: number[][]): number[] {
         return colAverage(this._models.map((m) => m.predict(features)));
     }
-
-    /**
-     * Reads the machine learning model from the given path
-     * Allows for more efficient creation than training
-     * @param path the location of the saved model
-     * @param converter how to convert the submodels into child models. Usually just the static
-     * fromObj method of the appropriate class
-     * @returns the pre-trained model
-     */
-    static readEnsemble(path: string, converter: convertFunc): Ensemble {
-        return Ensemble.fromObjEnsemble(readJSON(path), converter); 
-    }
-
-    static fromObjEnsemble(obj: { [key: string]: any }, converter: convertFunc): Ensemble {
-        return new Ensemble(obj['models'].map(converter));
-    }
- 
-    static fromObj(obj: { [key: string]: any }): Ensemble {
-        throw new Error(`Ensemble models should use the readEnsemble method, not the read method`);
-    }
-
-    toObj(): { [key: string]: any } {
-        const objs: { [key: string]: any }[] = [];
-        for (const m of this._models) {
-            objs.push(m.toObj());
-        }
-        return { models: objs };
-    }
 }
 
-type convertFunc = (obj: { [key: string]: any }) => MachineLearning;

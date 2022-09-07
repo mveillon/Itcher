@@ -1,5 +1,5 @@
 import { MachineLearning } from "./MachineLearning.js";
-import { Matrix, inverse } from "../../../node_modules/ml-matrix/matrix.js";
+import { Matrix, inverse } from "ml-matrix";
 
 export class Regression extends MachineLearning {
     protected _degree: number;
@@ -15,7 +15,7 @@ export class Regression extends MachineLearning {
         this._w = undefined;
     }
 
-    fit(features: number[][], targets: number[]): void {
+    protected async fitAsync(features: number[][], targets: number[]) {
         if (features.length === 0) return;
         const tarMat = Matrix.columnVector(targets);
         const zs = this.fillZs(features);
@@ -52,7 +52,7 @@ export class Regression extends MachineLearning {
             w: this._w
         };
     }
-    
+
     /**
      * Fills out the features array to include the additional terms required to make
      * this model better than just linear regression

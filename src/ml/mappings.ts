@@ -27,6 +27,7 @@ export const getFeature = (pitch: string, state: GameState): number[] => {
         pitchO.velo, 
         pitchO.spinRate, 
         pitchO.spinDirection,
+        pitchO.heatmap
     );
 }
 
@@ -37,6 +38,7 @@ export const getFeature = (pitch: string, state: GameState): number[] => {
  * @param velo the velocity of the pitch
  * @param spinRate the spinrate of the pitch
  * @param direc the direction of the pitch's spin in degrees
+ * @param heatmap the pitch's heatmap
  * @returns one list of features
  */
 export const pitchFeature = (
@@ -44,6 +46,7 @@ export const pitchFeature = (
     velo: number, 
     spinRate: number, 
     direc: number,
+    heatmap: number[][]
     ): number[] => {
     const radDirec = direc * Math.PI / 360;
     return [
@@ -54,6 +57,7 @@ export const pitchFeature = (
         spinRate,
         Math.cos(radDirec),
         Math.sin(radDirec),
+        ...flatten(heatmap) as number[]
     ];
 }
 

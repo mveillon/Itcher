@@ -1,1 +1,4 @@
--the pitches nextPitch selects have a lower reward than the actual pitches the pitchers throw
+-The weights for each pitch are all basically exactly the same
+    -Can probably fix with more child models, but for some reason they take forever to fit
+
+-Find average probability of selected pitch and put in README

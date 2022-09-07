@@ -14,12 +14,6 @@ export class EnsembleFriend extends Ensemble {
     set models(val: MachineLearning[]) {
         this._models = val;
     }
-
-    static fromEnsemble(ens: Ensemble, converter: (ml: { [key: string]: any }) => MachineLearning): EnsembleFriend {
-        let res = new EnsembleFriend([]);
-        res.models = ens.toObj()['models'].map(converter);
-        return res;
-    }
 }
 
 export class BallFriend extends KNNBall {
@@ -73,14 +67,6 @@ export class RegressionFriend extends Regression {
 
     set degree(val: number) {
         this._degree = val;
-    }
-
-    static fromRegression(reg: Regression): RegressionFriend {
-        let res = new RegressionFriend();
-        const o = reg.toObj();
-        res.w = o['w'];
-        res.degree = o['degree'];
-        return res;
     }
 }
 

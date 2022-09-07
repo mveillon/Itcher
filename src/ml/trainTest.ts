@@ -7,7 +7,7 @@ import { rewards } from "./rewards.js";
 import { pitchFeature, oneHotHeatmap } from "./mappings.js";
 import { mse } from "./calculations.js";
 import { heatmapSize } from "../baseballLogic/Pitch.js";
-import { ndMap, reshape } from "../utils/numJS.js";
+import { ndMap } from "../utils/numJS.js";
 
 /**
  * Splits the spreadsheet into features and targets
@@ -107,7 +107,12 @@ export const extractFeaturesTargets = (
         state,
         parseFloat(play['start_speed']),
         parseFloat(play['spin_rate']),
-        parseFloat(play['spin_dir'])
+        parseFloat(play['spin_dir']),
+        oneHotHeatmap(
+            x,
+            z,
+            heatmapSize()
+        )
     );
     
     return [features, target];

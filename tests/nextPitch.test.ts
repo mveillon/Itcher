@@ -6,7 +6,7 @@ import { defaultTimeout } from "./checkModel";
 jest.setTimeout(defaultTimeout);
 
 test('next pitch', async () => {
-    const learner = await getLearner();
+    const learner = await getLearner(20);
     resetState(false);
     const state = getState();
     state.lineup = ['R'];

@@ -49,7 +49,7 @@ export class NeuralNet extends MachineLearning {
         });
     }
 
-    async fit(features: number[][], targets: number[]) {
+    protected async fitAsync(features: number[][], targets: number[]) {
         if (features.length === 0) return;
         await this._net.fit(
             tf.tensor(features),
@@ -75,14 +75,6 @@ export class NeuralNet extends MachineLearning {
 
         const res = (preds as tf.Tensor).arraySync();
         return (res as number[][]).map(row => row[0]);
-    }
-
-    static fromObj(obj: { [key: string]: any }): MachineLearning {
-        throw new Error('Neural net saving and loading not supported');
-    }
-
-    toObj(): { [key: string]: any } {
-        throw new Error('Neural net saving and loading not supported');
     }
 }
 

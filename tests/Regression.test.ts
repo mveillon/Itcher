@@ -1,7 +1,13 @@
 import { Regression } from "../src/ml/models/Regression";
-import { checkModel, defaultTimeout } from "./checkModel";
+import { 
+    checkModel, 
+    defaultTimeout,
+    trainFeats,
+    trainTargs,
+    validFeats,
+    validTargs
+} from "./checkModel";
 import { arange, full, isClose, any, reshape } from "../src/utils/numJS";
-import { trainFeatsTargs, validFeatsTargs } from "../src/ml/trainTest";
 import { mse } from "../src/ml/calculations";
 import { RegressionFriend } from "./friends";
 
@@ -29,10 +35,6 @@ test('Regression', async () => {
     for (let i = 0; i < preds.length; i++) {
         expect(preds[i]).toBeCloseTo(y[i]);
     }
-
-    const backAgain = RegressionFriend.fromRegression(Regression.fromObj(reg.toObj()));
-    expect(backAgain.degree).toBe(reg.degree);
-    expect(backAgain.w).toEqual(reg.w);
 });
 
 test('overall sensibility', async () => {
@@ -43,9 +45,6 @@ const searching = false;
 test('best hypers', async () => {
     // d = 2 => 0.048
     if (searching) {
-        const [trainFeats, trainTargs] = trainFeatsTargs();
-        const [validFeats, validTargs] = validFeatsTargs();
-
         const errs: number[] = [];  
         for (let d = 2; d < 15; d++) {
             let knn = new Regression(d);

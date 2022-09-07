@@ -1,4 +1,4 @@
-import { sumList } from "../utils/numJS.js";
+import { sumList, numArray, ndMap } from "../utils/numJS.js";
 
 /**
  * Finds the mean squared error
