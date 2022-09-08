@@ -28,7 +28,10 @@ import {
     allEqual,
     arrIndex,
     zeros,
-    ones
+    ones,
+    sameArr,
+    toBool,
+    toNum
 } from "../src/utils/numJS";
 import { shuffle, randArr } from "../src/utils/random";
 
@@ -113,8 +116,8 @@ test('sub arrays', () => {
 
 test('scalar mul', () => {
     expect(scalarMul(1, 2)).toBe(2);
-    expect(scalarMul(2, [3])).toEqual([6]);
-    expect(scalarMul(-1, [[1, 2], [3, 4]])).toEqual([[-1, -2], [-3, -4]]);
+    expect(scalarMul([3], 2)).toEqual([6]);
+    expect(scalarMul([[1, 2], [3, 4]], -1)).toEqual([[-1, -2], [-3, -4]]);
 });
 
 test('flatten', () => {
@@ -336,6 +339,7 @@ test('full', () => {
 
 test('getShape', () => {
     expect(getShape(0)).toEqual([]);
+    expect(getShape([])).toEqual([0]);
     expect(getShape([1])).toEqual([1]);
     expect(getShape([1, 2, 3])).toEqual([3]);
     expect(getShape([[1, 2, 3], [4, 5, 6]])).toEqual([2, 3]);
@@ -581,9 +585,9 @@ test('broadcasting', () => {
     const ored = arrOr(e, f);
     expect(getShape(ored)).toEqual(getShape(f));
     expect(allEqual(ored, f)).toBe(true);
-    expect(all(arrEqual(ored, e))).toBe(true);
+    expect(allEqual(ored, e)).toBe(true);
     expect(allEqual(f, ored)).toBe(true);
-    expect(all(arrEqual(ored, e))).toBe(true);
+    expect(allEqual(ored, e)).toBe(true);
 
     const g = reshape(a, [2, 12]);
     const h = subArrays(a, g);
@@ -594,6 +598,10 @@ test('broadcasting', () => {
     const k = reshape(i, [4, 3]);
     const l = addArrays(j, k);
     expect(getShape(l)).toEqual(getShape(j));
+
+    expect(addArrays(1, 2)).toBe(3);
+
+    expect(addArrays([1, 2, 3], [[1, 2, 3]])).toEqual([[2, 4, 6]]);
 });
 
 test('array indexing', () => {
@@ -657,5 +665,89 @@ test('zeros and ones', () => {
     for (let i = 0; i < arrs.length; i++) {
         expect(all(arrEqual(arrs[i], i))).toBe(true);
         expect(getShape(arrs[i])).toEqual([20]);
+    }
+});
+
+test('array equality', () => {
+    expect(sameArr([1, 2, 3], [1, 2, 3])).toBe(true);
+    expect(sameArr([1, 2, 3], [[1, 2, 3]])).toBe(false);
+    expect(allEqual([1, 2, 3], [1, 2, 3])).toBe(true);
+    expect(allEqual([1, 2, 3], [[1, 2, 3]])).toBe(true);
+    expect(allEqual([1, 2, 3], [[1, 2, 4]])).toBe(false);
+});
+
+test('converting', () => {
+    expect(toNum(true)).toBe(1);
+    expect(toNum(false)).toBe(0);
+    expect(toNum([true, false, true])).toEqual([1, 0, 1]);
+    expect(toNum([[true, false], [false, true]])).toEqual([[1, 0], [0, 1]]);
+    expect(toNum([
+        [
+            [true, false],
+            [true, false]
+        ],
+        [
+            [false, true],
+            [false, false, false]
+        ],
+        [
+            [true, true, true],
+            [false]
+        ]
+    ])).toEqual([
+        [
+            [1, 0],
+            [1, 0]
+        ],
+        [
+            [0, 1],
+            [0, 0, 0]
+        ],
+        [
+            [1, 1, 1],
+            [0]
+        ]
+    ]);
+
+    expect(toBool(0)).toBe(false);
+    expect(toBool(1)).toBe(true);
+    expect(toBool([0, 1, 1])).toEqual([false, true, true]);
+    expect(toBool([[0, 1], [1, 0]])).toEqual([[false, true], [true, false]]);
+    expect(toBool([
+        [
+            [1, 0],
+            [1, 0]
+        ],
+        [
+            [0, 1],
+            [0, 0, 0]
+        ],
+        [
+            [1, 1, 1],
+            [0]
+        ]
+    ])).toEqual([
+        [
+            [true, false],
+            [true, false]
+        ],
+        [
+            [false, true],
+            [false, false, false]
+        ],
+        [
+            [true, true, true],
+            [false]
+        ]
+    ]);
+
+    expect(any(toBool(zeros([10])))).toBe(false);
+    expect(all(toBool(ones([10])))).toBe(true);
+    expect(sumList(toNum(arrEqual(zeros([10]), 0)))).toBe(10);
+    expect(sumList(toNum(arrEqual(ones([10]), 0)))).toBe(0);
+
+    for (let i = 0; i < 10; i++) {
+        const a = randArr([10, i + 1], 2);
+        expect(toNum(toBool(a))).toEqual(a);
     }
 });

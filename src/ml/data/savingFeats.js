@@ -1,7 +1,7 @@
 const { allFeatsTargs } = require("../../../dist/ml/trainTest");
 const { readSpreadSheet, writeFile } = require("../../../dist/utils/files");
 
-const ROOT = './src/ml/data/'
+const ROOT = './src/ml/data/';
 
 /**
  * Saves the features and targets to the directory with the given name
@@ -28,12 +28,16 @@ const saveAll = () => {
         'valid',
         'test'
     ];
-    for (const d of dirs) {
-        const [feats, targs] = allFeatsTargs(
-            readSpreadSheet(ROOT + d + '/raw.ignore.csv')
+    for (let d = 0; d < dirs.length; d++) {
+        process.stdout.write(
+            `Progress: [${'.'.repeat(d)}${' '.repeat(dirs.length - d)}]\r`
         );
-        saveSheets(feats, targs, d);
+        const [feats, targs] = allFeatsTargs(
+            readSpreadSheet(ROOT + dirs[d] + '/raw.ignore.csv')
+        );
+        saveSheets(feats, targs, dirs[d]);
     }
+    console.log(`Progress: [${'.'.repeat(dirs.length)}]\nDone!\n`);
 }
 
-saveAll()
+saveAll();

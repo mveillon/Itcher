@@ -1,4 +1,4 @@
-import { getState } from "../src/baseballLogic/GameState";
+import { getState, resetState } from "../src/baseballLogic/GameState";
 import * as buttons from "../src/ui/buttons";
 
 test('buttons', () => {
@@ -62,4 +62,10 @@ test('buttons', () => {
         expect(state.bases).toEqual([false, false, false]);
         expect(state.outs).toBe((2 + i) % 3);
     }
+
+    resetState();
+    state = getState();
+    buttons.doublePlay();
+    state = getState();
+    expect(state.outs).toBe(2);
 });

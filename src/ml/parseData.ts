@@ -110,7 +110,7 @@ export const findAllPitchers = ()  => {
                 pitchO.velo /= pitchO.timesThrown;
                 pitchO.spinRate /= pitchO.timesThrown;
                 pitchO.spinDirection /= pitchO.timesThrown;
-                pitchO.heatmap = scalarMul(1 / pitchO.timesThrown, pitchO.heatmap) as number[][];
+                pitchO.heatmap = scalarMul(pitchO.heatmap, 1 / pitchO.timesThrown) as number[][];
             }
 
             for (const p in accum[player].pitches) {

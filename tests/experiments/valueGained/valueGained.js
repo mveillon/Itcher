@@ -6,7 +6,7 @@ const { dataPaths, readSpreadSheet, writeFile } = require("../../../dist/utils/f
 const { readAllPitchers } = require("../../../dist/baseballLogic/Pitcher");
 const { aidToPitcher } = require("../../../dist/ml/parseData");
 const { getFeature } = require("../../../dist/ml/mappings");
-const { colAverage, scalarMul, sumList } = require("../../../dist/utils/numJS");
+const { colAverage, subArrays, argMin, ndMap } = require("../../../dist/utils/numJS");
 const { Pitcher } = require("../../../dist/baseballLogic/Pitcher");
 
 /**
@@ -78,7 +78,13 @@ const getValue = (row) => {
     const weight = pitchInd === 0 ? ws[0] : ws[pitchInd] - ws[pitchInd - 1];
     const prob = weight / ws[ws.length - 1];
 
-    return [+(actual > 0), selected, optimal, prob];
+    return [
+        +(actual > 0), 
+        selected, 
+        optimal, 
+        prob, 
+        preds.length
+    ];
 }
 
 /**
@@ -103,9 +109,24 @@ const allValues = async () => {
     const sheet = readSpreadSheet(paths[0]);
     console.log('Spreadsheet read!\n\nProcessing spreadsheet...');
 
-    const res = sheet.map(getValue).filter(l => l.length > 0);
+    let res = [];
+    const totalDots = 20;
+    const perDisp = Math.floor(sheet.length / totalDots);
+    let dots = 0;
+    for (let i = 0; i < sheet.length; i++) {
+        if (i % perDisp === 0) {
+            const spaces = totalDots - dots;
+            process.stdout.write(
+                `Progress: [${'.'.repeat(dots++)}${' '.repeat(spaces)}]\r`
+            );
+        }
+        const val = getValue(sheet[i]);
+        if (val.length > 0) {
+            res.push(val);
+        }
+    }
     const avgs = colAverage(res);
-    console.log('Spreadsheet processed!');
+    console.log(`Progress: [${".".repeat(totalDots)}]\nSpreadsheet processed!`);
 
     writeFile(
         './tests/experiments/valueGained/valueGained.txt',
@@ -116,7 +137,10 @@ Average probability of good event of actual pitch: ${avgs[0]}
 Average probability of good event of selected pitch: ${avgs[1]}
 Average probability of good event of optimal pitch: ${avgs[2]}
 
-Average probability of chosen pitch: ${avgs[3]}`
+Average probability of chosen pitch: ${avgs[3]}
+Average number of pitches ${avgs[4]}
+
+Mean absolute error of ensemble ${avgs[5]}`
     );
 }
 

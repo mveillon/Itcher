@@ -1,4 +1,7 @@
 import { copyArr, arange, arrGTEq, all, numArray, reshape } from "./numJS.js";
+import seedrandom from "seedrandom";
+
+const rng = seedrandom('Itcher');
 
 /**
  * Returns a random integer in between min (inclusive) and max (exclusive)
@@ -11,7 +14,7 @@ import { copyArr, arange, arrGTEq, all, numArray, reshape } from "./numJS.js";
         max = min;
         min = 0;
     }
-    return Math.floor(Math.random() * (max - min) + min);
+    return Math.floor(rng() * (max - min) + min);
 }
 
 /**
@@ -49,7 +52,7 @@ export const choice = <T>(arr: T[], ws?: number[]): T => {
         }
     }
 
-    const seed = Math.random() * ws[ws.length - 1];
+    const seed = rng() * ws[ws.length - 1];
     for (let i = 0; i < arr.length; i++) {
         if (ws[i] > seed) {
             return arr[i];

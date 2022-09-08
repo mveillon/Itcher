@@ -14,23 +14,30 @@ import { boolArray } from "./types.js";
     criterion: (b: boolArray) => boolean, 
     ifTrue: boolean
     ): boolean => {
-    if (typeof bools === 'boolean') {
-        return bools;
-    }
-    if (bools.length === 0) return false;
 
-    for (const nested of bools) {
-        if (criterion(nested)) {
-            return ifTrue;
+    if (Array.isArray(bools)) {
+        if (bools.length === 0) return false;
+        
+        for (const nested of bools) {
+            if (criterion(nested)) {
+                return ifTrue;
+            }
         }
-    }
 
-    return !ifTrue;
+        return !ifTrue;
+    }
+    return bools;
 }
 
 /**
  * Returns whether every element of bools is true. 
- * Returns false if bools is empty
+ * Returns false if bools is empty.
+ * ```
+ * console.log(all([])) // output: false
+ * console.log(all(true)) // output: true
+ * console.log(all([true, false, true])) // output: true
+ * console.log(all([true, true, true])) // output: true
+ * ```
  * @param bools an n-dimensional array of booleans
  * @returns whether all elements of bools are true
  */
@@ -40,7 +47,13 @@ export const all = (bools: boolArray): boolean => {
 
 /**
  * Returns whether any element of bools is true.
- * Returns false if bools is empty
+ * Returns false if bools is empty.
+ * ```
+ * console.log(any([])) // output: false
+ * console.log(any(true)) // output: true
+ * console.log(any([true, false, false])) // output: true
+ * console.log(any([false, false, false])) // output: false
+ * ```
  * @param bools an n-dimensional array of booleans
  * @returns whether any elements of bools are true
  */

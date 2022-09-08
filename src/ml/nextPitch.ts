@@ -3,7 +3,6 @@ import { getState } from "../baseballLogic/GameState.js";
 import { choice } from "../utils/random.js";
 import { MachineLearning } from "./models/MachineLearning.js";
 import { sigmoid } from "./calculations.js";
-import { scalarMul } from "../utils/numJS.js";
 
 /**
  * Given the current game state, computes the next pitch to throw
@@ -35,9 +34,6 @@ export const getWs = (learner: MachineLearning, pitches: string[]): number[] => 
     for (let i = 1; i < rewards.length; i++) {
         cum.push(cum[i - 1] + weights[i]);
     }
-
-    // console.log(scalarMul(1 / cum[cum.length - 1], weights));
-    // console.log(rewards);
 
     return cum;
 }

@@ -1,5 +1,5 @@
 import { MachineLearning } from "./MachineLearning.js";
-import { numArray, ndMap } from "../../utils/numJS.js";
+import { numArray, arrGT, toNum } from "../../utils/numJS.js";
 
 export class RegToClf extends MachineLearning {
     protected _model: MachineLearning;
@@ -31,7 +31,7 @@ export class RegToClf extends MachineLearning {
      * @returns an array of ones and zeros
      */
     private toBinary = (arr: numArray, threshold: number = 0): numArray => {
-        return ndMap(arr, n => +(n > threshold));
+        return toNum(arrGT(arr, threshold));
     }
 }
 

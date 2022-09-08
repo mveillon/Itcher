@@ -47,7 +47,7 @@ test('choice', () => {
     let fwDists: number[] = zeros([dists.length]) as number[];
     const vals = arange(dists.length);
     const ws = vals.map(n => Math.pow(n, 2));
-    const floatWs = scalarMul(1 / sumList(ws), ws) as number[];
+    const floatWs = scalarMul(ws, 1 / sumList(ws)) as number[];
 
     const checkN = (n: number) => {
         expect(Number.isInteger(n)).toBe(true);
@@ -76,14 +76,14 @@ test('choice', () => {
     )).toBe(true);
 
     expect(allClose(
-        scalarMul(1 / randIters, wDists),
+        scalarMul(wDists, 1 / randIters),
         floatWs,
         undefined,
         randIters / 100
     )).toBe(true);
 
     expect(allClose(
-        scalarMul(1 / randIters, fwDists),
+        scalarMul(fwDists, 1 / randIters),
         floatWs,
         undefined,
         randIters / 100

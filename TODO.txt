@@ -1,9 +1,1 @@
--Extend tests to get satisfy coverage
-
--The weights for each pitch are all basically exactly the same
-    -Can probably fix with more child models, but for some reason they take 
-        forever to fit
-    -If all else fails, can just load pre-trained children at runtime. They're all
-        regression so it's just one array per child
-
 -Find average probability of selected pitch and put in README

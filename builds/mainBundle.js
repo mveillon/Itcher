@@ -113,8 +113,10 @@ class GameState {
      * @param numBases how many bases the runners should move
      */
     nBaseHit(numBases) {
-        if (numBases === 0)
-            return;
+        if (numBases === 0) {
+            throw new Error('numBases must be greater than zero');
+        }
+        ;
         this.backup();
         this.newBatter();
         /* Runner on third */
@@ -281,14 +283,7 @@ class Pitch {
      * @returns a JSON
      */
     toObj() {
-        return {
-            name: this.name,
-            timesThrown: this.timesThrown,
-            velo: this.velo,
-            spinRate: this.spinRate,
-            spinDirection: this.spinDirection,
-            heatmap: this.heatmap,
-        };
+        return JSON.parse(JSON.stringify(this));
     }
 }
 exports.Pitch = Pitch;
@@ -394,15 +389,18 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.init = void 0;
 const scorebug_js_1 = _dereq_("./ui/scorebug.js");
+const usingNode_js_1 = _dereq_("./utils/usingNode.js");
 const init = () => {
-    (0, scorebug_js_1.initBug)();
+    if (!(0, usingNode_js_1.usingNode)())
+        (0, scorebug_js_1.initBug)();
 };
-module.exports.init = init;
+exports.init = init;
 __exportStar(_dereq_("./ui/buttons.js"), exports);
 __exportStar(_dereq_("./ui/scorebug.js"), exports);
 
-},{"./ui/buttons.js":17,"./ui/scorebug.js":18}],5:[function(_dereq_,module,exports){
+},{"./ui/buttons.js":17,"./ui/scorebug.js":18,"./utils/usingNode.js":33}],5:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.correlation = exports.sigmoid = exports.variance = exports.avgVar = exports.dot = exports.average = exports.squaredMag = exports.manhattanDistance = exports.squareDistance = exports.mse = void 0;
@@ -849,17 +847,6 @@ class Regression extends MachineLearning_js_1.MachineLearning {
         const res = this.fillZs(features).mmul(this._w);
         return res.to1DArray();
     }
-    static fromObj(obj) {
-        let res = new Regression(obj['degree']);
-        res._w = obj['w'];
-        return res;
-    }
-    toObj() {
-        return {
-            degree: this._degree,
-            w: this._w
-        };
-    }
     /**
      * Fills out the features array to include the additional terms required to make
      * this model better than just linear regression
@@ -869,11 +856,11 @@ class Regression extends MachineLearning_js_1.MachineLearning {
     fillZs(features) {
         let res = [];
         for (let i = 0; i < features.length; i++) {
-            let row = [];
+            let row = [1];
             for (let j = 0; j < features[i].length; j++) {
                 const point = features[i][j];
-                let current = 1;
-                for (let d = 0; d < this._degree + 1; d++) {
+                let current = point;
+                for (let d = 0; d < this._degree; d++) {
                     row.push(current);
                     current *= point;
                 }
@@ -917,7 +904,7 @@ const EnsembleClassifier_js_1 = _dereq_("./EnsembleClassifier.js");
  * Default is 20
  * @returns a machine learning model for selecting pitches
  */
-const getLearner = (numChildren = 20) => __awaiter(void 0, void 0, void 0, function* () {
+const getLearner = (numChildren = 1000) => __awaiter(void 0, void 0, void 0, function* () {
     let res = new EnsembleClassifier_js_1.EnsembleClassifier(Regression_js_1.regression, numChildren);
     const [feats, targs] = (0, trainTest_js_1.completeFeatsTargs)();
     yield res.fit(feats, targs);
@@ -963,7 +950,7 @@ const getWs = (learner, pitches) => {
         cum.push(cum[i - 1] + weights[i]);
     }
     // console.log(scalarMul(1 / cum[cum.length - 1], weights));
-    // console.log(rewards);
+    console.log(rewards);
     return cum;
 };
 exports.getWs = getWs;
@@ -971,7 +958,7 @@ exports.getWs = getWs;
 },{"../baseballLogic/GameState.js":1,"../utils/random.js":32,"./calculations.js":5,"./mappings.js":6}],14:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.pitchAbbreviations = exports.findAllPitchers = exports.getPlayType = exports.aidToPitcher = exports.abToPlat = exports.idToEvent = void 0;
+exports.playTypes = exports.pitchAbbreviations = exports.findAllPitchers = exports.getPlayType = exports.aidToPitcher = exports.abToPlat = exports.idToEvent = void 0;
 const files_js_1 = _dereq_("../utils/files.js");
 const Pitch_js_1 = _dereq_("../baseballLogic/Pitch.js");
 const Pitcher_js_1 = _dereq_("../baseballLogic/Pitcher.js");
@@ -999,7 +986,7 @@ exports.aidToPitcher = aidToPitcher;
  * @returns the play type as a key into rewards
  */
 const getPlayType = (result, event, state) => {
-    const pTypes = playTypes();
+    const pTypes = (0, exports.playTypes)();
     if (!(result in pTypes)) {
         throw new Error(`Unexpected result: ${result}`);
     }
@@ -1038,25 +1025,18 @@ const getPlayType = (result, event, state) => {
             switch (event) {
                 case 'Single':
                     return '1b';
-                    break;
                 case 'Double':
                     return '2b';
-                    break;
                 case 'Triple':
                     return '3b';
-                    break;
                 case 'Home Run':
                     return 'hr';
-                    break;
                 case 'Fielders Choice':
                     return '1b';
-                    break;
                 case 'Catcher Interference':
                     return '1b';
-                    break;
                 default:
                     throw new Error(`Unexpected hit type ${event}`);
-                    break;
             }
         }
     }
@@ -1220,6 +1200,7 @@ const playTypes = () => {
         O: 'dp',
     };
 };
+exports.playTypes = playTypes;
 
 },{"../baseballLogic/Pitch.js":2,"../baseballLogic/Pitcher.js":3,"../utils/files.js":20,"../utils/numJS.js":21,"../utils/usingNode.js":33,"./mappings.js":6}],15:[function(_dereq_,module,exports){
 "use strict";
@@ -1878,38 +1859,6 @@ class ListNode {
         this.val = _val;
         this.next = _next;
     }
-    /**
-     * Converts a JSON object into a ListNode
-     * Does not set previous pointers
-     * @param obj the object to convert
-     * @returns the converted list node
-     */
-    static fromObj(obj) {
-        let res = new ListNode(obj.val);
-        if (typeof obj.next !== undefined) {
-            res.next = ListNode.fromObj(obj.next);
-        }
-        return res;
-    }
-    /**
-     * Recursively converts the list from this node on
-     * into an object to be saved to a JSON. Does not
-     * keep track of prev pointer
-     * @returns a JSON object
-     */
-    toObj() {
-        let next;
-        if (typeof this.next === 'undefined') {
-            next = undefined;
-        }
-        else {
-            next = this.next.toObj();
-        }
-        return {
-            val: this.val,
-            next: next
-        };
-    }
 }
 class List {
     /**
@@ -1954,9 +1903,6 @@ class List {
             const newNode = new ListNode(val, this._tail);
             this._tail.next = newNode;
             this._tail = newNode;
-            if (typeof this._head.next === 'undefined') {
-                this._head.next = newNode;
-            }
         }
         this._length++;
     }
@@ -1975,9 +1921,6 @@ class List {
             const newNode = new ListNode(val, undefined, this._head);
             this._head.prev = newNode;
             this._head = newNode;
-            if (typeof this._tail.prev === 'undefined') {
-                this._tail.prev = newNode;
-            }
         }
         this._length++;
     }
@@ -2067,49 +2010,6 @@ class List {
      */
     toString() {
         return `(${[...this].join(', ')})`;
-    }
-    /**
-     * Converts a JSON object into a linked list
-     * @param obj the object to convert
-     * @returns a linked list
-     */
-    static fromObj(obj) {
-        let res = new List();
-        res._length = obj.length;
-        if (typeof obj.head !== 'undefined') {
-            const nodes = ListNode.fromObj(obj.head);
-            res._head = nodes;
-            let current = res._head;
-            let last = undefined;
-            while (typeof current !== 'undefined') {
-                current.prev = last;
-                last = current;
-                current = current.next;
-            }
-            current.prev = last;
-        }
-        return res;
-    }
-    /**
-     * Converts this object into a JSON object
-     * @returns the JSON object
-     */
-    toObj() {
-        let head;
-        let tail;
-        if (typeof this._head === 'undefined') {
-            head = undefined;
-            tail = undefined;
-        }
-        else {
-            head = this._head.toObj();
-            tail = this._tail.toObj();
-        }
-        return {
-            length: this._length,
-            head: head,
-            tail: tail
-        };
     }
 }
 exports.List = List;
@@ -2714,7 +2614,6 @@ const arrIndex = (arr, inds) => {
     else if (typeof current === 'boolean') {
         return boolIndex(arr, inds);
     }
-    throw new Error(`Unexpected index type: ${inds}`);
 };
 exports.arrIndex = arrIndex;
 
@@ -2805,17 +2704,26 @@ exports.flatten = flatten;
 /**
  * Returns an array full of whatever the value is in any arbitrary shape
  * @param shape the size of each dimension of the output
- * @param value what value to fill the array with
+ * @param value what value to fill the array with. If undefined, the values
+ * will be filled with the return value of valueGen
+ * @param valueGen a function that generates values to fill the array with. Only
+ * called if value is undefined
  * @returns an array with the given shape and every value equal to the given value
  */
-const full = (shape, value) => {
+const full = (shape, value, valueGen) => {
     if (shape.length === 0) {
+        if (typeof value === 'undefined') {
+            if (typeof valueGen === 'undefined') {
+                throw new Error('Both of value and valueGen cannot be undefined');
+            }
+            return valueGen();
+        }
         return value;
     }
     let res = [];
     const rest = shape.slice(1, shape.length);
     for (let i = 0; i < shape[0]; i++) {
-        res.push((0, exports.full)(rest, value));
+        res.push((0, exports.full)(rest, value, valueGen));
     }
     return res;
 };

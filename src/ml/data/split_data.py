@@ -26,7 +26,8 @@ def lines_to_arr(lines: List[str]) -> np.ndarray:
 def split(data: List[str], splits: List[float]) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Splits the data into train set, validation set, and testing set."""
     all_data = lines_to_arr(data)
-    np.random.shuffle(all_data)
+    rand = np.random.default_rng(2022)
+    rand.shuffle(all_data)
     train_end = round(all_data.shape[0] * splits[0])
     valid_end = round(all_data.shape[0] * (splits[0] + splits[1]))
 
@@ -92,11 +93,14 @@ def batch_manager(
             data[i % batch_size] = line
             i += 1
             if i % batch_size == 0:
-                print(f'Saving batch {batch_ind}')
+                print(
+                    f'\rProgress: [{"." * batch_ind}{" " * (num_batches - batch_ind)}]',
+                    end=''
+                )
                 save_splits(*split(data, splits))
                 batch_ind += 1
                 if batch_ind == num_batches:
-                    print('Done!')
+                    print(f'\rProgress: [{"." * num_batches}]\nDone!')
                     return
         
         print('End of file reached')

@@ -1,5 +1,6 @@
 import { MachineLearning } from "./MachineLearning.js";
 import { Matrix, inverse } from "ml-matrix";
+import { getShape } from "../../utils/numJS.js";
 
 export class Regression extends MachineLearning {
     protected _degree: number;
@@ -49,11 +50,11 @@ export class Regression extends MachineLearning {
     private fillZs(features: number[][]): Matrix {
         let res: number[][] = [];
         for (let i = 0; i < features.length; i++) {
-            let row: number[] = [];
+            let row: number[] = [1];
             for (let j = 0; j < features[i].length; j++) {
                 const point = features[i][j];
-                let current = 1;
-                for (let d = 0; d < this._degree + 1; d++) {
+                let current = point;
+                for (let d = 0; d < this._degree; d++) {
                     row.push(current);
                     current *= point;
                 }

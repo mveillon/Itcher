@@ -1,7 +1,13 @@
 /**
  * Returns an array from start to stop with values separated by step. Same syntax as
  * Python's `range` constructor, i.e. if stop is omitted, the array will go from 0 to
- * stop, and step defaults to 1
+ * stop, and step defaults to 1.
+ * ```
+ * console.log(arange(4)) // output: [0, 1, 2, 3]
+ * console.log(arange(1, 5)) // output: [1, 2, 3, 4]
+ * console.log(arange(1, 6, 2)) // output: [1, 3, 5]
+ * console.log(arange(5, 0, -1)) // output: [5, 4, 3, 2, 1]
+ * ```
  * @param start the first element of the array, or the exclusive maximum if stop is omitted
  * @param stop the exclusive max of the return array
  * @param step the difference between the `i`th element and the `i + 1` of the return array

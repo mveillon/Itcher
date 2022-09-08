@@ -3,6 +3,8 @@ import { completeFeatsTargs } from "../trainTest.js";
 import { regression } from "./Regression.js";
 import { EnsembleClassifier } from "./EnsembleClassifier.js";
 
+export const ensembleChildren = 100
+
 /**
  * Trains the machine learning network that will predict
  * the expected reward given the current state and what pitch
@@ -11,7 +13,7 @@ import { EnsembleClassifier } from "./EnsembleClassifier.js";
  * Default is 20
  * @returns a machine learning model for selecting pitches
  */
-export const getLearner = async (numChildren: number = 20): Promise<MachineLearning> => {
+export const getLearner = async (numChildren: number = ensembleChildren): Promise<MachineLearning> => {
     let res = new EnsembleClassifier(regression, numChildren);
 
     const [feats, targs] = completeFeatsTargs();

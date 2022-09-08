@@ -1,5 +1,9 @@
 /**
- * Finds the index of the best element in x, based on comp
+ * Finds the index of the best element in x, based on comp.
+ * ```
+ * console.log(argBest([3, 4, 5], (a, b) => a < b)) // output: 0
+ * console.log(argBest([3, 4, 5], (a, b) => a >= b)) // output: 2
+ * ```
  * @param x the array to look through
  * @param comp how to compare the elements of x. Should return true if the first arg is "better"
  * than the second
@@ -19,7 +23,10 @@
 }
 
 /**
- * Returns the index of the smallest elemeent of x
+ * Returns the index of the smallest element of x.
+ * ```
+ * console.log(argMin([3, 4, 5])) // output: 0
+ * ```
  * @param x the array to look at
  * @returns where the smallest element is
  */
@@ -28,7 +35,10 @@
 }
 
 /**
- * Returns the index of the largest elemeent of x
+ * Returns the index of the largest element of x.
+ * ```
+ * console.log(argMax([3, 4, 5])) // output: 2
+ * ```
  * @param x the array to look at
  * @returns where the largest element is
  */
