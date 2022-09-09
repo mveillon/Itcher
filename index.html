@@ -9,7 +9,7 @@
         <link rel="stylesheet" type="text/css" href="./src/ui/styles/main.css">
         <link rel="stylesheet" type="text/css" href="./src/ui/styles/scorebug.css">
 
-        <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="./assets/favicon.ico?v=1">
         <script src="./builds/mainBundle.js"></script>
     </head>
 
@@ -95,8 +95,10 @@
                 </div>
 
                 <div class="linespot">
-                    <p class="linespot-text">At bat:</p>
-                    <input class="change-linespot" id="change-linespot" type="text">
+                    <div class="linespot-row">
+                        <p class="linespot-text">At bat:</p>
+                        <input class="change-linespot" id="change-linespot" type="text">
+                    </div>
                 </div>
 
                 <button class="next-pitch" id="next-pitch" onclick="Main.updateNext()"></button>
@@ -104,7 +106,7 @@
         </div>
 
         <div class="logo">
-            <img src="./assets/favicon.ico" alt="icon" width="250" height="250">
+            <img src="./assets/logo.png" alt="icon" width="250" height="250">
         </div>
     </body>
 </html>

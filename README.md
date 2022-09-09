@@ -4,10 +4,10 @@ This codebase uses machine learning to select what pitch the pitcher should thro
 The models have been trained using pitch by pitch data from 2019 found [here](https://www.kaggle.com/datasets/pschale/mlb-pitch-data-20152018?resource=download).
 
 # Mac/Linux
-To install, first download the code. Because of the requirements of some of the dependencies, the path to the root must not have any spaces. We recommend leaving it in your Downloads folder or placing it in your Desktop or Documents folder. Then open Terminal and `cd` into the root directory (you can drag the folder from Finder to Terminal to copy the absolute path). Run `npm install` to install all the dependencies and run `npm run run-server` to start the local host and open the HTML in your browser.
+To install, first download the code. Because of the requirements of some of the dependencies, the path to the root must not have any spaces. We recommend leaving it in your Downloads folder or placing it in your Desktop or Documents folder. Then open Terminal and `cd` into the root directory (on Mac, you can drag the folder from Finder to Terminal to copy the absolute path). Run `npm install` to install all the dependencies and run `npm run run-server` to start the local host and open the HTML in your browser.
 
 # Windows
-Not yet supported because I don't have a Windows machine ¯\\\_(ツ)\_/¯. 
+Not yet supported because I don't have a Windows machine. It might work on Windows, but I doubt it ¯\\\_(ツ)\_/¯. 
 
 # Usage
 
@@ -36,7 +36,7 @@ This code would be impossible to predict reliably because it uses a much truer r
 
 Along with the randomness, the pitches this model suggests would perform better than the pitches selected in the dataset. Sticking to the framework of measuring outcomes based on the binary of whether they were good or bad for the pitcher, unsurprisingly, as currently chosen, a given pitch is good for the pitcher about 50% of the time. The specific figure is 51.2%. Based on the machine learning's valuation, the pitch the model selects would give the pitcher a good outcome 58.7% of the time.
 
-However, we still have to factor in the model's inaccuracy. The model uses a bagging ensemble, which means the 0.587 roughly translates to 587 models predicting a good outcome while 1000 - 587 = 413 models predict a bad outcome (we don't actually use 1000 models but this is just for illustration). If 70.5% of those 587 "good" models are right, that results in 0.705 * 587 = 413.835 good outcomes, and (1 - 0.705) * 587 = 173.165 bad outcomes. When we do the same with the "bad" models, we get 0.705 * 413 = 291.165 bad outcomes and (1 - 0.705) * 413 = 121.835 good outcomes. This means, adjusting for the inaccuracy, we get about 413.835 + 121.835 = 535.67 good outcomes, i.e. a 53.6% chance of a good outcome. This estimate is more conservative, which makes sense since it is taking the model's output with a grain of salt. 
+However, we still have to factor in the model's inaccuracy. The model uses a bagging ensemble, which means the 0.587 roughly translates to 587 models predicting a good outcome while 1000 - 587 = 413 models predict a bad outcome (we don't actually use 1000 models but this is just for illustration). The average child model has an accuracy of 70.5%, and if 70.5% of those 587 "good" models are right, that results in 0.705 * 587 = 413.835 good outcomes, and (1 - 0.705) * 587 = 173.165 bad outcomes. When we do the same with the "bad" models, we get 0.705 * 413 = 291.165 bad outcomes and (1 - 0.705) * 413 = 121.835 good outcomes. This means, adjusting for the inaccuracy, we get about 413.835 + 121.835 = 535.67 good outcomes, i.e. a 53.6% chance of a good outcome. This estimate is more conservative, which makes sense since it is taking the model's output with a grain of salt. 
 
 We can convert these figures to a run value by measuring the wOBA before and after the pitch, and then using that to find the wRAA over a full season. Note that the training data is originally categorized into "good" and "bad" events based on this difference in wOBA, although the magnitude is lost. 
 

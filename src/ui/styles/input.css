@@ -120,6 +120,7 @@
 
 .linespot {
     box-sizing: border-box;
+    display: table;
     background-color: var(--secondary);
     height: 60px;
     padding-left: 10px;
@@ -132,10 +133,14 @@
     border-color: var(--secondary);
 }
 
+.linespot-row {
+    display: table-row;
+}
+
 .linespot-text {
+    display: table-cell;
     color: var(--dominant);
     font-size: medium;
-    display: inline;
     font-family: var(--font);
     text-align: center;
     padding-left: 10px;
@@ -145,12 +150,13 @@
     box-sizing: border-box;
     background-color: var(--secondary);
     font-size: medium;
-    display: inline;
+    display: table-cell;
     color: var(--dominant);
     border: none;
     height: 57px;
     width: 30px;
     font-family: var(--font);
+    margin-left: 5px;
 }
 
 .change-linespot:focus {
@@ -158,6 +164,7 @@
 }
 
 .next-pitch {
+    box-sizing: border-box;
     margin: 10px;
     padding: 10px;
     width: 250px;

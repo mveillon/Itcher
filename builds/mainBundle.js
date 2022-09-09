@@ -773,7 +773,7 @@ class RegToClf extends MachineLearning_js_1.MachineLearning {
          * @returns an array of ones and zeros
          */
         this.toBinary = (arr, threshold = 0) => {
-            return (0, numJS_js_1.ndMap)(arr, n => +(n > threshold));
+            return (0, numJS_js_1.toNum)((0, numJS_js_1.arrGT)(arr, threshold));
         };
         this._model = model;
     }
@@ -880,7 +880,7 @@ const regression = () => {
 };
 exports.regression = regression;
 
-},{"./MachineLearning.js":9,"ml-matrix":39}],12:[function(_dereq_,module,exports){
+},{"./MachineLearning.js":9,"ml-matrix":40}],12:[function(_dereq_,module,exports){
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -892,10 +892,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLearner = void 0;
+exports.getLearner = exports.ensembleChildren = void 0;
 const trainTest_js_1 = _dereq_("../trainTest.js");
 const Regression_js_1 = _dereq_("./Regression.js");
 const EnsembleClassifier_js_1 = _dereq_("./EnsembleClassifier.js");
+exports.ensembleChildren = 100;
 /**
  * Trains the machine learning network that will predict
  * the expected reward given the current state and what pitch
@@ -904,7 +905,7 @@ const EnsembleClassifier_js_1 = _dereq_("./EnsembleClassifier.js");
  * Default is 20
  * @returns a machine learning model for selecting pitches
  */
-const getLearner = (numChildren = 1000) => __awaiter(void 0, void 0, void 0, function* () {
+const getLearner = (numChildren = exports.ensembleChildren) => __awaiter(void 0, void 0, void 0, function* () {
     let res = new EnsembleClassifier_js_1.EnsembleClassifier(Regression_js_1.regression, numChildren);
     const [feats, targs] = (0, trainTest_js_1.completeFeatsTargs)();
     yield res.fit(feats, targs);
@@ -949,8 +950,6 @@ const getWs = (learner, pitches) => {
     for (let i = 1; i < rewards.length; i++) {
         cum.push(cum[i - 1] + weights[i]);
     }
-    // console.log(scalarMul(1 / cum[cum.length - 1], weights));
-    console.log(rewards);
     return cum;
 };
 exports.getWs = getWs;
@@ -1067,7 +1066,7 @@ const findAllPitchers = () => {
                 pitchO.velo /= pitchO.timesThrown;
                 pitchO.spinRate /= pitchO.timesThrown;
                 pitchO.spinDirection /= pitchO.timesThrown;
-                pitchO.heatmap = (0, numJS_js_1.scalarMul)(1 / pitchO.timesThrown, pitchO.heatmap);
+                pitchO.heatmap = (0, numJS_js_1.scalarMul)(pitchO.heatmap, 1 / pitchO.timesThrown);
             }
             for (const p in accum[player].pitches) {
                 accum[player].pitches[p].timesThrown /= total;
@@ -2149,21 +2148,27 @@ exports.any = exports.all = void 0;
  * @returns ifTrue if at least one subarray satisfies criterion, else !ifTrue
  */
 const nestedSatisfies = (bools, criterion, ifTrue) => {
-    if (typeof bools === 'boolean') {
-        return bools;
-    }
-    if (bools.length === 0)
-        return false;
-    for (const nested of bools) {
-        if (criterion(nested)) {
-            return ifTrue;
+    if (Array.isArray(bools)) {
+        if (bools.length === 0)
+            return false;
+        for (const nested of bools) {
+            if (criterion(nested)) {
+                return ifTrue;
+            }
         }
+        return !ifTrue;
     }
-    return !ifTrue;
+    return bools;
 };
 /**
  * Returns whether every element of bools is true.
- * Returns false if bools is empty
+ * Returns false if bools is empty.
+ * ```
+ * console.log(all([])) // output: false
+ * console.log(all(true)) // output: true
+ * console.log(all([true, false, true])) // output: true
+ * console.log(all([true, true, true])) // output: true
+ * ```
  * @param bools an n-dimensional array of booleans
  * @returns whether all elements of bools are true
  */
@@ -2173,7 +2178,13 @@ const all = (bools) => {
 exports.all = all;
 /**
  * Returns whether any element of bools is true.
- * Returns false if bools is empty
+ * Returns false if bools is empty.
+ * ```
+ * console.log(any([])) // output: false
+ * console.log(any(true)) // output: true
+ * console.log(any([true, false, false])) // output: true
+ * console.log(any([false, false, false])) // output: false
+ * ```
  * @param bools an n-dimensional array of booleans
  * @returns whether any elements of bools are true
  */
@@ -2189,7 +2200,13 @@ exports.arange = void 0;
 /**
  * Returns an array from start to stop with values separated by step. Same syntax as
  * Python's `range` constructor, i.e. if stop is omitted, the array will go from 0 to
- * stop, and step defaults to 1
+ * stop, and step defaults to 1.
+ * ```
+ * console.log(arange(4)) // output: [0, 1, 2, 3]
+ * console.log(arange(1, 5)) // output: [1, 2, 3, 4]
+ * console.log(arange(1, 6, 2)) // output: [1, 3, 5]
+ * console.log(arange(5, 0, -1)) // output: [5, 4, 3, 2, 1]
+ * ```
  * @param start the first element of the array, or the exclusive maximum if stop is omitted
  * @param stop the exclusive max of the return array
  * @param step the difference between the `i`th element and the `i + 1` of the return array
@@ -2221,7 +2238,11 @@ exports.arange = arange;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.argMax = exports.argMin = exports.argBest = void 0;
 /**
- * Finds the index of the best element in x, based on comp
+ * Finds the index of the best element in x, based on comp.
+ * ```
+ * console.log(argBest([3, 4, 5], (a, b) => a < b)) // output: 0
+ * console.log(argBest([3, 4, 5], (a, b) => a >= b)) // output: 2
+ * ```
  * @param x the array to look through
  * @param comp how to compare the elements of x. Should return true if the first arg is "better"
  * than the second
@@ -2241,7 +2262,10 @@ const argBest = (x, comp) => {
 };
 exports.argBest = argBest;
 /**
- * Returns the index of the smallest elemeent of x
+ * Returns the index of the smallest element of x.
+ * ```
+ * console.log(argMin([3, 4, 5])) // output: 0
+ * ```
  * @param x the array to look at
  * @returns where the smallest element is
  */
@@ -2250,7 +2274,10 @@ const argMin = (x) => {
 };
 exports.argMin = argMin;
 /**
- * Returns the index of the largest elemeent of x
+ * Returns the index of the largest element of x.
+ * ```
+ * console.log(argMax([3, 4, 5])) // output: 2
+ * ```
  * @param x the array to look at
  * @returns where the largest element is
  */
@@ -2265,88 +2292,116 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sumList = exports.colAverage = exports.scalarMul = exports.subArrays = exports.addArrays = void 0;
 const shapes_js_1 = _dereq_("./shapes.js");
 /**
- * Adds the two n-dimensional matrices element-wise
+ * Adds the two n-dimensional matrices element-wise.
+ * ```
+ * console.log(addArrays(1, 2)) // output: 3
+ * console.log(addArrays([1, 2, 3], [3, 4, 5])) // output: [4, 6, 8]
+ * console.log(addArrays(2, [1, 2, 3])) // output: [3, 5, 7]
+ * ```
  * @param a1 the first matrix
  * @param a2 the second matrix
  * @returns their element-wise sum
  */
 const addArrays = (a1, a2) => {
     [a1, a2] = (0, shapes_js_1.broadcast)(a1, a2);
-    if (typeof a1 === 'number') {
-        return a1 + a2;
+    if (Array.isArray(a1)) {
+        let res = [];
+        for (let i = 0; i < a1.length; i++) {
+            res.push((0, exports.addArrays)(a1[i], a2[i]));
+        }
+        return res;
     }
-    let res = [];
-    for (let i = 0; i < a1.length; i++) {
-        res.push((0, exports.addArrays)(a1[i], a2[i]));
-    }
-    return res;
+    return a1 + a2;
 };
 exports.addArrays = addArrays;
 /**
- * Subtracts the two n-dimensional matrices element-wise
+ * Subtracts the two n-dimensional matrices element-wise.
+ * ```
+ * console.log(subArrays(2, 1)) // output: 1
+ * console.log(subArrays([3, 4, 5], [1, 2, 3])) // output: [2, 2, 2]
+ * console.log(subArrays([1, 2, 3], 1)) // output: [0, 1, 2]
+ * console.log(subArrays(3, [1, 2, 3])) // output: [2, 1, 0]
+ * ```
  * @param a1 the first matrix
  * @param a2 the second matrix
  * @returns a1 - a2 element-wise
  */
 const subArrays = (a1, a2) => {
-    return (0, exports.addArrays)(a1, (0, exports.scalarMul)(-1, a2));
+    return (0, exports.addArrays)(a1, (0, exports.scalarMul)(a2, -1));
 };
 exports.subArrays = subArrays;
 /**
- * Multiplies every element of A by x and returns a new matrix
+ * Multiplies every element of A by x and returns a new matrix.
+ * ```
+ * console.log(scalarMul(1, 2)) // output: 2
+ * console.log(scalarMul([1, 2, 3], 3)) // output: [3, 6, 9]
+ * console.log(scalarMul([2, 4, 6], 0.5)) // output: [1, 2, 3]
+ * ```
  * @param x the scalar
  * @param A the matrix to multiply
  * @returns the result of x * A
  */
-const scalarMul = (x, A) => {
-    if (typeof A === 'number') {
-        return x * A;
+const scalarMul = (A, x) => {
+    if (Array.isArray(A)) {
+        let res = [];
+        for (const row of A) {
+            res.push((0, exports.scalarMul)(row, x));
+        }
+        return res;
     }
-    let res = [];
-    for (const row of A) {
-        res.push((0, exports.scalarMul)(x, row));
-    }
-    return res;
+    return x * A;
 };
 exports.scalarMul = scalarMul;
 /**
- * Returns the averages of the columns of A
+ * Returns the averages of the columns of A.
+ * ```
+ * console.log(colAverage([[1, 2], [3, 4]])) // output: [2, 3]
+ * ```
  * @param A the 2D matrix to average
  * @returns the column-wise average of A
  */
 const colAverage = (A) => {
     if (A.length === 0)
         return [];
-    let res = A[0];
-    for (let i = 1; i < A.length; i++) {
-        res = (0, exports.addArrays)(res, A[i]);
-    }
-    return (0, exports.scalarMul)(1 / A.length, res);
+    const total = A.reduce((accum, row) => (0, exports.addArrays)(accum, row), (0, shapes_js_1.zeros)([A[0].length]));
+    return (0, exports.scalarMul)(total, 1 / A.length);
 };
 exports.colAverage = colAverage;
 /**
- * Returns the sum of every element of the n-dimensional list
+ * Returns the sum of every element of the n-dimensional list.
+ * ```
+ * console.log(sumList(1)) // output: 1
+ * console.log(sumList([1, 2, 3])) // output: 6
+ * console.log(sumList([[1, 2], [3, 4]])) // output: 10
+ * ```
  * @param x the array of numbers
  * @returns the sum of every element in x
  */
 const sumList = (x) => {
-    if (typeof x === 'number') {
-        return x;
+    if (Array.isArray(x)) {
+        return x.map(exports.sumList).reduce((a, b) => a + b, 0);
     }
-    return x.map(exports.sumList).reduce((a, b) => a + b, 0);
+    return x;
 };
 exports.sumList = sumList;
 
 },{"./shapes.js":30}],26:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.allEqual = exports.arrNot = exports.arrAnd = exports.arrOr = exports.arrGTEq = exports.arrGT = exports.arrLTEq = exports.arrLT = exports.arrEqual = exports.allClose = exports.isClose = void 0;
+exports.sameArr = exports.allEqual = exports.arrNot = exports.arrAnd = exports.arrOr = exports.arrGTEq = exports.arrGT = exports.arrLTEq = exports.arrLT = exports.arrEqual = exports.allClose = exports.isClose = void 0;
 const shapes_js_1 = _dereq_("./shapes.js");
 const anyAll_js_1 = _dereq_("./anyAll.js");
 const ndMap_js_1 = _dereq_("./ndMap.js");
 /**
  * Returns an array where `ith` element corresponds to whether `x[i]` is close enough to `y[i]`,
- * where close enough means within floating-point error bars. Uses the formula `abs(x - y) <= atol + rtol * abs(y)`
+ * where close enough means within floating-point error bars. Uses the formula `abs(x - y) <= atol + rtol * abs(y)`.
+ * ```
+ * console.log(isClose(1, 1.0000000001)) // output: true
+ * console.log(isClose(1, 2)) // output: false
+ * console.log(isClose(1, 2, undefined, 1)) // output: true
+ * console.log(isClose([1, 2, 3], [1, 3, 3])) // output: [true, false, true]
+ * console.log(isClose([[1, 2], [3, 4]], [[1, 3], [4, 4]])) // output: [[true, false], [false, true]]
+ * ```
  * @param x the first array
  * @param y the second array
  * @param rtol the relative tolerance, which is multiplied by the elements of b
@@ -2355,19 +2410,25 @@ const ndMap_js_1 = _dereq_("./ndMap.js");
  */
 const isClose = (x, y, rtol = 1e-5, atol = 1e-8) => {
     [x, y] = (0, shapes_js_1.broadcast)(x, y);
-    if (typeof x === 'number') {
-        return Math.abs(x - y) <= atol + rtol * Math.abs(y);
+    if (Array.isArray(x)) {
+        let res = [];
+        for (let i = 0; i < x.length; i++) {
+            res.push((0, exports.isClose)(x[i], y[i], rtol, atol));
+        }
+        return res;
     }
-    let res = [];
-    for (let i = 0; i < x.length; i++) {
-        res.push((0, exports.isClose)(x[i], y[i], rtol, atol));
-    }
-    return res;
+    return Math.abs(x - y) <= atol + rtol * Math.abs(y);
 };
 exports.isClose = isClose;
 /**
  * Returns whether every element of x is close to every element of y, using the formula
- * `abs(x - y) <= atol + rtol * abs(y)`
+ * `abs(x - y) <= atol + rtol * abs(y)`.
+ * ```
+ * console.log(allClose(1, 1)) // output: true
+ * console.log(allClose(1, 2)) // output: false
+ * console.log(allClose([1, 2, 3], [1.000000001, 2, 3])) // output: true
+ * console.log(allClose([1, 2, 3], [2, 2, 3])) // output: false
+ * ```
  * @param x the first array
  * @param y the second array
  * @param rtol the relative tolerance, which is multiplied by the elements of b
@@ -2399,7 +2460,13 @@ const arrayComp = (a, b, comp) => {
 };
 /**
  * Checks for equality of a and b element-wise and returns a new array
- * with the results
+ * with the results.
+ * ```
+ * console.log(arrEqual(1, 1)) // output: true
+ * console.log(arrEqual(1, 2)) // output: false
+ * console.log(arrEqual([1, 2, 3], [2, 2, 3])) // output: [false, true, true]
+ * console.log(arrEqual([1, 2, 3], [1.00000001, 2, 3])) // output: [false, true, true] (see isClose)
+ * ```
  * @param a the first array
  * @param b the second array
  * @returns an array of booleans, each corresponding to whether the
@@ -2411,7 +2478,13 @@ const arrEqual = (a, b) => {
 exports.arrEqual = arrEqual;
 /**
  * Checks for a < b element-wise and returns a new array
- * with the results
+ * with the results.
+ * ```
+ * console.log(arrLT(1, 2)) // output: true
+ * console.log(arrLT(2, 1)) // output: false
+ * console.log(arrLT(1, 1)) // output: false
+ * console.log(arrLT([1, 2, 3], [1, 3, 2])) // output: [false, true, false]
+ * ```
  * @param a the first array
  * @param b the second array
  * @returns an array of booleans, each corresponding to whether the
@@ -2423,7 +2496,13 @@ const arrLT = (a, b) => {
 exports.arrLT = arrLT;
 /**
  * Checks for a <= b element-wise and returns a new array
- * with the results
+ * with the results.
+ * ```
+ * console.log(arrLTEq(1, 2)) // output: true
+ * console.log(arrLTEq(2, 1)) // output: false
+ * console.log(arrLTEq(1, 1)) // output: true
+ * console.log(arrLTEq([1, 2, 3], [1, 3, 2])) // output: [true, true, false]
+ * ```
  * @param a the first array
  * @param b the second array
  * @returns an array of booleans, each corresponding to whether the
@@ -2435,7 +2514,13 @@ const arrLTEq = (a, b) => {
 exports.arrLTEq = arrLTEq;
 /**
  * Checks for a > b element-wise and returns a new array
- * with the results
+ * with the results.
+ * ```
+ * console.log(arrGT(1, 2)) // output: false
+ * console.log(arrGT(2, 1)) // output: true
+ * console.log(arrGT(1, 1)) // output: false
+ * console.log(arrGT([1, 2, 3], [1, 3, 2])) // output: [false, false, true]
+ * ```
  * @param a the first array
  * @param b the second array
  * @returns an array of booleans, each corresponding to whether the
@@ -2447,7 +2532,13 @@ const arrGT = (a, b) => {
 exports.arrGT = arrGT;
 /**
  * Checks for a >= b element-wise and returns a new array
- * with the results
+ * with the results.
+ * ```
+ * console.log(arrGTEq(1, 2)) // output: false
+ * console.log(arrGTEq(2, 1)) // output: true
+ * console.log(arrGTEq(1, 1)) // output: true
+ * console.log(arrGTEq([1, 2, 3], [1, 3, 2])) // output: [true, false, true]
+ * ```
  * @param a the first array
  * @param b the second array
  * @returns an array of booleans, each corresponding to whether the
@@ -2458,7 +2549,14 @@ const arrGTEq = (a, b) => {
 };
 exports.arrGTEq = arrGTEq;
 /**
- * Computes the element-wise OR of two boolean arrays
+ * Computes the element-wise OR of two boolean arrays.
+ * ```
+ * console.log(arrOr(true, false)) // output: true
+ * console.log(arrOr(false, false)) // output: false
+ * console.log(arrOr([true, true, false], [false, false, false])) // output: [true, true, false]
+ * console.log(arrOr([true, false, true], false)) // output: [true, false, true]
+ * console.log(arrOr(true, [[false, false], [false, false]])) // output: [[true, true], [true, true]]
+ * ```
  * @param a the first array
  * @param b the second array
  * @returns an array of booleans, each corresponding to whether
@@ -2470,7 +2568,14 @@ const arrOr = (a, b) => {
 };
 exports.arrOr = arrOr;
 /**
- * Computes the element-wise AND of two boolean arrays
+ * Computes the element-wise AND of two boolean arrays.
+ * ```
+ * console.log(arrOr(true, false)) // output: false
+ * console.log(arrOr(true, true)) // output: true
+ * console.log(arrOr([true, true, false], [false, true, false])) // output: [false, true, false]
+ * console.log(arrOr([true, false, true], true)) // output: [true, false, true]
+ * console.log(arrOr(true, [[false, false], [false, false]])) // output: [[false, false], [false, false]]
+ * ```
  * @param a the first array
  * @param b the second array
  * @returns an array of booleans, each corresponding to whether
@@ -2482,7 +2587,13 @@ const arrAnd = (a, b) => {
 };
 exports.arrAnd = arrAnd;
 /**
- * Computes the element-wise NOT of a
+ * Computes the element-wise NOT of a.
+ * ```
+ * console.log(arrNot(true)) // output: false
+ * console.log(arrNot(false)) // output: true
+ * console.log(arrNot([true, false, true])) // output: [false, true, false]
+ * console.log(arrNot([[true, true], [false, false]])) // output: [[false, false], [true, true]]
+ * ```
  * @param a the array to negate
  * @returns an array of booleans, each with the opposite value
  * of the same position in a
@@ -2492,29 +2603,68 @@ const arrNot = (a) => {
 };
 exports.arrNot = arrNot;
 /**
+ * Returns whether a and b are all equal after broadcasting. Note that
+ * a and b can have different shapes and this function can still return `true`.
+ * If this is not desired, see `sameArr`.
+ * ```
+ * console.log(allEqual(1, 1)) // output: true
+ * console.log(allEqual(1, 2)) // output: false
+ * console.log(allEqual([1, 2, 3], [1, 2, 3])) // output: true
+ * console.log(allEqual([1, 2, 3], [[1, 2, 3]])) // output: false
+ * ```
+ * @param a the first array
+ * @param b the second array
+ * @returns whether a and b are element-wise equal
+ */
+const allEqual = (a, b) => {
+    return (0, anyAll_js_1.all)((0, exports.arrEqual)(a, b));
+};
+exports.allEqual = allEqual;
+/**
  * Returns whether every element of a and b are equal and that their shapes
- * are equal
+ * are equal.
+ * ```
+ * console.log(allEqual(1, 1)) // output: true
+ * console.log(allEqual(1, 2)) // output: false
+ * console.log(allEqual([1, 2, 3], [1, 2, 3])) // output: true
+ * console.log(allEqual([1, 2, 3], [[1, 2, 3]])) // output: true
+ * ```
  * @param a the first array
  * @param b the second array
  * @returns whether a and b are recursively equal
  */
-const allEqual = (a, b) => {
-    const aShape = (0, shapes_js_1.getShape)(a);
-    const bShape = (0, shapes_js_1.getShape)(b);
-    return (aShape.length === bShape.length &&
-        (0, anyAll_js_1.all)((0, exports.arrEqual)(aShape, bShape)) &&
-        (0, anyAll_js_1.all)((0, exports.arrEqual)(a, b)));
+const sameArr = (a, b) => {
+    const shape1 = (0, shapes_js_1.getShape)(a);
+    const shape2 = (0, shapes_js_1.getShape)(b);
+    return (shape1.length === shape2.length &&
+        (0, exports.allEqual)(shape1, shape2) &&
+        (0, exports.allEqual)(a, b));
 };
-exports.allEqual = allEqual;
+exports.sameArr = sameArr;
 
 },{"./anyAll.js":22,"./ndMap.js":29,"./shapes.js":30}],27:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.copyArr = void 0;
 /**
- * Returns a shallow copy of arr. Changing any of the subarrays of the copy
+ * Returns a semi-shallow copy of arr. Changing any of the subarrays of the copy
  * will not change the original, but changing a value within a subarray might
- * change the same value in the original
+ * change the same value in the original.
+ * ```
+ * let a = [1, 2, 3];
+ * let b = a;
+ * a[0] = 0;
+ * console.log(b[0]); // output: 0
+ * a = [1, 2, 3]
+ * let c = copyArr(a);
+ * a[0] = 0;
+ * console.log(c[0]); // output: 1
+ *
+ * a[0] = {one: 1, two: 2, three: 3};
+ * c = copyArr(a);
+ * a[0].one = 2;
+ * console.log(c[0].one); // output: 2
+ * ```
  * @param arr the array to copy
  * @returns a shallow copy of arr with the same elements
  */
@@ -2598,7 +2748,19 @@ const numIndex = (arr, inds) => {
     return res;
 };
 /**
- * Indexes arr using an array of either numbers or booleans
+ * Indexes arr using an array of either numbers or booleans.
+ * ```
+ * console.log(arrIndex([1, 2, 3], 0)) // output: 1
+ * console.log(arrIndex([1, 2, 3], [1, 2])) // output: [2, 3]
+ * console.log(arrIndex([[1, 2, 3], [4, 5, 6]], 0)) // output: [1, 2, 3]
+ * console.log(arrIndex([[1, 2, 3], [4, 5, 6]], [0])) // output: [[1, 2, 3]]
+ * console.log(arrIndex([[1, 2, 3], [4, 5, 6]], [[0, 1]])) // output: [2]
+ *
+ * console.log(arrIndex([1, 2, 3], true)) // output: [1, 2, 3]
+ * console.log(arrIndex([1, 2, 3], false)) // output: []
+ * console.log(arrIndex([1, 2, 3], [true, false, false])) // output: [1]
+ * console.log(arrIndex([[1, 2], [3, 4]], [[true, false], [true, true]])) // output: [[1], [3, 4]]
+ * ```
  * @param arr the array to index
  * @param inds what values to get from arr
  * @returns arr indexed at each value of inds
@@ -2620,9 +2782,15 @@ exports.arrIndex = arrIndex;
 },{"./shapes.js":30}],29:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ndMap = void 0;
+exports.toBool = exports.toNum = exports.ndMap = void 0;
 /**
- * Maps func onto every element of x and returns a new array of the same shape as x
+ * Maps func onto every element of x and returns a new array of the same shape as x.
+ * ```
+ * let double = n => 2 * n;
+ * console.log(ndMap(1, double)) // output: 2
+ * console.log(ndMap([1, 2, 3], double)) // output: [2, 4, 6]
+ * console.log(ndMap([[1, 2], [3, 4, 5]], double)) // output: [[2, 4], [6, 8, 10]]
+ * ```
  * @param x the ndArray of any type
  * @param func a function that takes an element of x and returns something else
  * @returns func mapped onto x
@@ -2638,6 +2806,38 @@ const ndMap = (x, func) => {
     return func(x);
 };
 exports.ndMap = ndMap;
+/**
+ * Converts the array of booleans to numbers.
+ * ```
+ * console.log(toNum(false)) // output: 0
+ * console.log(toNum(true)) // output: 1
+ * console.log(toNum([true, false, false])) // output: [1, 0, 0]
+ * console.log(toNum([[true, false], [false, false]])) // output: [[1, 0], [0, 0]]
+ * ```
+ * @param bools an nd array of bools
+ * @returns the same array with every `true` mapped to one and every `false`
+ * mapped to 0
+ */
+const toNum = (bools) => {
+    return (0, exports.ndMap)(bools, b => +b);
+};
+exports.toNum = toNum;
+/**
+ * Converts the array of numbers to booleans.
+ * ```
+ * console.log(toBool(0)) // output: false
+ * console.log(toBool(2)) // output: true
+ * console.log(toBool([0, 1, 2])) // output: [false, true, true]
+ * console.log(toBool([[0, 1], [-2, 0]])) // output: [[false, true], [true, false]]
+ * ```
+ * @param nums an nd array of numbers
+ * @returns the same array with every zero mapped to `false` and every other
+ * value mapped to `true`
+ */
+const toBool = (nums) => {
+    return (0, exports.ndMap)(nums, n => !!n);
+};
+exports.toBool = toBool;
 
 },{}],30:[function(_dereq_,module,exports){
 "use strict";
@@ -2650,8 +2850,15 @@ exports.reshape = exports.ones = exports.zeros = exports.getShape = exports.full
  * the other argument. Otherwise, the argument with the more complex
  * (higher dimensionality) shape is taken as the "ground truth" and the other array is
  * reshaped to have the same shape. In this case, both arrays must have the same
- * total number of arrays. If both arrays have the same complexity, the first argument
+ * total number of elements. If both arrays have the same complexity, the first argument
  * is taken as the "ground truth".
+ * ```
+ * console.log(broadcast([1, 2, 3], [4, 5, 6])) // output: [[1, 2, 3], [4, 5, 6]]
+ * console.log(broadcast([1, 2, 3], 4)) // output: [[1, 2, 3], [4, 4, 4]]
+ * console.log(broadcast(4, [1, 2, 3])) // output: [[4, 4, 4], [1, 2, 3]]
+ * console.log(broadcast([1, 2, 3, 4], [[5, 6], [7, 8]])) // output: [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
+ * console.log(broadcast([[1, 2]], [[3], [4]])) // output: [[[1, 2]], [[3, 4]]]
+ * ```
  * @param a1 the first array
  * @param a2 the second array
  * @returns both arrays reshaped to have the same shape
@@ -2662,14 +2869,18 @@ const broadcast = (a1, a2) => {
     const getTotal = (shape) => shape.reduce((a, b) => a * b, 1);
     const t1 = getTotal(shape1);
     const t2 = getTotal(shape2);
-    const erStr = (`Arguments could not be broadcast together: ${shape1} (${t1} elements) and ${shape2} (${t2} elements).`);
+    const erStr = ('Arguments could not be broadcast together: ' +
+        `${a1}: ${shape1} (${t1} elements) and ${a2}: ${shape2} (${t2} elements).`);
     if (t1 !== t2 && shape1.length > 0 && shape2.length > 0) {
         throw new Error(erStr);
     }
     if (shape1.length === shape2.length) {
         let same = true;
         for (let i = 0; i < shape1.length; i++) {
-            same && (same = shape1[i] === shape2[i]);
+            if (shape1[i] !== shape2[i]) {
+                same = false;
+                break;
+            }
         }
         if (same) {
             return [a1, a2];
@@ -2689,8 +2900,14 @@ const broadcast = (a1, a2) => {
 };
 exports.broadcast = broadcast;
 /**
- * Flattens the n-dimensional array into just one array
+ * Flattens the n-dimensional array into just one array.
+ * ```
+ * console.log(flatten(5)) // output: 5
+ * console.log(flatten([1, 2, 3])) // output: [1, 2, 3]
+ * console.log(flatten([[1, 2], [3, 4]])) // output: [1, 2, 3, 4]
+ * ```
  * @param A the array to flatten
+ * @returns the flattened array
  */
 const flatten = (A) => {
     if (Array.isArray(A)) {
@@ -2702,7 +2919,13 @@ const flatten = (A) => {
 };
 exports.flatten = flatten;
 /**
- * Returns an array full of whatever the value is in any arbitrary shape
+ * Returns an array full of whatever the value is in any arbitrary shape.
+ * ```
+ * console.log(full([3], 1)) // output: [1, 1, 1]
+ * console.log(full([2, 2], 3)) // output: [[3, 3], [3, 3]]
+ * console.log(full([2], undefined, () => 4)) // output: [4, 4]
+ * console.log(full([3], 3, () => 2)) // output: [3, 3, 3]
+ * ```
  * @param shape the size of each dimension of the output
  * @param value what value to fill the array with. If undefined, the values
  * will be filled with the return value of valueGen
@@ -2730,7 +2953,12 @@ const full = (shape, value, valueGen) => {
 exports.full = full;
 /**
  * Returns the shape of the array, which should be of uniform dimension
- * to allow for basically constant time calculation
+ * to allow for basically constant time calculation.
+ * ```
+ * console.log(getShape(1)) // output: []
+ * console.log(getShape([1, 2, 3])) // output: [3]
+ * console.log(getShape([[1, 2, 3], [4, 5, 6]])) // output: [2, 3]
+ * ```
  * @param arr the array to measure
  * @returns the shape of the array as an array
  */
@@ -2747,7 +2975,11 @@ const getShape = (arr) => {
 };
 exports.getShape = getShape;
 /**
- * Convenience function to create an array full of zeros
+ * Convenience function to create an array full of zeros.
+ * ```
+ * console.log(zeros([3])) // output: [0, 0, 0]
+ * console.log(zeros([2, 2])) // output: [[0, 0], [0, 0]]
+ * ```
  * @param shape the shape of the array to create
  * @returns an array of all zeros
  */
@@ -2756,7 +2988,11 @@ const zeros = (shape) => {
 };
 exports.zeros = zeros;
 /**
- * Convenience function to create an array full of ones
+ * Convenience function to create an array full of ones.
+ * ```
+ * console.log(ones([3])) // output: [1, 1, 1]
+ * console.log(ones([2, 2])) // output: [[1, 1], [1, 1]]
+ * ```
  * @param shape the shape of the array to create
  * @returns an array of all ones
  */
@@ -2765,7 +3001,11 @@ const ones = (shape) => {
 };
 exports.ones = ones;
 /**
- * Reshapes arr to be the given shape
+ * Reshapes arr to be the given shape.
+ * ```
+ * console.log(reshape([1, 2, 3, 4], [2, 2])) // output: [[1, 2], [3, 4]]
+ * console.log(reshape([[1, 2], [3, 4]], [4]))  // output: [1, 2, 3, 4]
+ * ```
  * @param arr the array to reshape
  * @param shape the shape of the output array
  * @returns an array of the given shape with all the elements as arr in order
@@ -2804,9 +3044,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 },{}],32:[function(_dereq_,module,exports){
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.randArr = exports.choices = exports.shuffle = exports.choice = exports.randInt = void 0;
 const numJS_js_1 = _dereq_("./numJS.js");
+const seedrandom_1 = __importDefault(_dereq_("seedrandom"));
+const rng = (0, seedrandom_1.default)('Itcher');
 /**
  * Returns a random integer in between min (inclusive) and max (exclusive)
  * @param min the lower bound
@@ -2818,7 +3063,7 @@ const randInt = (min, max) => {
         max = min;
         min = 0;
     }
-    return Math.floor(Math.random() * (max - min) + min);
+    return Math.floor(rng() * (max - min) + min);
 };
 exports.randInt = randInt;
 /**
@@ -2845,7 +3090,7 @@ const choice = (arr, ws) => {
             throw new Error(`Cumulative weights must be monotonically increasing: ${ws}`);
         }
     }
-    const seed = Math.random() * ws[ws.length - 1];
+    const seed = rng() * ws[ws.length - 1];
     for (let i = 0; i < arr.length; i++) {
         if (ws[i] > seed) {
             return arr[i];
@@ -2899,7 +3144,7 @@ const randArr = (shape, min, max) => {
 };
 exports.randArr = randArr;
 
-},{"./numJS.js":21}],33:[function(_dereq_,module,exports){
+},{"./numJS.js":21,"seedrandom":42}],33:[function(_dereq_,module,exports){
 (function (process){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -2917,7 +3162,7 @@ const usingNode = () => {
 exports.usingNode = usingNode;
 
 }).call(this)}).call(this,_dereq_('_process'))
-},{"_process":40}],34:[function(_dereq_,module,exports){
+},{"_process":41}],34:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.nameLT = exports.$ = exports.allPitchTypes = void 0;
@@ -2981,6 +3226,8 @@ const nameLT = (p1, p2) => {
 exports.nameLT = nameLT;
 
 },{"./usingNode.js":33}],35:[function(_dereq_,module,exports){
+
+},{}],36:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isAnyArray = void 0;
@@ -2996,7 +3243,7 @@ function isAnyArray(value) {
 }
 exports.isAnyArray = isAnyArray;
 
-},{}],36:[function(_dereq_,module,exports){
+},{}],37:[function(_dereq_,module,exports){
 'use strict';
 
 var isAnyArray = _dereq_('is-any-array');
@@ -3039,7 +3286,7 @@ function max(input, options = {}) {
 
 module.exports = max;
 
-},{"is-any-array":35}],37:[function(_dereq_,module,exports){
+},{"is-any-array":36}],38:[function(_dereq_,module,exports){
 'use strict';
 
 var isAnyArray = _dereq_('is-any-array');
@@ -3082,7 +3329,7 @@ function min(input, options = {}) {
 
 module.exports = min;
 
-},{"is-any-array":35}],38:[function(_dereq_,module,exports){
+},{"is-any-array":36}],39:[function(_dereq_,module,exports){
 'use strict';
 
 var isAnyArray = _dereq_('is-any-array');
@@ -3139,7 +3386,7 @@ function rescale(input, options = {}) {
 
 module.exports = rescale;
 
-},{"is-any-array":35,"ml-array-max":36,"ml-array-min":37}],39:[function(_dereq_,module,exports){
+},{"is-any-array":36,"ml-array-max":37,"ml-array-min":38}],40:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -8290,7 +8537,7 @@ exports.pseudoInverse = pseudoInverse;
 exports.solve = solve;
 exports.wrap = wrap;
 
-},{"is-any-array":35,"ml-array-rescale":38}],40:[function(_dereq_,module,exports){
+},{"is-any-array":36,"ml-array-rescale":39}],41:[function(_dereq_,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -8476,5 +8723,961 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}]},{},[4])(4)
+},{}],42:[function(_dereq_,module,exports){
+// A library of seedable RNGs implemented in Javascript.
+//
+// Usage:
+//
+// var seedrandom = require('seedrandom');
+// var random = seedrandom(1); // or any seed.
+// var x = random();       // 0 <= x < 1.  Every bit is random.
+// var x = random.quick(); // 0 <= x < 1.  32 bits of randomness.
+
+// alea, a 53-bit multiply-with-carry generator by Johannes Baagøe.
+// Period: ~2^116
+// Reported to pass all BigCrush tests.
+var alea = _dereq_('./lib/alea');
+
+// xor128, a pure xor-shift generator by George Marsaglia.
+// Period: 2^128-1.
+// Reported to fail: MatrixRank and LinearComp.
+var xor128 = _dereq_('./lib/xor128');
+
+// xorwow, George Marsaglia's 160-bit xor-shift combined plus weyl.
+// Period: 2^192-2^32
+// Reported to fail: CollisionOver, SimpPoker, and LinearComp.
+var xorwow = _dereq_('./lib/xorwow');
+
+// xorshift7, by François Panneton and Pierre L'ecuyer, takes
+// a different approach: it adds robustness by allowing more shifts
+// than Marsaglia's original three.  It is a 7-shift generator
+// with 256 bits, that passes BigCrush with no systmatic failures.
+// Period 2^256-1.
+// No systematic BigCrush failures reported.
+var xorshift7 = _dereq_('./lib/xorshift7');
+
+// xor4096, by Richard Brent, is a 4096-bit xor-shift with a
+// very long period that also adds a Weyl generator. It also passes
+// BigCrush with no systematic failures.  Its long period may
+// be useful if you have many generators and need to avoid
+// collisions.
+// Period: 2^4128-2^32.
+// No systematic BigCrush failures reported.
+var xor4096 = _dereq_('./lib/xor4096');
+
+// Tyche-i, by Samuel Neves and Filipe Araujo, is a bit-shifting random
+// number generator derived from ChaCha, a modern stream cipher.
+// https://eden.dei.uc.pt/~sneves/pubs/2011-snfa2.pdf
+// Period: ~2^127
+// No systematic BigCrush failures reported.
+var tychei = _dereq_('./lib/tychei');
+
+// The original ARC4-based prng included in this library.
+// Period: ~2^1600
+var sr = _dereq_('./seedrandom');
+
+sr.alea = alea;
+sr.xor128 = xor128;
+sr.xorwow = xorwow;
+sr.xorshift7 = xorshift7;
+sr.xor4096 = xor4096;
+sr.tychei = tychei;
+
+module.exports = sr;
+
+},{"./lib/alea":43,"./lib/tychei":44,"./lib/xor128":45,"./lib/xor4096":46,"./lib/xorshift7":47,"./lib/xorwow":48,"./seedrandom":49}],43:[function(_dereq_,module,exports){
+// A port of an algorithm by Johannes Baagøe <baagoe@baagoe.com>, 2010
+// http://baagoe.com/en/RandomMusings/javascript/
+// https://github.com/nquinlan/better-random-numbers-for-javascript-mirror
+// Original work is under MIT license -
+
+// Copyright (C) 2010 by Johannes Baagøe <baagoe@baagoe.org>
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+
+
+(function(global, module, define) {
+
+function Alea(seed) {
+  var me = this, mash = Mash();
+
+  me.next = function() {
+    var t = 2091639 * me.s0 + me.c * 2.3283064365386963e-10; // 2^-32
+    me.s0 = me.s1;
+    me.s1 = me.s2;
+    return me.s2 = t - (me.c = t | 0);
+  };
+
+  // Apply the seeding algorithm from Baagoe.
+  me.c = 1;
+  me.s0 = mash(' ');
+  me.s1 = mash(' ');
+  me.s2 = mash(' ');
+  me.s0 -= mash(seed);
+  if (me.s0 < 0) { me.s0 += 1; }
+  me.s1 -= mash(seed);
+  if (me.s1 < 0) { me.s1 += 1; }
+  me.s2 -= mash(seed);
+  if (me.s2 < 0) { me.s2 += 1; }
+  mash = null;
+}
+
+function copy(f, t) {
+  t.c = f.c;
+  t.s0 = f.s0;
+  t.s1 = f.s1;
+  t.s2 = f.s2;
+  return t;
+}
+
+function impl(seed, opts) {
+  var xg = new Alea(seed),
+      state = opts && opts.state,
+      prng = xg.next;
+  prng.int32 = function() { return (xg.next() * 0x100000000) | 0; }
+  prng.double = function() {
+    return prng() + (prng() * 0x200000 | 0) * 1.1102230246251565e-16; // 2^-53
+  };
+  prng.quick = prng;
+  if (state) {
+    if (typeof(state) == 'object') copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+function Mash() {
+  var n = 0xefc8249d;
+
+  var mash = function(data) {
+    data = String(data);
+    for (var i = 0; i < data.length; i++) {
+      n += data.charCodeAt(i);
+      var h = 0.02519603282416938 * n;
+      n = h >>> 0;
+      h -= n;
+      h *= n;
+      n = h >>> 0;
+      h -= n;
+      n += h * 0x100000000; // 2^32
+    }
+    return (n >>> 0) * 2.3283064365386963e-10; // 2^-32
+  };
+
+  return mash;
+}
+
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (define && define.amd) {
+  define(function() { return impl; });
+} else {
+  this.alea = impl;
+}
+
+})(
+  this,
+  (typeof module) == 'object' && module,    // present in node.js
+  (typeof define) == 'function' && define   // present with an AMD loader
+);
+
+
+
+},{}],44:[function(_dereq_,module,exports){
+// A Javascript implementaion of the "Tyche-i" prng algorithm by
+// Samuel Neves and Filipe Araujo.
+// See https://eden.dei.uc.pt/~sneves/pubs/2011-snfa2.pdf
+
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this, strseed = '';
+
+  // Set up generator function.
+  me.next = function() {
+    var b = me.b, c = me.c, d = me.d, a = me.a;
+    b = (b << 25) ^ (b >>> 7) ^ c;
+    c = (c - d) | 0;
+    d = (d << 24) ^ (d >>> 8) ^ a;
+    a = (a - b) | 0;
+    me.b = b = (b << 20) ^ (b >>> 12) ^ c;
+    me.c = c = (c - d) | 0;
+    me.d = (d << 16) ^ (c >>> 16) ^ a;
+    return me.a = (a - b) | 0;
+  };
+
+  /* The following is non-inverted tyche, which has better internal
+   * bit diffusion, but which is about 25% slower than tyche-i in JS.
+  me.next = function() {
+    var a = me.a, b = me.b, c = me.c, d = me.d;
+    a = (me.a + me.b | 0) >>> 0;
+    d = me.d ^ a; d = d << 16 ^ d >>> 16;
+    c = me.c + d | 0;
+    b = me.b ^ c; b = b << 12 ^ d >>> 20;
+    me.a = a = a + b | 0;
+    d = d ^ a; me.d = d = d << 8 ^ d >>> 24;
+    me.c = c = c + d | 0;
+    b = b ^ c;
+    return me.b = (b << 7 ^ b >>> 25);
+  }
+  */
+
+  me.a = 0;
+  me.b = 0;
+  me.c = 2654435769 | 0;
+  me.d = 1367130551;
+
+  if (seed === Math.floor(seed)) {
+    // Integer seed.
+    me.a = (seed / 0x100000000) | 0;
+    me.b = seed | 0;
+  } else {
+    // String seed.
+    strseed += seed;
+  }
+
+  // Mix in string seed, then discard an initial batch of 64 values.
+  for (var k = 0; k < strseed.length + 20; k++) {
+    me.b ^= strseed.charCodeAt(k) | 0;
+    me.next();
+  }
+}
+
+function copy(f, t) {
+  t.a = f.a;
+  t.b = f.b;
+  t.c = f.c;
+  t.d = f.d;
+  return t;
+};
+
+function impl(seed, opts) {
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (typeof(state) == 'object') copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (define && define.amd) {
+  define(function() { return impl; });
+} else {
+  this.tychei = impl;
+}
+
+})(
+  this,
+  (typeof module) == 'object' && module,    // present in node.js
+  (typeof define) == 'function' && define   // present with an AMD loader
+);
+
+
+
+},{}],45:[function(_dereq_,module,exports){
+// A Javascript implementaion of the "xor128" prng algorithm by
+// George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
+
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this, strseed = '';
+
+  me.x = 0;
+  me.y = 0;
+  me.z = 0;
+  me.w = 0;
+
+  // Set up generator function.
+  me.next = function() {
+    var t = me.x ^ (me.x << 11);
+    me.x = me.y;
+    me.y = me.z;
+    me.z = me.w;
+    return me.w ^= (me.w >>> 19) ^ t ^ (t >>> 8);
+  };
+
+  if (seed === (seed | 0)) {
+    // Integer seed.
+    me.x = seed;
+  } else {
+    // String seed.
+    strseed += seed;
+  }
+
+  // Mix in string seed, then discard an initial batch of 64 values.
+  for (var k = 0; k < strseed.length + 64; k++) {
+    me.x ^= strseed.charCodeAt(k) | 0;
+    me.next();
+  }
+}
+
+function copy(f, t) {
+  t.x = f.x;
+  t.y = f.y;
+  t.z = f.z;
+  t.w = f.w;
+  return t;
+}
+
+function impl(seed, opts) {
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (typeof(state) == 'object') copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (define && define.amd) {
+  define(function() { return impl; });
+} else {
+  this.xor128 = impl;
+}
+
+})(
+  this,
+  (typeof module) == 'object' && module,    // present in node.js
+  (typeof define) == 'function' && define   // present with an AMD loader
+);
+
+
+
+},{}],46:[function(_dereq_,module,exports){
+// A Javascript implementaion of Richard Brent's Xorgens xor4096 algorithm.
+//
+// This fast non-cryptographic random number generator is designed for
+// use in Monte-Carlo algorithms. It combines a long-period xorshift
+// generator with a Weyl generator, and it passes all common batteries
+// of stasticial tests for randomness while consuming only a few nanoseconds
+// for each prng generated.  For background on the generator, see Brent's
+// paper: "Some long-period random number generators using shifts and xors."
+// http://arxiv.org/pdf/1004.3115v1.pdf
+//
+// Usage:
+//
+// var xor4096 = require('xor4096');
+// random = xor4096(1);                        // Seed with int32 or string.
+// assert.equal(random(), 0.1520436450538547); // (0, 1) range, 53 bits.
+// assert.equal(random.int32(), 1806534897);   // signed int32, 32 bits.
+//
+// For nonzero numeric keys, this impelementation provides a sequence
+// identical to that by Brent's xorgens 3 implementaion in C.  This
+// implementation also provides for initalizing the generator with
+// string seeds, or for saving and restoring the state of the generator.
+//
+// On Chrome, this prng benchmarks about 2.1 times slower than
+// Javascript's built-in Math.random().
+
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this;
+
+  // Set up generator function.
+  me.next = function() {
+    var w = me.w,
+        X = me.X, i = me.i, t, v;
+    // Update Weyl generator.
+    me.w = w = (w + 0x61c88647) | 0;
+    // Update xor generator.
+    v = X[(i + 34) & 127];
+    t = X[i = ((i + 1) & 127)];
+    v ^= v << 13;
+    t ^= t << 17;
+    v ^= v >>> 15;
+    t ^= t >>> 12;
+    // Update Xor generator array state.
+    v = X[i] = v ^ t;
+    me.i = i;
+    // Result is the combination.
+    return (v + (w ^ (w >>> 16))) | 0;
+  };
+
+  function init(me, seed) {
+    var t, v, i, j, w, X = [], limit = 128;
+    if (seed === (seed | 0)) {
+      // Numeric seeds initialize v, which is used to generates X.
+      v = seed;
+      seed = null;
+    } else {
+      // String seeds are mixed into v and X one character at a time.
+      seed = seed + '\0';
+      v = 0;
+      limit = Math.max(limit, seed.length);
+    }
+    // Initialize circular array and weyl value.
+    for (i = 0, j = -32; j < limit; ++j) {
+      // Put the unicode characters into the array, and shuffle them.
+      if (seed) v ^= seed.charCodeAt((j + 32) % seed.length);
+      // After 32 shuffles, take v as the starting w value.
+      if (j === 0) w = v;
+      v ^= v << 10;
+      v ^= v >>> 15;
+      v ^= v << 4;
+      v ^= v >>> 13;
+      if (j >= 0) {
+        w = (w + 0x61c88647) | 0;     // Weyl.
+        t = (X[j & 127] ^= (v + w));  // Combine xor and weyl to init array.
+        i = (0 == t) ? i + 1 : 0;     // Count zeroes.
+      }
+    }
+    // We have detected all zeroes; make the key nonzero.
+    if (i >= 128) {
+      X[(seed && seed.length || 0) & 127] = -1;
+    }
+    // Run the generator 512 times to further mix the state before using it.
+    // Factoring this as a function slows the main generator, so it is just
+    // unrolled here.  The weyl generator is not advanced while warming up.
+    i = 127;
+    for (j = 4 * 128; j > 0; --j) {
+      v = X[(i + 34) & 127];
+      t = X[i = ((i + 1) & 127)];
+      v ^= v << 13;
+      t ^= t << 17;
+      v ^= v >>> 15;
+      t ^= t >>> 12;
+      X[i] = v ^ t;
+    }
+    // Storing state as object members is faster than using closure variables.
+    me.w = w;
+    me.X = X;
+    me.i = i;
+  }
+
+  init(me, seed);
+}
+
+function copy(f, t) {
+  t.i = f.i;
+  t.w = f.w;
+  t.X = f.X.slice();
+  return t;
+};
+
+function impl(seed, opts) {
+  if (seed == null) seed = +(new Date);
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (state.X) copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (define && define.amd) {
+  define(function() { return impl; });
+} else {
+  this.xor4096 = impl;
+}
+
+})(
+  this,                                     // window object or global
+  (typeof module) == 'object' && module,    // present in node.js
+  (typeof define) == 'function' && define   // present with an AMD loader
+);
+
+},{}],47:[function(_dereq_,module,exports){
+// A Javascript implementaion of the "xorshift7" algorithm by
+// François Panneton and Pierre L'ecuyer:
+// "On the Xorgshift Random Number Generators"
+// http://saluc.engr.uconn.edu/refs/crypto/rng/panneton05onthexorshift.pdf
+
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this;
+
+  // Set up generator function.
+  me.next = function() {
+    // Update xor generator.
+    var X = me.x, i = me.i, t, v, w;
+    t = X[i]; t ^= (t >>> 7); v = t ^ (t << 24);
+    t = X[(i + 1) & 7]; v ^= t ^ (t >>> 10);
+    t = X[(i + 3) & 7]; v ^= t ^ (t >>> 3);
+    t = X[(i + 4) & 7]; v ^= t ^ (t << 7);
+    t = X[(i + 7) & 7]; t = t ^ (t << 13); v ^= t ^ (t << 9);
+    X[i] = v;
+    me.i = (i + 1) & 7;
+    return v;
+  };
+
+  function init(me, seed) {
+    var j, w, X = [];
+
+    if (seed === (seed | 0)) {
+      // Seed state array using a 32-bit integer.
+      w = X[0] = seed;
+    } else {
+      // Seed state using a string.
+      seed = '' + seed;
+      for (j = 0; j < seed.length; ++j) {
+        X[j & 7] = (X[j & 7] << 15) ^
+            (seed.charCodeAt(j) + X[(j + 1) & 7] << 13);
+      }
+    }
+    // Enforce an array length of 8, not all zeroes.
+    while (X.length < 8) X.push(0);
+    for (j = 0; j < 8 && X[j] === 0; ++j);
+    if (j == 8) w = X[7] = -1; else w = X[j];
+
+    me.x = X;
+    me.i = 0;
+
+    // Discard an initial 256 values.
+    for (j = 256; j > 0; --j) {
+      me.next();
+    }
+  }
+
+  init(me, seed);
+}
+
+function copy(f, t) {
+  t.x = f.x.slice();
+  t.i = f.i;
+  return t;
+}
+
+function impl(seed, opts) {
+  if (seed == null) seed = +(new Date);
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (state.x) copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (define && define.amd) {
+  define(function() { return impl; });
+} else {
+  this.xorshift7 = impl;
+}
+
+})(
+  this,
+  (typeof module) == 'object' && module,    // present in node.js
+  (typeof define) == 'function' && define   // present with an AMD loader
+);
+
+
+},{}],48:[function(_dereq_,module,exports){
+// A Javascript implementaion of the "xorwow" prng algorithm by
+// George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
+
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this, strseed = '';
+
+  // Set up generator function.
+  me.next = function() {
+    var t = (me.x ^ (me.x >>> 2));
+    me.x = me.y; me.y = me.z; me.z = me.w; me.w = me.v;
+    return (me.d = (me.d + 362437 | 0)) +
+       (me.v = (me.v ^ (me.v << 4)) ^ (t ^ (t << 1))) | 0;
+  };
+
+  me.x = 0;
+  me.y = 0;
+  me.z = 0;
+  me.w = 0;
+  me.v = 0;
+
+  if (seed === (seed | 0)) {
+    // Integer seed.
+    me.x = seed;
+  } else {
+    // String seed.
+    strseed += seed;
+  }
+
+  // Mix in string seed, then discard an initial batch of 64 values.
+  for (var k = 0; k < strseed.length + 64; k++) {
+    me.x ^= strseed.charCodeAt(k) | 0;
+    if (k == strseed.length) {
+      me.d = me.x << 10 ^ me.x >>> 4;
+    }
+    me.next();
+  }
+}
+
+function copy(f, t) {
+  t.x = f.x;
+  t.y = f.y;
+  t.z = f.z;
+  t.w = f.w;
+  t.v = f.v;
+  t.d = f.d;
+  return t;
+}
+
+function impl(seed, opts) {
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (typeof(state) == 'object') copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (define && define.amd) {
+  define(function() { return impl; });
+} else {
+  this.xorwow = impl;
+}
+
+})(
+  this,
+  (typeof module) == 'object' && module,    // present in node.js
+  (typeof define) == 'function' && define   // present with an AMD loader
+);
+
+
+
+},{}],49:[function(_dereq_,module,exports){
+/*
+Copyright 2019 David Bau.
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+*/
+
+(function (global, pool, math) {
+//
+// The following constants are related to IEEE 754 limits.
+//
+
+var width = 256,        // each RC4 output is 0 <= x < 256
+    chunks = 6,         // at least six RC4 outputs for each double
+    digits = 52,        // there are 52 significant digits in a double
+    rngname = 'random', // rngname: name for Math.random and Math.seedrandom
+    startdenom = math.pow(width, chunks),
+    significance = math.pow(2, digits),
+    overflow = significance * 2,
+    mask = width - 1,
+    nodecrypto;         // node.js crypto module, initialized at the bottom.
+
+//
+// seedrandom()
+// This is the seedrandom function described above.
+//
+function seedrandom(seed, options, callback) {
+  var key = [];
+  options = (options == true) ? { entropy: true } : (options || {});
+
+  // Flatten the seed string or build one from local entropy if needed.
+  var shortseed = mixkey(flatten(
+    options.entropy ? [seed, tostring(pool)] :
+    (seed == null) ? autoseed() : seed, 3), key);
+
+  // Use the seed to initialize an ARC4 generator.
+  var arc4 = new ARC4(key);
+
+  // This function returns a random double in [0, 1) that contains
+  // randomness in every bit of the mantissa of the IEEE 754 value.
+  var prng = function() {
+    var n = arc4.g(chunks),             // Start with a numerator n < 2 ^ 48
+        d = startdenom,                 //   and denominator d = 2 ^ 48.
+        x = 0;                          //   and no 'extra last byte'.
+    while (n < significance) {          // Fill up all significant digits by
+      n = (n + x) * width;              //   shifting numerator and
+      d *= width;                       //   denominator and generating a
+      x = arc4.g(1);                    //   new least-significant-byte.
+    }
+    while (n >= overflow) {             // To avoid rounding up, before adding
+      n /= 2;                           //   last byte, shift everything
+      d /= 2;                           //   right using integer math until
+      x >>>= 1;                         //   we have exactly the desired bits.
+    }
+    return (n + x) / d;                 // Form the number within [0, 1).
+  };
+
+  prng.int32 = function() { return arc4.g(4) | 0; }
+  prng.quick = function() { return arc4.g(4) / 0x100000000; }
+  prng.double = prng;
+
+  // Mix the randomness into accumulated entropy.
+  mixkey(tostring(arc4.S), pool);
+
+  // Calling convention: what to return as a function of prng, seed, is_math.
+  return (options.pass || callback ||
+      function(prng, seed, is_math_call, state) {
+        if (state) {
+          // Load the arc4 state from the given state if it has an S array.
+          if (state.S) { copy(state, arc4); }
+          // Only provide the .state method if requested via options.state.
+          prng.state = function() { return copy(arc4, {}); }
+        }
+
+        // If called as a method of Math (Math.seedrandom()), mutate
+        // Math.random because that is how seedrandom.js has worked since v1.0.
+        if (is_math_call) { math[rngname] = prng; return seed; }
+
+        // Otherwise, it is a newer calling convention, so return the
+        // prng directly.
+        else return prng;
+      })(
+  prng,
+  shortseed,
+  'global' in options ? options.global : (this == math),
+  options.state);
+}
+
+//
+// ARC4
+//
+// An ARC4 implementation.  The constructor takes a key in the form of
+// an array of at most (width) integers that should be 0 <= x < (width).
+//
+// The g(count) method returns a pseudorandom integer that concatenates
+// the next (count) outputs from ARC4.  Its return value is a number x
+// that is in the range 0 <= x < (width ^ count).
+//
+function ARC4(key) {
+  var t, keylen = key.length,
+      me = this, i = 0, j = me.i = me.j = 0, s = me.S = [];
+
+  // The empty key [] is treated as [0].
+  if (!keylen) { key = [keylen++]; }
+
+  // Set up S using the standard key scheduling algorithm.
+  while (i < width) {
+    s[i] = i++;
+  }
+  for (i = 0; i < width; i++) {
+    s[i] = s[j = mask & (j + key[i % keylen] + (t = s[i]))];
+    s[j] = t;
+  }
+
+  // The "g" method returns the next (count) outputs as one number.
+  (me.g = function(count) {
+    // Using instance members instead of closure state nearly doubles speed.
+    var t, r = 0,
+        i = me.i, j = me.j, s = me.S;
+    while (count--) {
+      t = s[i = mask & (i + 1)];
+      r = r * width + s[mask & ((s[i] = s[j = mask & (j + t)]) + (s[j] = t))];
+    }
+    me.i = i; me.j = j;
+    return r;
+    // For robust unpredictability, the function call below automatically
+    // discards an initial batch of values.  This is called RC4-drop[256].
+    // See http://google.com/search?q=rsa+fluhrer+response&btnI
+  })(width);
+}
+
+//
+// copy()
+// Copies internal state of ARC4 to or from a plain object.
+//
+function copy(f, t) {
+  t.i = f.i;
+  t.j = f.j;
+  t.S = f.S.slice();
+  return t;
+};
+
+//
+// flatten()
+// Converts an object tree to nested arrays of strings.
+//
+function flatten(obj, depth) {
+  var result = [], typ = (typeof obj), prop;
+  if (depth && typ == 'object') {
+    for (prop in obj) {
+      try { result.push(flatten(obj[prop], depth - 1)); } catch (e) {}
+    }
+  }
+  return (result.length ? result : typ == 'string' ? obj : obj + '\0');
+}
+
+//
+// mixkey()
+// Mixes a string seed into a key that is an array of integers, and
+// returns a shortened string seed that is equivalent to the result key.
+//
+function mixkey(seed, key) {
+  var stringseed = seed + '', smear, j = 0;
+  while (j < stringseed.length) {
+    key[mask & j] =
+      mask & ((smear ^= key[mask & j] * 19) + stringseed.charCodeAt(j++));
+  }
+  return tostring(key);
+}
+
+//
+// autoseed()
+// Returns an object for autoseeding, using window.crypto and Node crypto
+// module if available.
+//
+function autoseed() {
+  try {
+    var out;
+    if (nodecrypto && (out = nodecrypto.randomBytes)) {
+      // The use of 'out' to remember randomBytes makes tight minified code.
+      out = out(width);
+    } else {
+      out = new Uint8Array(width);
+      (global.crypto || global.msCrypto).getRandomValues(out);
+    }
+    return tostring(out);
+  } catch (e) {
+    var browser = global.navigator,
+        plugins = browser && browser.plugins;
+    return [+new Date, global, plugins, global.screen, tostring(pool)];
+  }
+}
+
+//
+// tostring()
+// Converts an array of charcodes to a string
+//
+function tostring(a) {
+  return String.fromCharCode.apply(0, a);
+}
+
+//
+// When seedrandom.js is loaded, we immediately mix a few bits
+// from the built-in RNG into the entropy pool.  Because we do
+// not want to interfere with deterministic PRNG state later,
+// seedrandom will not call math.random on its own again after
+// initialization.
+//
+mixkey(math.random(), pool);
+
+//
+// Nodejs and AMD support: export the implementation as a module using
+// either convention.
+//
+if ((typeof module) == 'object' && module.exports) {
+  module.exports = seedrandom;
+  // When in node.js, try using crypto package for autoseeding.
+  try {
+    nodecrypto = _dereq_('crypto');
+  } catch (ex) {}
+} else if ((typeof define) == 'function' && define.amd) {
+  define(function() { return seedrandom; });
+} else {
+  // When included as a plain script, set up Math.seedrandom global.
+  math['seed' + rngname] = seedrandom;
+}
+
+
+// End anonymous scope, and pass initial values.
+})(
+  // global: `self` in browsers (including strict mode and web workers),
+  // otherwise `this` in Node and other environments
+  (typeof self !== 'undefined') ? self : this,
+  [],     // pool: entropy pool starts empty
+  Math    // math: package containing random, pow, and seedrandom
+);
+
+},{"crypto":35}]},{},[4])(4)
 });
