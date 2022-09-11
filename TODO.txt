@@ -1,1 +1,0 @@
--Find average probability of selected pitch and put in README

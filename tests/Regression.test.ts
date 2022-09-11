@@ -7,8 +7,7 @@ import {
     validFeats,
     validTargs
 } from "./checkModel";
-import { arange, full, isClose, any, reshape } from "../src/utils/numJS";
-import { mse } from "../src/ml/calculations";
+import { arange, full, isClose, any, reshape, mse } from "../src/utils/numJS";
 import { RegressionFriend } from "./friends";
 
 jest.setTimeout(defaultTimeout);

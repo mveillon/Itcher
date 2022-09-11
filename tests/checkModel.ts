@@ -1,6 +1,6 @@
 import { MachineLearning } from "../src/ml/models/MachineLearning";
 import { trainFeatsTargs, validFeatsTargs } from "../src/ml/trainTest";
-import { mse } from "../src/ml/calculations";
+import { mse } from "../src/utils/numJS";
 
 export const defaultTimeout = 2_147_483_647;
 export const training = true;

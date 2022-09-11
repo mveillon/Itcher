@@ -9,7 +9,7 @@ import {
 } from "./checkModel";
 import { KNNBall, knnBall } from "../src/ml/models/KNNBall";
 import { BinaryTree } from "../src/utils/BinaryTree";
-import { mse } from "../src/ml/calculations";
+import { mse } from "../src/utils/numJS";
 import { BallFriend } from "./friends";
 import { numAttributes } from "../src/ml/mappings";
 

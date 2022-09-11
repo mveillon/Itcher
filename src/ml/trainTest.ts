@@ -5,9 +5,8 @@ import { dataPaths, readFile, sheet, sheetRow } from "../utils/files.js";
 import { GameState } from "../baseballLogic/GameState.js";
 import { rewards } from "./rewards.js";
 import { pitchFeature, oneHotHeatmap } from "./mappings.js";
-import { mse } from "./calculations.js";
+import { mse, ndMap } from "../utils/numJS.js";
 import { heatmapSize } from "../baseballLogic/Pitch.js";
-import { ndMap } from "../utils/numJS.js";
 
 /**
  * Splits the spreadsheet into features and targets

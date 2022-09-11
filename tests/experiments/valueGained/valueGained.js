@@ -6,7 +6,7 @@ const { dataPaths, readSpreadSheet, writeFile } = require("../../../dist/utils/f
 const { readAllPitchers } = require("../../../dist/baseballLogic/Pitcher");
 const { aidToPitcher } = require("../../../dist/ml/parseData");
 const { getFeature } = require("../../../dist/ml/mappings");
-const { colAverage, subArrays, argMin, ndMap } = require("../../../dist/utils/numJS");
+const { colAverage, argMin, ndMap, subArrays, sumList } = require("../../../dist/utils/numJS");
 const { Pitcher } = require("../../../dist/baseballLogic/Pitcher");
 
 /**
@@ -77,13 +77,20 @@ const getValue = (row) => {
     const optimal = Math.max(...preds);
     const weight = pitchInd === 0 ? ws[0] : ws[pitchInd] - ws[pitchInd - 1];
     const prob = weight / ws[ws.length - 1];
+    const avg = sumList(preds) / preds.length;
+
+    const diffs = subArrays(feat[3], pitches.map(p => currentPitcher.pitches[p].velo));
+    const actInd = argMin(ndMap(diffs, Math.abs));
+    const actProb = preds[actInd];
 
     return [
         +(actual > 0), 
         selected, 
         optimal, 
         prob, 
-        preds.length
+        preds.length,
+        avg,
+        actProb
     ];
 }
 
@@ -134,13 +141,14 @@ const allValues = async () => {
 Average wOBA of bad event: ${avgBad}
 
 Average probability of good event of actual pitch: ${avgs[0]}
+Average predicted probability of good event of actual pitch: ${avgs[6]}
 Average probability of good event of selected pitch: ${avgs[1]}
 Average probability of good event of optimal pitch: ${avgs[2]}
 
 Average probability of chosen pitch: ${avgs[3]}
 Average number of pitches ${avgs[4]}
 
-Mean absolute error of ensemble ${avgs[5]}`
+Average predicted probability of good event: ${avgs[5]}`
     );
 }
 

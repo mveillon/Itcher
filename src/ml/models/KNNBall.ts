@@ -1,6 +1,6 @@
 import { KNN } from "./KNN.js";
 import { BinaryTree } from "../../utils/BinaryTree.js";
-import { squareDistance, squaredMag } from "../calculations.js";
+import { squareDistance, squaredMag } from "../../utils/numJS.js";
 
 export class KNNBall extends KNN {
     /**

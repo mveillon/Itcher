@@ -1,5 +1,5 @@
 import { MachineLearning } from "./MachineLearning.js";
-import { average } from "../calculations.js";
+import { mean } from "../../utils/numJS.js";
 
 export class AlwaysMean extends MachineLearning {
     private _mean: number;
@@ -18,7 +18,7 @@ export class AlwaysMean extends MachineLearning {
     }
 
     protected async fitAsync(features: number[][], targets: number[]) {
-        this._mean = average(targets);
+        this._mean = mean(targets);
     }
 
     predict(features: number[][]): number[] {

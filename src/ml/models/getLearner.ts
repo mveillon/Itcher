@@ -1,9 +1,9 @@
 import { MachineLearning } from "./MachineLearning.js";
 import { completeFeatsTargs } from "../trainTest.js";
-import { regression } from "./Regression.js";
+import { KNNkd } from "./KNNkd.js";
 import { EnsembleClassifier } from "./EnsembleClassifier.js";
 
-export const ensembleChildren = 100
+export const ensembleChildren = 100;
 
 /**
  * Trains the machine learning network that will predict
@@ -14,7 +14,7 @@ export const ensembleChildren = 100
  * @returns a machine learning model for selecting pitches
  */
 export const getLearner = async (numChildren: number = ensembleChildren): Promise<MachineLearning> => {
-    let res = new EnsembleClassifier(regression, numChildren);
+    let res = new EnsembleClassifier(() => new KNNkd(200, 'mode'), numChildren);
 
     const [feats, targs] = completeFeatsTargs();
     await res.fit(feats, targs);

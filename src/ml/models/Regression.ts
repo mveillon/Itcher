@@ -1,6 +1,5 @@
 import { MachineLearning } from "./MachineLearning.js";
 import { Matrix, inverse } from "ml-matrix";
-import { getShape } from "../../utils/numJS.js";
 
 export class Regression extends MachineLearning {
     protected _degree: number;

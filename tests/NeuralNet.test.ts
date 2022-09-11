@@ -7,7 +7,7 @@ import {
     validFeats,
     validTargs
 } from "./checkModel";
-import { mse } from "../src/ml/calculations";
+import { mse } from "../src/utils/numJS";
 import { numAttributes } from "../src/ml/mappings";
 jest.setTimeout(defaultTimeout);
 

@@ -9,7 +9,7 @@ import {
     validTargs
 } from "./checkModel";
 import { BinaryTree } from "../src/utils/BinaryTree";
-import { mse } from "../src/ml/calculations";
+import { mse } from "../src/utils/numJS";
 import { kdFriend } from "./friends";
 import { numAttributes } from "../src/ml/mappings";
 

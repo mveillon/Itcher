@@ -2,7 +2,7 @@ import { getFeature } from "./mappings.js";
 import { getState } from "../baseballLogic/GameState.js";
 import { choice } from "../utils/random.js";
 import { MachineLearning } from "./models/MachineLearning.js";
-import { sigmoid } from "./calculations.js";
+import { sigmoid } from "../utils/numJS";
 
 /**
  * Given the current game state, computes the next pitch to throw

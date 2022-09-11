@@ -130,13 +130,14 @@ export const full = <T>(shape: number[], value?: T, valueGen?: () => T): ndArray
  * @returns the shape of the array as an array
  */
 export const getShape = <T>(arr: ndArray<T>): number[] => {
-    if (Array.isArray(arr)) {
-        let res = [arr.length];
-        if (arr.length === 0) return res;
-        return res.concat(getShape(arr[0]));
-    } else {
-        return [];
+    let res: number[] = [];
+    let current = arr;
+    while (Array.isArray(current)) {
+        res.push(current.length);
+        if (current.length === 0) break;
+        current = current[0];
     }
+    return res;
 } 
 
 /**
@@ -203,5 +204,20 @@ export const ones = (shape: number[]): numArray => {
     }
 
     return res;
+}
+
+/**
+ * Finds the total number of elements in the array
+ * ```
+ * console.log(getSize(1)) // output: 1
+ * console.log(getSize([])) // output: 0
+ * console.log(getSize([1, 2, 3])) // output: 3
+ * console.log(getSize([[1, 2], [3, 4]])) // output: 4
+ * ```
+ * @param arr the array to measure
+ * @returns the number of elements in arr
+ */
+export const getSize = <T>(arr: ndArray<T>): number => {
+    return getShape(arr).reduce((a, b) => a * b, 1);
 }
 

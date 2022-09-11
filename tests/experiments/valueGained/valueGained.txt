@@ -2,10 +2,11 @@ Average wOBA of good event: 0.14526936870994522
 Average wOBA of bad event: -0.15518148865087253
 
 Average probability of good event of actual pitch: 0.5138044015202685
+Average predicted probability of good event of actual pitch: 0.5468688516326283
 Average probability of good event of selected pitch: 0.5867545290493609
 Average probability of good event of optimal pitch: 0.6862230802575695
 
 Average probability of chosen pitch: 0.18302447019678805
 Average number of pitches 6.009553093464256
 
-Mean absolute error of ensemble undefined
+Average predicted probability of good event: 0.45111082310867945

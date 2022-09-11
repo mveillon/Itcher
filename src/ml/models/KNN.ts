@@ -1,25 +1,23 @@
 import { MachineLearning } from "./MachineLearning.js";
 import { BinaryTree } from "../../utils/BinaryTree.js";
-import { average } from "../calculations.js"
-import { arange } from "../../utils/numJS.js";
+import { arange, mean, mode, median } from "../../utils/numJS.js";
 
 export abstract class KNN extends MachineLearning {
     protected _features: number[][];
     protected _targets: number[];
     protected _k: number;
     protected _tree: BinaryTree<number[]>;
+    protected _agg: 'mean' | 'mode' | 'median';
 
     /**
      * Aggregates predictions from the k nearest neighbors to
      * each of the features of the testing set.
      * @param k how many neighbors to consider
      */
-    constructor(k: number) {
+    constructor(k: number, agg: 'mean' | 'mode' | 'median' = 'mean') {
         super()
         this._k = k;
-        this._features = undefined;
-        this._targets = undefined;
-        this._tree = undefined;
+        this._agg = agg;
     }
 
     protected async fitAsync(features: number[][], targets: number[]) {
@@ -40,15 +38,19 @@ export abstract class KNN extends MachineLearning {
     }
 
     predict(features: number[][]): number[] {
-        let preds: number[] = [];
+        let preds: number[][] = [];
         const m = (ind: number): number => this._targets[ind];
         for (const f of features) {
-            const inds = this._tree.traverse(f);
-            const targs = inds.map(m);
-            preds.push(average(targs));
+            preds.push(this._tree.traverse(f).map(m));
         }
 
-        return preds;
+        const aggs: { [key: string]: (arr: number[]) => number } = {
+            'mean': mean,
+            'median': median,
+            'mode': mode
+        };
+
+        return preds.map(aggs[this._agg]);
     }
 
     /**
