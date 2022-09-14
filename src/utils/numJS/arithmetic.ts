@@ -4,9 +4,9 @@ import { broadcast, zeros } from "./shapes.js";
 /**
  * Adds the two n-dimensional matrices element-wise.
  * ```
- * console.log(addArrays(1, 2)) // output: 3
- * console.log(addArrays([1, 2, 3], [3, 4, 5])) // output: [4, 6, 8]
- * console.log(addArrays(2, [1, 2, 3])) // output: [3, 5, 7]
+ * addArrays(1, 2) // output: 3
+ * addArrays([1, 2, 3], [3, 4, 5]) // output: [4, 6, 8]
+ * addArrays(2, [1, 2, 3]) // output: [3, 5, 7]
  * ```
  * @param a1 the first matrix
  * @param a2 the second matrix
@@ -29,10 +29,10 @@ import { broadcast, zeros } from "./shapes.js";
 /**
  * Subtracts the two n-dimensional matrices element-wise.
  * ```
- * console.log(subArrays(2, 1)) // output: 1
- * console.log(subArrays([3, 4, 5], [1, 2, 3])) // output: [2, 2, 2]
- * console.log(subArrays([1, 2, 3], 1)) // output: [0, 1, 2]
- * console.log(subArrays(3, [1, 2, 3])) // output: [2, 1, 0]
+ * subArrays(2, 1) // output: 1
+ * subArrays([3, 4, 5], [1, 2, 3]) // output: [2, 2, 2]
+ * subArrays([1, 2, 3], 1) // output: [0, 1, 2]
+ * subArrays(3, [1, 2, 3]) // output: [2, 1, 0]
  * ```
  * @param a1 the first matrix
  * @param a2 the second matrix
@@ -45,9 +45,9 @@ import { broadcast, zeros } from "./shapes.js";
 /**
  * Multiplies every element of A by x and returns a new matrix.
  * ```
- * console.log(scalarMul(1, 2)) // output: 2
- * console.log(scalarMul([1, 2, 3], 3)) // output: [3, 6, 9]
- * console.log(scalarMul([2, 4, 6], 0.5)) // output: [1, 2, 3]
+ * scalarMul(1, 2) // output: 2
+ * scalarMul([1, 2, 3], 3) // output: [3, 6, 9]
+ * scalarMul([2, 4, 6], 0.5) // output: [1, 2, 3]
  * ```
  * @param x the scalar
  * @param A the matrix to multiply
@@ -68,7 +68,7 @@ import { broadcast, zeros } from "./shapes.js";
 /**
  * Returns the averages of the columns of A.
  * ```
- * console.log(colAverage([[1, 2], [3, 4]])) // output: [2, 3]
+ * colAverage([[1, 2], [3, 4]]) // output: [2, 3]
  * ```
  * @param A the 2D matrix to average
  * @returns the column-wise average of A
@@ -85,9 +85,9 @@ import { broadcast, zeros } from "./shapes.js";
 /**
  * Returns the sum of every element of the n-dimensional list.
  * ```
- * console.log(sumList(1)) // output: 1
- * console.log(sumList([1, 2, 3])) // output: 6
- * console.log(sumList([[1, 2], [3, 4]])) // output: 10
+ * sumList(1) // output: 1
+ * sumList([1, 2, 3]) // output: 6
+ * sumList([[1, 2], [3, 4]]) // output: 10
  * ```
  * @param x the array of numbers
  * @returns the sum of every element in x

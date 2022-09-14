@@ -18,6 +18,7 @@ test('median', () => {
         expect(median(c)).toBe(0);
     }
     expect(median(2)).toBe(2);
+    expect(() => median([])).toThrowError();
 });
 
 test('mode', () => {
@@ -33,7 +34,7 @@ test('mode', () => {
         expect(mode(c)).toBe(2);
     }
     expect(mode(2)).toBe(2);
-    expect(mode([])).toBeNaN();
+    expect(() => mode([])).toThrowError();
 });
 
 test('average', () => {
@@ -41,4 +42,5 @@ test('average', () => {
     expect(mean([-3, -2, -1, 0, 1, 2, 3])).toBe(0);
     expect(mean(1)).toBe(1);
     expect(mean([[1, 2], [3, 4]])).toBeCloseTo(2.5);
+    expect(() => mean([])).toThrowError();
 });

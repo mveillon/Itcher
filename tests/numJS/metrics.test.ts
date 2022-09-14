@@ -7,7 +7,9 @@ import {
     variance,
     arange,
     sigmoid,
-    correlation
+    correlation,
+    colVariance,
+    allClose
 } from "../../src/utils/numJS";
 
 test('mse', () => {
@@ -73,9 +75,9 @@ test('dot', () => {
 
 test('variance', () => {
     expect(variance([1, 1, 1, 1])).toBe(0);
-    expect(variance([0, 1, 1, 2])).toBeCloseTo(0.5);
-    expect(variance(1)).toBe(0);
+    expect(variance([0, 1, 1, 2])).toBeCloseTo(2 / 3);
     expect(variance([[2, 2], [2, 2]])).toBe(0);
+    expect(variance([1, 2, 3])).toBeCloseTo(1);
 });
 
 test('sigmoid', () => {
@@ -96,4 +98,16 @@ test('correlation', () => {
     expect(correlation([1, 2, 3], [1, 1, 1])).toBeCloseTo(0);
     expect(correlation([1, 2, 3], 1)).toBe(0);
     expect(correlation([[1, 2], [3, 4]], [-1, -2, -3, -4])).toBe(-1);
+});
+
+test('col variance', () => {
+    expect(allClose(
+        colVariance([
+            [0, 1, 2],
+            [0, 2, 1],
+            [0, 1, 1],
+            [0, 2, 2]
+        ]),
+        [0, 1 / 3, 1 / 3]
+    )).toBe(true);
 });

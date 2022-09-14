@@ -22,9 +22,9 @@ test('train learner', async () => {
         expect(typeof knn.features).not.toBe('undefined');
         expect(typeof knn.targets).not.toBe('undefined');
         expect(typeof knn.tree).not.toBe('undefined');
-        expect(knn.tree instanceof BinaryTree<number[][]>).toBe(true);
-        expect(knn.tree.left instanceof BinaryTree<number[][]>).toBe(true);
-        expect(knn.tree.right instanceof BinaryTree<number[][]>).toBe(true);
+        expect(knn.tree instanceof BinaryTree<number[]>).toBe(true);
+        expect(knn.tree.left instanceof BinaryTree<number[]>).toBe(true);
+        expect(knn.tree.right instanceof BinaryTree<number[]>).toBe(true);
 
         expect(knn.features.length).toBe(trainFeats.length);
         expect(knn.features[0].length).toBe(numAttributes());

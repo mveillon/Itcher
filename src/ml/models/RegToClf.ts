@@ -1,5 +1,6 @@
 import { MachineLearning } from "./MachineLearning.js";
-import { numArray, arrGT, toNum } from "../../utils/numJS.js";
+import { numArray, arrGT, toNum, arange, arrIndex, toBool, arrNot, argMin } from "../../utils/numJS.js";
+import { shuffle } from "../../utils/random.js";
 
 export class RegToClf extends MachineLearning {
     protected _model: MachineLearning;
@@ -15,7 +16,7 @@ export class RegToClf extends MachineLearning {
     }
 
     async fitAsync(features: number[][], targets: number[]) {
-        await this._model.fit(features, this.toBinary(targets) as number[]);
+        await this._model.fit(...this.equalClasses(features, targets));
     }
 
     predict(features: number[][]): number[] {
@@ -32,6 +33,34 @@ export class RegToClf extends MachineLearning {
      */
     private toBinary = (arr: numArray, threshold: number = 0): numArray => {
         return toNum(arrGT(arr, threshold));
+    }
+
+    /**
+     * Removes features and targets to ensure that there is an equal amount
+     * of samples of each class
+     * @param features the 2D array of features
+     * @param targets the 1D array of targets as passed into the fit function
+     * @returns the new features and targets array
+     */
+    protected equalClasses(
+        features: number[][], 
+        targets: number[]
+    ): [number[][], number[]] {
+        const binTargs: number[] = this.toBinary(targets) as number[];
+        const inds = arange(features.length);
+        let byClass: [number[], number[]] = [[], []];
+        for (let i = 0; i < binTargs.length; i++) {
+            byClass[binTargs[i]].push(inds[i]);
+        }
+        const smaller = argMin(byClass.map(a => a.length));
+        shuffle(byClass[1 - smaller]);
+        byClass[1 - smaller] = byClass[1 - smaller].slice(0, byClass[smaller].length);
+        const newInds = byClass[0].concat(byClass[1]);
+        shuffle(newInds);
+        return [
+            arrIndex(features, newInds) as number[][],
+            arrIndex(binTargs, newInds) as number[]
+        ];
     }
 }
 

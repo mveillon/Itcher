@@ -5,24 +5,28 @@ import { numArray } from "./types.js";
 /**
  * Computes the average aka mean of x.
  * ```
- * console.log(mean(1)) // output; 1
- * console.log(mean([1, 2, 3])) // output: 1
- * console.log(mean([[1, 2], [3, 4]])) // output: 2.5
+ * mean(1) // output; 1
+ * mean([1, 2, 3]) // output: 1
+ * mean([[1, 2], [3, 4]]) // output: 2.5
  * ```
  * @param x the array to measure
  * @returns the mean of x
  */
  export const mean = (x: numArray): number => {
-    return sumList(x) / getSize(x);
+    const size = getSize(x);
+    if (size === 0) {
+        throw new Error('Trying to find the mean of empty array');
+    }
+    return sumList(x) / size
 }
 
 /**
  * Finds the most common element in arr
  * ```
- * console.log(mode(1)) // output: 1
- * console.log(mode([0, 0, 1, 2])) // output: 0
- * console.log(mode([1, 1, 0, 2, 2, 2])) // output: 2
- * console.log(mode([[0, 1], [1, 2]])) // output: 1
+ * mode(1) // output: 1
+ * mode([0, 0, 1, 2]) // output: 0
+ * mode([1, 1, 0, 2, 2, 2]) // output: 2
+ * mode([[0, 1], [1, 2]]) // output: 1
  * ```
  * @param arr the array to search through
  * @returns the most common element in arr
@@ -31,7 +35,9 @@ import { numArray } from "./types.js";
     arr = flatten(arr);
     if (Array.isArray(arr)) {
         const flat: number[] = arr as number[];
-        if (arr.length === 0) return NaN;
+        if (arr.length === 0) {
+            throw new Error('Trying to find mode of empty array');
+        };
 
         let counts: { [key: number]: number } = {};
         for (const n of flat) {
@@ -53,11 +59,11 @@ import { numArray } from "./types.js";
  * Returns the element n such that there are an equal number of elements
  * in arr greater than or equal to n as there are less than or equal to n
  * ```
- * consoe.log(median(1)) // output: 1
- * console.log(median([0, 1, 2])) // output: 1
- * console.log(median([0, 0, 1, 1])) // output: 0.5
- * console.log(median([2, 2, 0, 1, 1])) // output: 1
- * console.log(median([[1, 2], [3, 4]])) // output: 2.5
+ * median(1) // output: 1
+ * median([0, 1, 2]) // output: 1
+ * median([0, 0, 1, 1]) // output: 0.5
+ * median([2, 2, 0, 1, 1]) // output: 1
+ * median([[1, 2], [3, 4]]) // output: 2.5
  * ```
  * @param arr the array to search through
  * @returns the median of arr
@@ -65,7 +71,10 @@ import { numArray } from "./types.js";
 export const median = (arr: numArray): number => {
     arr = flatten(arr);
     if (Array.isArray(arr)) {
-        const flat: number[] = arr as number[]
+        const flat: number[] = arr as number[];
+        if (flat.length === 0) {
+            throw new Error('Trying to find median of empty array');
+        }
         const s = flat.sort((a, b) => a - b);
         if (flat.length % 2 === 0) {
             return (s[arr.length / 2 - 1] + s[arr.length / 2]) / 2;

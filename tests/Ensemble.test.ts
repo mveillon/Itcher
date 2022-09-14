@@ -3,6 +3,7 @@ import { checkModel, defaultTimeout } from "./checkModel";
 import { KNNkd } from "../src/ml/models/KNNkd";
 import { EnsembleFriend, kdFriend } from "./friends";
 import { full } from "../src/utils/numJS";
+import { standardScale } from "../src/ml/standardScale";
 
 jest.setTimeout(defaultTimeout);
 test('Ensemble', async () => {
@@ -31,8 +32,8 @@ test('Ensemble', async () => {
     await mod.fit(feats, targs);
 
     for (let i = 0; i < 3; i++) {
-        expect(feats.includes((mod.models[i] as kdFriend).features[0])).toEqual(true);
-        expect(targs.includes((mod.models[i] as kdFriend).targets[0])).toEqual(true);
+        expect(feats).toContainEqual((mod.models[i] as kdFriend).features[0]);
+        expect(targs).toContain((mod.models[i] as kdFriend).targets[0]);
     }
 
     const preds = mod.predict(feats);

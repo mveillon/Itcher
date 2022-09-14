@@ -1,6 +1,7 @@
 import { MachineLearning } from "./MachineLearning.js";
 import { BinaryTree } from "../../utils/BinaryTree.js";
 import { arange, mean, mode, median } from "../../utils/numJS.js";
+import { standardScale } from "../standardScale.js";
 
 export abstract class KNN extends MachineLearning {
     protected _features: number[][];
@@ -21,36 +22,32 @@ export abstract class KNN extends MachineLearning {
     }
 
     protected async fitAsync(features: number[][], targets: number[]) {
+        features = standardScale(features, false) as number[][];
         this._features = features;
         this._targets = targets;
 
         let inds: number[] = arange(this._features.length);
         const _tree = this.buildTree(inds);
-        if (_tree instanceof BinaryTree<number[]>) {
-            this._tree = _tree;
-        } else {
+        if (Array.isArray(_tree)) {
             this._tree = new BinaryTree<number[]>(
                 inds,
                 [],
-                (val) => true
+                (_) => true
             );
+        } else {
+            this._tree = _tree;
         }
     }
 
     predict(features: number[][]): number[] {
-        let preds: number[][] = [];
-        const m = (ind: number): number => this._targets[ind];
-        for (const f of features) {
-            preds.push(this._tree.traverse(f).map(m));
-        }
-
-        const aggs: { [key: string]: (arr: number[]) => number } = {
+        features = standardScale(features, false) as number[][];
+        const agg: (arr: number[]) => number = {
             'mean': mean,
             'median': median,
             'mode': mode
-        };
-
-        return preds.map(aggs[this._agg]);
+        }[this._agg];
+        const m = (ind: number): number => this._targets[ind];
+        return features.map(f => agg(this._tree.traverse(f).map(m)));
     }
 
     /**

@@ -1,5 +1,6 @@
 const { EnsembleClassifier } = require("../../../dist/ml/models/EnsembleClassifier");
-const { regression } = require("../../../dist/ml/models/Regression");
+const { Regression } = require("../../../dist/ml/models/Regression");
+// const { KNNBall } = require("../../../dist/ml/models/KNNBall");
 const { trainFeatsTargs, validFeatsTargs } = require("../../../dist/ml/trainTest");
 const { ensembleChildren } = require("../../../dist/ml/models/getLearner");
 const { arrEqual, sumList, arrGT, toNum } = require("../../../dist/utils/numJS");
@@ -20,7 +21,10 @@ class EnsembleClassifierFriend extends EnsembleClassifier {
  * @returns the average accuracy of the child models
  */
 const getAccuracy = () => {
-    const learner = new EnsembleClassifierFriend(regression, ensembleChildren);
+    const learner = new EnsembleClassifierFriend(
+        () => new Regression(2), 
+        ensembleChildren
+    );
     console.log('Starting training...');
     learner.fit(...trainFeatsTargs());
     console.log('Training complete!\n\nStarting predicting...');

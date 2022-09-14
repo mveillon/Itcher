@@ -72,16 +72,16 @@ const numIndex = <T>(arr: ndArray<T>, inds: numArray): ndArray<T> => {
 /**
  * Indexes arr using an array of either numbers or booleans.
  * ```
- * console.log(arrIndex([1, 2, 3], 0)) // output: 1
- * console.log(arrIndex([1, 2, 3], [1, 2])) // output: [2, 3]
- * console.log(arrIndex([[1, 2, 3], [4, 5, 6]], 0)) // output: [1, 2, 3]
- * console.log(arrIndex([[1, 2, 3], [4, 5, 6]], [0])) // output: [[1, 2, 3]]
- * console.log(arrIndex([[1, 2, 3], [4, 5, 6]], [[0, 1]])) // output: [2]
+ * arrIndex([1, 2, 3], 0) // output: 1
+ * arrIndex([1, 2, 3], [1, 2]) // output: [2, 3]
+ * arrIndex([[1, 2, 3], [4, 5, 6]], 0) // output: [1, 2, 3]
+ * arrIndex([[1, 2, 3], [4, 5, 6]], [0]) // output: [[1, 2, 3]]
+ * arrIndex([[1, 2, 3], [4, 5, 6]], [[0, 1]]) // output: [2]
  * 
- * console.log(arrIndex([1, 2, 3], true)) // output: [1, 2, 3]
- * console.log(arrIndex([1, 2, 3], false)) // output: []
- * console.log(arrIndex([1, 2, 3], [true, false, false])) // output: [1]
- * console.log(arrIndex([[1, 2], [3, 4]], [[true, false], [true, true]])) // output: [[1], [3, 4]]
+ * arrIndex([1, 2, 3], true) // output: [1, 2, 3]
+ * arrIndex([1, 2, 3], false) // output: []
+ * arrIndex([1, 2, 3], [true, false, false]) // output: [1]
+ * arrIndex([[1, 2], [3, 4]], [[true, false], [true, true]]) // output: [[1], [3, 4]]
  * ```
  * @param arr the array to index
  * @param inds what values to get from arr

@@ -1,6 +1,7 @@
 import { MachineLearning } from "./MachineLearning.js";
 import { completeFeatsTargs } from "../trainTest.js";
-import { KNNkd } from "./KNNkd.js";
+import { Regression } from "./Regression.js";
+// import { KNNBall } from "./KNNBall.js";
 import { EnsembleClassifier } from "./EnsembleClassifier.js";
 
 export const ensembleChildren = 100;
@@ -10,11 +11,11 @@ export const ensembleChildren = 100;
  * the expected reward given the current state and what pitch
  * is being thrown.
  * @param numChildren the number of children to use in the ensemble method.
- * Default is 20
+ * Default is 100
  * @returns a machine learning model for selecting pitches
  */
 export const getLearner = async (numChildren: number = ensembleChildren): Promise<MachineLearning> => {
-    let res = new EnsembleClassifier(() => new KNNkd(200, 'mode'), numChildren);
+    let res = new EnsembleClassifier(() => new Regression(2), numChildren);
 
     const [feats, targs] = completeFeatsTargs();
     await res.fit(feats, targs);

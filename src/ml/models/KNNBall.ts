@@ -1,45 +1,44 @@
 import { KNN } from "./KNN.js";
+import { arange, squaredMag } from "../../utils/numJS.js";
 import { BinaryTree } from "../../utils/BinaryTree.js";
-import { squareDistance, squaredMag } from "../../utils/numJS.js";
 
 export class KNNBall extends KNN {
+    protected _magnitudes: number[];
+    protected _sortedInds: number[];
     /**
      * Uses a Ball Tree to organize features
      */
 
-    protected buildTree(inds: number[]): BinaryTree<number[]> | number[] {
+    protected async fitAsync(features: number[][], targets: number[]) {
+        this._magnitudes = features.map(squaredMag);
+        this._sortedInds = arange(features.length);
+        this._sortedInds.sort((a, b) => this._magnitudes[a] - this._magnitudes[b]);
+
+        await super.fitAsync(features, targets);
+    }
+
+    protected buildTree(inds: number[]): number[] | BinaryTree<number[]> {
+        return this.buildFromSorted(this._sortedInds);
+    }
+
+    /**
+     * Builds the tree from a pre-sorted array of indices, all sorted based on their
+     * distance from the origin
+     * @param inds the indices sorted in ascending order based on their distance from
+     * the origin
+     * @returns a binary ball tree gropuing samples by proximity
+     */
+    protected buildFromSorted(inds: number[]): number[] | BinaryTree<number[]> {
         if (inds.length <= this._k) return inds;
 
-        /* Too expensive to find the two furthest points so we use a heuristic */ 
-        inds.sort((a, b) => squaredMag(this._features[a]) - squaredMag(this._features[b]));
-        const p1 = inds[0];
-        let p2: number;
-        let bestDistance = -Infinity;
-        for (const i of inds) {
-            const newDist = squareDistance(this._features[p1], this._features[i])
-            if (newDist > bestDistance) {
-                p2 = i;
-                bestDistance = newDist;
-            }
-        }
-
-        const comp = (vec: number[]): boolean => {
-            return (
-                squareDistance(vec, this._features[p1]) <
-                squareDistance(vec, this._features[p2])
-            );
-        }
-        let splits: [number[], number[]] = [[], []];
-        for (const i of inds) {
-            splits[+(!comp(this._features[i]))].push(i);
-        }
-
-        if (splits[0].length <= 1 || splits[1].length <= 1) return inds;
+        const splitInd = Math.ceil(inds.length / 2);
+        const splitMag = this._magnitudes[inds[splitInd]];
+        const med = Math.ceil(inds.length / 2);
 
         return new BinaryTree<number[]>(
-            this.buildTree(splits[0]),
-            this.buildTree(splits[1]),
-            comp
+            this.buildFromSorted(inds.slice(0, med)),
+            this.buildFromSorted(inds.slice(med, inds.length)),
+            (vec) => squaredMag(vec) < splitMag
         );
     }
 }

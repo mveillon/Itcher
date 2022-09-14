@@ -2,12 +2,14 @@ export class BinaryTree<T> {
     left: BinaryTree<T> | T;
     right: BinaryTree<T> | T;
     split: (val: T) => boolean;
+    private _height: number;
 
     /**
      * One node in a binary tree
      * @param _left the left child - can be a leaf
      * @param _right the right child - can be a leaf
-     * @param _split how to split the incoming value. True means left, false means right
+     * @param _split how to split the incoming value. 
+     * `true` means left, `false` means right
      */
     constructor(
             _left: BinaryTree<T> | T, 
@@ -17,6 +19,10 @@ export class BinaryTree<T> {
         this.left = _left;
         this.right = _right;
         this.split = _split;
+        const getHeight = (node: BinaryTree<T> | T): number => {
+            return node instanceof BinaryTree<T> ? node.height : 1;
+        }
+        this._height = 1 + Math.max(getHeight(_left), getHeight(_right));
     }
 
     /**
@@ -25,10 +31,14 @@ export class BinaryTree<T> {
      * @returns the relevant leaf
      */
     traverse(val: T): T {
-        const rel: BinaryTree<T> | T = this.split(val) ? this.left : this.right;
-        if (rel instanceof BinaryTree<T>) {
-            return rel.traverse(val);
+        let current: BinaryTree<T> | T = this;
+        while (current instanceof BinaryTree<T>) {
+            current = current.split(val) ? current.left : current.right;
         }
-        return rel;
+        return current;
+    }
+
+    get height() {
+        return this._height;
     }
 }

@@ -10,11 +10,11 @@ import { ndArray, numArray } from "./types.js";
  * total number of elements. If both arrays have the same complexity, the first argument
  * is taken as the "ground truth".
  * ```
- * console.log(broadcast([1, 2, 3], [4, 5, 6])) // output: [[1, 2, 3], [4, 5, 6]]
- * console.log(broadcast([1, 2, 3], 4)) // output: [[1, 2, 3], [4, 4, 4]]
- * console.log(broadcast(4, [1, 2, 3])) // output: [[4, 4, 4], [1, 2, 3]]
- * console.log(broadcast([1, 2, 3, 4], [[5, 6], [7, 8]])) // output: [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
- * console.log(broadcast([[1, 2]], [[3], [4]])) // output: [[[1, 2]], [[3, 4]]]
+ * broadcast([1, 2, 3], [4, 5, 6]) // output: [[1, 2, 3], [4, 5, 6]]
+ * broadcast([1, 2, 3], 4) // output: [[1, 2, 3], [4, 4, 4]]
+ * broadcast(4, [1, 2, 3]) // output: [[4, 4, 4], [1, 2, 3]]
+ * broadcast([1, 2, 3, 4], [[5, 6], [7, 8]]) // output: [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
+ * broadcast([[1, 2]], [[3], [4]]) // output: [[[1, 2]], [[3, 4]]]
  * ```
  * @param a1 the first array
  * @param a2 the second array
@@ -26,13 +26,16 @@ export const broadcast = <T, U>(
 ): [ndArray<T>, ndArray<U>] => {
     const shape1 = getShape(a1);
     const shape2 = getShape(a2);
-    const getTotal = (shape: number[]): number => shape.reduce((a, b) => a * b, 1);
-    const t1 = getTotal(shape1);
-    const t2 = getTotal(shape2);
+    const t1 = getSize(a1);
+    const t2 = getSize(a2);
 
+    const showArr = Math.max(t1, t2) <= 10;
     const erStr = (
         'Arguments could not be broadcast together: ' + 
-        `${a1}: ${shape1} (${t1} elements) and ${a2}: ${shape2} (${t2} elements).`
+        (showArr ? `${a1}: ` : '') +
+        `[${shape1}] (${t1} elements) and ` +
+        (showArr ? `${a2}: ` : '') +
+        `[${shape2}] (${t2} elements).`
     );
     if (t1 !== t2 && shape1.length > 0 && shape2.length > 0) {
         throw new Error(erStr);
@@ -69,9 +72,9 @@ export const broadcast = <T, U>(
 /**
  * Flattens the n-dimensional array into just one array.
  * ```
- * console.log(flatten(5)) // output: 5
- * console.log(flatten([1, 2, 3])) // output: [1, 2, 3]
- * console.log(flatten([[1, 2], [3, 4]])) // output: [1, 2, 3, 4]
+ * flatten(5) // output: [5]
+ * flatten([1, 2, 3]) // output: [1, 2, 3]
+ * flatten([[1, 2], [3, 4]]) // output: [1, 2, 3, 4]
  * ```
  * @param A the array to flatten
  * @returns the flattened array
@@ -87,10 +90,10 @@ export const broadcast = <T, U>(
 /**
  * Returns an array full of whatever the value is in any arbitrary shape.
  * ```
- * console.log(full([3], 1)) // output: [1, 1, 1]
- * console.log(full([2, 2], 3)) // output: [[3, 3], [3, 3]]
- * console.log(full([2], undefined, () => 4)) // output: [4, 4]
- * console.log(full([3], 3, () => 2)) // output: [3, 3, 3]
+ * full([3], 1) // output: [1, 1, 1]
+ * full([2, 2], 3) // output: [[3, 3], [3, 3]]
+ * full([2], undefined, () => 4) // output: [4, 4]
+ * full([3], 3, () => 2) // output: [3, 3, 3]
  * ```
  * @param shape the size of each dimension of the output
  * @param value what value to fill the array with. If undefined, the values
@@ -122,9 +125,9 @@ export const full = <T>(shape: number[], value?: T, valueGen?: () => T): ndArray
  * Returns the shape of the array, which should be of uniform dimension
  * to allow for basically constant time calculation.
  * ```
- * console.log(getShape(1)) // output: []
- * console.log(getShape([1, 2, 3])) // output: [3]
- * console.log(getShape([[1, 2, 3], [4, 5, 6]])) // output: [2, 3]
+ * getShape(1) // output: []
+ * getShape([1, 2, 3]) // output: [3]
+ * getShape([[1, 2, 3], [4, 5, 6]]) // output: [2, 3]
  * ```
  * @param arr the array to measure
  * @returns the shape of the array as an array
@@ -143,8 +146,8 @@ export const getShape = <T>(arr: ndArray<T>): number[] => {
 /**
  * Convenience function to create an array full of zeros.
  * ```
- * console.log(zeros([3])) // output: [0, 0, 0]
- * console.log(zeros([2, 2])) // output: [[0, 0], [0, 0]]
+ * zeros([3])) // output: [0, 0, 0]
+ * zeros([2, 2])) // output: [[0, 0], [0, 0]]
  * ```
  * @param shape the shape of the array to create
  * @returns an array of all zeros
@@ -156,8 +159,8 @@ export const getShape = <T>(arr: ndArray<T>): number[] => {
 /**
  * Convenience function to create an array full of ones.
  * ```
- * console.log(ones([3])) // output: [1, 1, 1]
- * console.log(ones([2, 2])) // output: [[1, 1], [1, 1]]
+ * ones([3]) // output: [1, 1, 1]
+ * ones([2, 2]) // output: [[1, 1], [1, 1]]
  * ```
  * @param shape the shape of the array to create
  * @returns an array of all ones
@@ -166,11 +169,28 @@ export const ones = (shape: number[]): numArray => {
     return full(shape, 1);
 }
 
+export const empty = <T>(shape: number[]): ndArray<T> => {
+    if (shape.length === 0) {
+        return undefined;
+    }
+    if (shape.length === 1) {
+        return new Array<T>(shape[0]);
+    }
+
+    let res: ndArray<T> = new Array<ndArray<T>>(shape[0]);
+    const rest = shape.slice(1, shape.length);
+    for (let i = 0; i < shape[0]; i++) {
+        res[i] = empty(rest);
+    }
+
+    return res;
+}
+
 /**
  * Reshapes arr to be the given shape.
  * ```
- * console.log(reshape([1, 2, 3, 4], [2, 2])) // output: [[1, 2], [3, 4]]
- * console.log(reshape([[1, 2], [3, 4]], [4]))  // output: [1, 2, 3, 4]
+ * reshape([1, 2, 3, 4], [2, 2]) // output: [[1, 2], [3, 4]]
+ * reshape([[1, 2], [3, 4]], [4])  // output: [1, 2, 3, 4]
  * ```
  * @param arr the array to reshape
  * @param shape the shape of the output array
@@ -209,10 +229,10 @@ export const ones = (shape: number[]): numArray => {
 /**
  * Finds the total number of elements in the array
  * ```
- * console.log(getSize(1)) // output: 1
- * console.log(getSize([])) // output: 0
- * console.log(getSize([1, 2, 3])) // output: 3
- * console.log(getSize([[1, 2], [3, 4]])) // output: 4
+ * getSize(1) // output: 1
+ * getSize([]) // output: 0
+ * getSize([1, 2, 3]) // output: 3
+ * getSize([[1, 2], [3, 4]]) // output: 4
  * ```
  * @param arr the array to measure
  * @returns the number of elements in arr

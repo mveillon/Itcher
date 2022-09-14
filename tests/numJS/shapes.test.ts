@@ -14,9 +14,10 @@ import {
     zeros,
     ones,
     arrEqual,
-    getSize
+    getSize,
+    empty
 } from "../../src/utils/numJS";
-import { randArr } from "../../src/utils/random";
+import { randArr, randInt } from "../../src/utils/random";
 
 test('flatten', () => {
     expect(flatten(1)).toBe(1);
@@ -174,3 +175,22 @@ test('getSize', () => {
         ]
     ])).toBe(12);
 });
+
+test('empty', () => {
+    expect(empty([])).toBeUndefined();
+    const e: number[] = empty<number>([5]) as number[];
+    for (let i = 0; i < 5; i++) {
+        expect(e[i]).toBeUndefined();
+        e[i] = i;
+        expect(e[i]).toBe(i);
+    }
+
+    const e2: string[][] = empty<string>([5, 5]) as string[][];
+    for (let i = 0; i < 5; i++) {
+        const x = randInt(5);
+        const y = randInt(5);
+        expect(e2[x][y]).toBeUndefined();
+        e2[x][y] = i.toString();
+        expect(e2[x][y]).toBe(i.toString());
+    }
+})

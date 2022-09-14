@@ -22,7 +22,6 @@ test('getFeature', () => {
 
         for (const pitch in state.pitcher.pitches) {
             const feat = getFeature(pitch, state);
-            expect(feat.length).toBe(numAttributes());
             feats.push(feat);
         }
     }

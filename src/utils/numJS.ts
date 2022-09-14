@@ -11,3 +11,4 @@ export * from "./numJS/ndMap.js";
 export * from "./numJS/shapes.js";
 export * from "./numJS/types.js";
 export * from "./numJS/measuresOfCenter.js";
+export * from "./numJS/linAlg.js";

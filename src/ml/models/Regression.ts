@@ -1,43 +1,58 @@
 import { MachineLearning } from "./MachineLearning.js";
+// import { matMul, invert, transpose } from "../../utils/numJS.js";
+// import { standardScale } from "../standardScale.js";
 import { Matrix, inverse } from "ml-matrix";
 
 export class Regression extends MachineLearning {
     protected _degree: number;
-    protected _w: Matrix;
+    protected _w: number[];
+    protected _fixSingular: boolean;
 
     /**
      * Finds a line of best fit of nth degree to make predictions
      * @param degree the degree of the polynomial describing the trendline
+     * @param fixSingular whether to change the features to try and make them
+     * not singular. This also scales the features to have a mean of zero and
+     * a standard deviation of one
      */
-    constructor(degree: number = 2) {
+    constructor(degree: number = 2, fixSingular: boolean = true) {
         super();
         this._degree = degree;
-        this._w = undefined;
+        this._fixSingular = fixSingular;
     }
 
     protected async fitAsync(features: number[][], targets: number[]) {
         if (features.length === 0) return;
-        const tarMat = Matrix.columnVector(targets);
-        const zs = this.fillZs(features);
-
+        // if (this._fixSingular) {
+        //     features = standardScale(features, true) as number[][];
+        // }
+        // const zs = this.fillZs(features);
+        // const zsT = transpose(zs);
+        const zs = new Matrix(this.fillZs(features));
         const zsT = zs.transpose();
 
         // (zs^T * zs)^-1 * (zs^T * tarMat)
+        // const left: number[][] = matMul(zsT, zs) as number[][];
+        // const inv = invert(left);
+        // const right = matMul(zsT, targets);
+        // this._w = matMul(inv, right) as number[];
         const left = zsT.mmul(zs);
-        let inv: Matrix;
-        try {
-            inv = inverse(left);
-        } catch (e) {
-            inv = inverse(left, true);
-        }
-        this._w = inv.mmul(zsT.mmul(tarMat));
+        const inv = inverse(left, true);
+        const right = zsT.mmul(Matrix.columnVector(targets));
+        this._w = inv.mmul(right).to1DArray();
     }
 
     predict(features: number[][]): number[] {
         if (features.length === 0) return [];
-
-        const res = this.fillZs(features).mmul(this._w);
-        return res.to1DArray();
+        // if (this._fixSingular) {
+        //     features = standardScale(features, false) as number[][];
+        // }
+        // return matMul(this.fillZs(features), this._w) as number[];
+        return (
+            new Matrix(this.fillZs(features))
+                .mmul(Matrix.columnVector(this._w))
+                .to1DArray()
+        );
     }
 
     /**
@@ -46,7 +61,7 @@ export class Regression extends MachineLearning {
      * @param features the 2D array of features
      * @returns a matrix with all terms to use in training
      */
-    private fillZs(features: number[][]): Matrix {
+    protected fillZs(features: number[][]): number[][] {
         let res: number[][] = [];
         for (let i = 0; i < features.length; i++) {
             let row: number[] = [1];
@@ -61,7 +76,7 @@ export class Regression extends MachineLearning {
             res.push(row);
         }
 
-        return new Matrix(res);
+        return res;
     }
 }
 

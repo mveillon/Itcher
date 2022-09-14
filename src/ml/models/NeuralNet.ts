@@ -1,6 +1,7 @@
 import { MachineLearning } from "./MachineLearning.js";
 import { numAttributes } from "../mappings.js";
 import * as tf from "@tensorflow/tfjs-node";
+import { standardScale } from "../standardScale.js";
 
 export class NeuralNet extends MachineLearning {
     protected _net: tf.Sequential;
@@ -51,6 +52,7 @@ export class NeuralNet extends MachineLearning {
 
     protected async fitAsync(features: number[][], targets: number[]) {
         if (features.length === 0) return;
+        features = standardScale(features, false) as number[][];
         await this._net.fit(
             tf.tensor(features),
             tf.tensor(targets),
@@ -65,6 +67,7 @@ export class NeuralNet extends MachineLearning {
 
     predict(features: number[][]): number[] {
         if (features.length === 0) return [];
+        features = standardScale(features, false) as number[][];
 
         const preds = this._net.predict(
             tf.tensor(features), 
@@ -85,5 +88,5 @@ export class NeuralNet extends MachineLearning {
  */
  export const neuralNet = (numInputs?: number): NeuralNet => {
     numInputs = numInputs || numAttributes();
-    return new NeuralNet(numInputs, 512, 1024, 512, 1);
+    return new NeuralNet(numInputs, 512, 1);
 }

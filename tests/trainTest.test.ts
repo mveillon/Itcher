@@ -8,7 +8,16 @@ import {
     testFeatsTargs,
     completeFeatsTargs
 } from "../src/ml/trainTest";
-import { allClose, sumList, all, arrGT, arrLT } from "../src/utils/numJS";
+import { 
+    allClose, 
+    sumList, 
+    all, 
+    arrGT, 
+    arrLT, 
+    any,
+    ndMap,
+    transpose
+} from "../src/utils/numJS";
 import { defaultTimeout } from "./checkModel";
 import { readSpreadSheet, dataPaths } from "../src/utils/files";
 import { RegressionFriend } from "./friends";
@@ -25,6 +34,8 @@ test('features and targets', () => {
     const [trainFeats2, trainTargs2] = allFeatsTargs(
         spreadsheet
     );
+    expect(any(ndMap(datasets, isNaN))).toBe(false);
+    expect(any(ndMap(trainFeats2, isNaN))).toBe(false);
     expect(allClose(datasets[0][0], trainFeats2)).toBe(true);
     expect(allClose(datasets[0][1], trainTargs2)).toBe(true);
 
@@ -35,10 +46,6 @@ test('features and targets', () => {
 
         for (const row of feats) {
             expect(row.length).toBe(width);
-            for (const cell of row) {
-                expect(typeof cell).toBe('number');
-                expect(cell).not.toBeNaN();
-            }
         }
     }
 
@@ -56,7 +63,10 @@ test('features and targets', () => {
             trainTargs3.push(t);
         }
     }
-    expect(allClose(trainFeats3, trainFeats2)).toBe(true);
+    expect(allClose(
+        trainFeats3, 
+        trainFeats2
+    )).toBe(true);
     expect(allClose(trainTargs3, trainTargs2)).toBe(true);
 });
 

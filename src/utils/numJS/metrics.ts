@@ -8,9 +8,9 @@ import { mean } from "./measuresOfCenter";
  * x and y can be of any shape and are broadcast and compared
  * element-wise.
  * ```
- * console.log(mse([0, 1, 2], [3, 2, 1])) // output: 3.66666667
- * console.log(mse([0, 1, 2], 1)) // output: 0.66666667
- * console.log(mse([[0, 1], [2, 3]], [0, 1, 2, 3])) // output: 0
+ * mse([0, 1, 2], [3, 2, 1]) // output: 3.66666667
+ * mse([0, 1, 2], 1) // output: 0.66666667
+ * mse([[0, 1], [2, 3]], [0, 1, 2, 3]) // output: 0
  * ```
  * @param x the first array of numbers
  * @param y the second array of numbers
@@ -25,9 +25,9 @@ import { mean } from "./measuresOfCenter";
  * Returns the square (for efficiency) of the Euclidean distance 
  * between x and y. Arrays are broadcast and compared element-wise
  * ```
- * console.log(squareDistance([0, 1, 2], [3, 2, 1])) // output: 11
- * console.log(squareDistance([0, 1, 2], 1)) // output: 2
- * console.log(squareDistance([[0, 1], [2, 3]], [0, 1, 2, 3])) // output: 0
+ * squareDistance([0, 1, 2], [3, 2, 1]) // output: 11
+ * squareDistance([0, 1, 2], 1) // output: 2
+ * squareDistance([[0, 1], [2, 3]], [0, 1, 2, 3]) // output: 0
  * ```
  * @param x the first array/vector
  * @param y the second array/vector
@@ -50,9 +50,9 @@ export const squareDistance = (x: numArray, y: numArray): number => {
  * Computes the Manhattan distance between x and y. x and y are broadcast
  * together and compared element-wise.
  * ```
- * console.log(manhattanDistance([0, 1, 2], [3, 2, 1])) // output: 5
- * console.log(manhattanDistance([0, 1, 2], 1)) // output: 2
- * console.log(manhattanDistance([[0, 1], [2, 3]], [0, 1, 2, 3])) // output: 0
+ * manhattanDistance([0, 1, 2], [3, 2, 1]) // output: 5
+ * manhattanDistance([0, 1, 2], 1) // output: 2
+ * manhattanDistance([[0, 1], [2, 3]], [0, 1, 2, 3]) // output: 0
  * ```
  * @param x the first array of numbers
  * @param y the second array of numbers
@@ -77,10 +77,10 @@ export const manhattanDistance = (x: numArray, y: numArray): number => {
  * correlation, while -1 means a perfect negative correlation. 0 means no
  * correlation.
  * ```
- * console.log(correlation([1, 2, 3], [4, 5, 6])) // output: 1
- * console.log(correlation([[1, 2], [3, 4]], [-1, -2, -3, -4])) // output: -1
- * console.log(correlation([1, 2, 3], [1, 1, 1])) // output: 0
- * console.log(correlation([1, 2, 3], 1)) // output: 0
+ * correlation([1, 2, 3], [4, 5, 6]) // output: 1
+ * correlation([[1, 2], [3, 4]], [-1, -2, -3, -4]) // output: -1
+ * correlation([1, 2, 3], [1, 1, 1]) // output: 0
+ * correlation([1, 2, 3], 1) // output: 0
  * ```
  * @param x 
  * @param y 
@@ -120,9 +120,9 @@ export const correlation = (x: numArray, y: numArray): number => {
  * Returns the square (for efficiency) of the magnitude (distance from origin)
  * of x.
  * ```
- * console.log(squaredMag(1)) // output: 1
- * console.log(squaredMag([1, 2, 3])) // output: 14
- * console.log(squaredMag([[1, 2], [3, 4]])) // output: 30
+ * squaredMag(1) // output: 1
+ * squaredMag([1, 2, 3]) // output: 14
+ * squaredMag([[1, 2], [3, 4]]) // output: 30
  * ```
  * @param x 
  * @returns 

@@ -7,11 +7,11 @@ import { ndMap } from "./ndMap.js";
  * Returns an array where `ith` element corresponds to whether `x[i]` is close enough to `y[i]`,
  * where close enough means within floating-point error bars. Uses the formula `abs(x - y) <= atol + rtol * abs(y)`.
  * ```
- * console.log(isClose(1, 1.0000000001)) // output: true
- * console.log(isClose(1, 2)) // output: false
- * console.log(isClose(1, 2, undefined, 1)) // output: true
- * console.log(isClose([1, 2, 3], [1, 3, 3])) // output: [true, false, true]
- * console.log(isClose([[1, 2], [3, 4]], [[1, 3], [4, 4]])) // output: [[true, false], [false, true]]
+ * isClose(1, 1.0000000001) // output: true
+ * isClose(1, 2) // output: false
+ * isClose(1, 2, undefined, 1) // output: true
+ * isClose([1, 2, 3], [1, 3, 3]) // output: [true, false, true]
+ * isClose([[1, 2], [3, 4]], [[1, 3], [4, 4]]) // output: [[true, false], [false, true]]
  * ```
  * @param x the first array
  * @param y the second array
@@ -37,10 +37,10 @@ import { ndMap } from "./ndMap.js";
  * Returns whether every element of x is close to every element of y, using the formula
  * `abs(x - y) <= atol + rtol * abs(y)`.
  * ```
- * console.log(allClose(1, 1)) // output: true
- * console.log(allClose(1, 2)) // output: false
- * console.log(allClose([1, 2, 3], [1.000000001, 2, 3])) // output: true
- * console.log(allClose([1, 2, 3], [2, 2, 3])) // output: false
+ * allClose(1, 1) // output: true
+ * allClose(1, 2) // output: false
+ * allClose([1, 2, 3], [1.000000001, 2, 3]) // output: true
+ * allClose([1, 2, 3], [2, 2, 3]) // output: false
  * ```
  * @param x the first array
  * @param y the second array
@@ -81,10 +81,10 @@ import { ndMap } from "./ndMap.js";
  * Checks for equality of a and b element-wise and returns a new array
  * with the results.
  * ```
- * console.log(arrEqual(1, 1)) // output: true
- * console.log(arrEqual(1, 2)) // output: false
- * console.log(arrEqual([1, 2, 3], [2, 2, 3])) // output: [false, true, true]
- * console.log(arrEqual([1, 2, 3], [1.00000001, 2, 3])) // output: [false, true, true] (see isClose)
+ * arrEqual(1, 1) // output: true
+ * arrEqual(1, 2) // output: false
+ * arrEqual([1, 2, 3], [2, 2, 3]) // output: [false, true, true]
+ * arrEqual([1, 2, 3], [1.00000001, 2, 3]) // output: [false, true, true] (see isClose)
  * ```
  * @param a the first array
  * @param b the second array
@@ -99,10 +99,10 @@ export const arrEqual = <T>(a: ndArray<T>, b: ndArray<T>): boolArray => {
  * Checks for a < b element-wise and returns a new array
  * with the results.
  * ```
- * console.log(arrLT(1, 2)) // output: true
- * console.log(arrLT(2, 1)) // output: false
- * console.log(arrLT(1, 1)) // output: false
- * console.log(arrLT([1, 2, 3], [1, 3, 2])) // output: [false, true, false]
+ * arrLT(1, 2) // output: true
+ * arrLT(2, 1) // output: false
+ * arrLT(1, 1) // output: false
+ * arrLT([1, 2, 3], [1, 3, 2]) // output: [false, true, false]
  * ```
  * @param a the first array
  * @param b the second array
@@ -117,10 +117,10 @@ export const arrEqual = <T>(a: ndArray<T>, b: ndArray<T>): boolArray => {
  * Checks for a <= b element-wise and returns a new array
  * with the results.
  * ```
- * console.log(arrLTEq(1, 2)) // output: true
- * console.log(arrLTEq(2, 1)) // output: false
- * console.log(arrLTEq(1, 1)) // output: true
- * console.log(arrLTEq([1, 2, 3], [1, 3, 2])) // output: [true, true, false]
+ * arrLTEq(1, 2) // output: true
+ * arrLTEq(2, 1) // output: false
+ * arrLTEq(1, 1) // output: true
+ * arrLTEq([1, 2, 3], [1, 3, 2]) // output: [true, true, false]
  * ```
  * @param a the first array
  * @param b the second array
@@ -135,10 +135,10 @@ export const arrEqual = <T>(a: ndArray<T>, b: ndArray<T>): boolArray => {
  * Checks for a > b element-wise and returns a new array
  * with the results.
  * ```
- * console.log(arrGT(1, 2)) // output: false
- * console.log(arrGT(2, 1)) // output: true
- * console.log(arrGT(1, 1)) // output: false
- * console.log(arrGT([1, 2, 3], [1, 3, 2])) // output: [false, false, true]
+ * arrGT(1, 2) // output: false
+ * arrGT(2, 1) // output: true
+ * arrGT(1, 1) // output: false
+ * arrGT([1, 2, 3], [1, 3, 2]) // output: [false, false, true]
  * ```
  * @param a the first array
  * @param b the second array
@@ -153,10 +153,10 @@ export const arrEqual = <T>(a: ndArray<T>, b: ndArray<T>): boolArray => {
  * Checks for a >= b element-wise and returns a new array
  * with the results.
  * ```
- * console.log(arrGTEq(1, 2)) // output: false
- * console.log(arrGTEq(2, 1)) // output: true
- * console.log(arrGTEq(1, 1)) // output: true
- * console.log(arrGTEq([1, 2, 3], [1, 3, 2])) // output: [true, false, true]
+ * arrGTEq(1, 2) // output: false
+ * arrGTEq(2, 1) // output: true
+ * arrGTEq(1, 1) // output: true
+ * arrGTEq([1, 2, 3], [1, 3, 2]) // output: [true, false, true]
  * ```
  * @param a the first array
  * @param b the second array
@@ -170,11 +170,11 @@ export const arrEqual = <T>(a: ndArray<T>, b: ndArray<T>): boolArray => {
 /**
  * Computes the element-wise OR of two boolean arrays.
  * ```
- * console.log(arrOr(true, false)) // output: true
- * console.log(arrOr(false, false)) // output: false
- * console.log(arrOr([true, true, false], [false, false, false])) // output: [true, true, false]
- * console.log(arrOr([true, false, true], false)) // output: [true, false, true]
- * console.log(arrOr(true, [[false, false], [false, false]])) // output: [[true, true], [true, true]]
+ * arrOr(true, false) // output: true
+ * arrOr(false, false) // output: false
+ * arrOr([true, true, false], [false, false, false]) // output: [true, true, false]
+ * arrOr([true, false, true], false) // output: [true, false, true]
+ * arrOr(true, [[false, false], [false, false]]) // output: [[true, true], [true, true]]
  * ```
  * @param a the first array
  * @param b the second array
@@ -189,11 +189,11 @@ export const arrEqual = <T>(a: ndArray<T>, b: ndArray<T>): boolArray => {
 /**
  * Computes the element-wise AND of two boolean arrays.
  * ```
- * console.log(arrOr(true, false)) // output: false
- * console.log(arrOr(true, true)) // output: true
- * console.log(arrOr([true, true, false], [false, true, false])) // output: [false, true, false]
- * console.log(arrOr([true, false, true], true)) // output: [true, false, true]
- * console.log(arrOr(true, [[false, false], [false, false]])) // output: [[false, false], [false, false]]
+ * arrOr(true, false) // output: false
+ * arrOr(true, true) // output: true
+ * arrOr([true, true, false], [false, true, false]) // output: [false, true, false]
+ * arrOr([true, false, true], true) // output: [true, false, true]
+ * arrOr(true, [[false, false], [false, false]]) // output: [[false, false], [false, false]]
  * ```
  * @param a the first array
  * @param b the second array
@@ -208,10 +208,10 @@ export const arrEqual = <T>(a: ndArray<T>, b: ndArray<T>): boolArray => {
 /**
  * Computes the element-wise NOT of a.
  * ```
- * console.log(arrNot(true)) // output: false
- * console.log(arrNot(false)) // output: true
- * console.log(arrNot([true, false, true])) // output: [false, true, false]
- * console.log(arrNot([[true, true], [false, false]])) // output: [[false, false], [true, true]]
+ * arrNot(true) // output: false
+ * arrNot(false) // output: true
+ * arrNot([true, false, true]) // output: [false, true, false]
+ * arrNot([[true, true], [false, false]]) // output: [[false, false], [true, true]]
  * ```
  * @param a the array to negate
  * @returns an array of booleans, each with the opposite value
@@ -226,10 +226,10 @@ export const arrNot = (a: boolArray): boolArray => {
  * a and b can have different shapes and this function can still return `true`.
  * If this is not desired, see `sameArr`.
  * ```
- * console.log(allEqual(1, 1)) // output: true
- * console.log(allEqual(1, 2)) // output: false
- * console.log(allEqual([1, 2, 3], [1, 2, 3])) // output: true
- * console.log(allEqual([1, 2, 3], [[1, 2, 3]])) // output: false
+ * allEqual(1, 1) // output: true
+ * allEqual(1, 2) // output: false
+ * allEqual([1, 2, 3], [1, 2, 3]) // output: true
+ * allEqual([1, 2, 3], [[1, 2, 3])) // output: false
  * ```
  * @param a the first array
  * @param b the second array
@@ -243,10 +243,10 @@ export const allEqual = <T>(a: ndArray<T>, b: ndArray<T>): boolean => {
  * Returns whether every element of a and b are equal and that their shapes
  * are equal.
  * ```
- * console.log(allEqual(1, 1)) // output: true
- * console.log(allEqual(1, 2)) // output: false
- * console.log(allEqual([1, 2, 3], [1, 2, 3])) // output: true
- * console.log(allEqual([1, 2, 3], [[1, 2, 3]])) // output: true
+ * allEqual(1, 1) // output: true
+ * allEqual(1, 2) // output: false
+ * allEqual([1, 2, 3], [1, 2, 3]) // output: true
+ * allEqual([1, 2, 3], [[1, 2, 3]]) // output: true
  * ```
  * @param a the first array
  * @param b the second array

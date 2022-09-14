@@ -4,7 +4,6 @@ module.exports = {
     testRegex: '/tests/.*\\.(test|spec)?\\.(ts|tsx)$',
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
     resolver: "jest-ts-webcompat-resolver",
-    collectCoverage: true,
     collectCoverageFrom: [
         "src/**/*.ts",
         "!<rootDir>/node_modules/**",

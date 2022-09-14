@@ -1,4 +1,4 @@
-import { copyArr, arange, arrGTEq, all, numArray, reshape } from "./numJS.js";
+import { copyArr, arrGTEq, all, numArray, reshape } from "./numJS.js";
 import seedrandom from "seedrandom";
 
 const rng = seedrandom('Itcher');
@@ -29,7 +29,7 @@ export const choice = <T>(arr: T[], ws?: number[]): T => {
     }
 
     if (typeof ws === 'undefined') {
-        ws = arange(1, arr.length + 1);
+        return arr[randInt(arr.length)];
     }
 
     if (ws.length !== arr.length) {

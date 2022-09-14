@@ -7,6 +7,7 @@ import { rewards } from "./rewards.js";
 import { pitchFeature, oneHotHeatmap } from "./mappings.js";
 import { mse, ndMap } from "../utils/numJS.js";
 import { heatmapSize } from "../baseballLogic/Pitch.js";
+import { standardScale } from "./standardScale.js";
 
 /**
  * Splits the spreadsheet into features and targets
@@ -25,7 +26,10 @@ export const allFeatsTargs = (data: sheet): [number[][], number[]] => {
         }
     }
 
-    return [features, targets];
+    return [
+        features, 
+        targets
+    ];
 }
 
 /**
@@ -143,7 +147,7 @@ const fromDir = (dirName: string): [number[][], number[]] => {
 
 /**
  * Returns all the features and targets for training an ML model
- * @returns the features and targets from 'train.csv'
+ * @returns the features and targets from 'train/raw.ignore..csv'
  */
  export const trainFeatsTargs = (): [number[][], number[]] => {
     return fromDir(dataPaths().train);
@@ -151,7 +155,7 @@ const fromDir = (dirName: string): [number[][], number[]] => {
 
 /**
  * Returns all the features and targets for validating an ML model
- * @returns the features and the targets from 'valid.csv'
+ * @returns the features and the targets from 'valid/raw.ignore.csv'
  */
 export const validFeatsTargs = (): [number[][], number[]] => {
     return fromDir(dataPaths().valid);
@@ -159,7 +163,7 @@ export const validFeatsTargs = (): [number[][], number[]] => {
 
 /**
  * Returns all the features and targets for testing an ML model
- * @returns the features and targets from 'test.csv'
+ * @returns the features and targets from 'test/raw.ignore.csv'
  */
 export const testFeatsTargs = (): [number[][], number[]] => {
     return fromDir(dataPaths().test);
