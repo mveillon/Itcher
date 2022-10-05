@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { MachineLearning } from "../src/ml/models/MachineLearning";
 import { Ensemble } from "../src/ml/models/Ensemble";
 import { KNNBall } from "../src/ml/models/KNNBall";

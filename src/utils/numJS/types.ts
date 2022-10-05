@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 export type ndArray<T> = T | ndArray<T>[];
 
 export type numArray = ndArray<number>;

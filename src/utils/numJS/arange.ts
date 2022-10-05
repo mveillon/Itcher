@@ -1,4 +1,10 @@
 /**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
+/**
  * Returns an array from start to stop with values separated by step. Same syntax as
  * Python's `range` constructor, i.e. if stop is omitted, the array will go from 0 to
  * stop, and step defaults to 1.

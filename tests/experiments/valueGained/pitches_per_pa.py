@@ -1,3 +1,9 @@
+"""
+Itcher
+Michael Veillon, 2022
+https://github.com/mveillon
+"""
+
 from typing import Dict
 
 def find_pitches_per_pa() -> float:

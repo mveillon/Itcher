@@ -1,9 +1,14 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { Ensemble } from "../src/ml/models/Ensemble";
 import { checkModel, defaultTimeout } from "./checkModel";
 import { KNNkd } from "../src/ml/models/KNNkd";
 import { EnsembleFriend, kdFriend } from "./friends";
 import { full } from "../src/utils/numJS";
-import { standardScale } from "../src/ml/standardScale";
 
 jest.setTimeout(defaultTimeout);
 test('Ensemble', async () => {

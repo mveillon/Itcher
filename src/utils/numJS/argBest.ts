@@ -1,4 +1,10 @@
 /**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
+/**
  * Finds the index of the best element in x, based on comp.
  * ```
  * argBest([3, 4, 5], (a, b) => a < b) // output: 0

@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { nextPitch, getWs } from "../src/ml/nextPitch";
 import { getState, resetState, setState } from "../src/baseballLogic/GameState";
 import { readAllPitchers } from "../src/baseballLogic/Pitcher";

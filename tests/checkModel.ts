@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { MachineLearning } from "../src/ml/models/MachineLearning";
 import { trainFeatsTargs, validFeatsTargs } from "../src/ml/trainTest";
 import { mse } from "../src/utils/numJS";

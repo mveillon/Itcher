@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { Pitcher } from "./Pitcher.js";
 import { List } from "../utils/LinkedList.js";
 

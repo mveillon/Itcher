@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 const { trainFeatsTargs, validFeatsTargs } = require("../../../dist/ml/trainTest");
 
 const { alwaysMean } = require("../../../dist/ml/models/AlwaysMean");

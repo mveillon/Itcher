@@ -1,6 +1,10 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { MachineLearning } from "./MachineLearning.js";
-// import { matMul, invert, transpose } from "../../utils/numJS.js";
-// import { standardScale } from "../standardScale.js";
 import { Matrix, inverse } from "ml-matrix";
 
 export class Regression extends MachineLearning {

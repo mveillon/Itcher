@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { numArray } from "./types.js";
 import { addArrays } from "./arithmetic.js";
 import { broadcast, getSize } from "./shapes.js";

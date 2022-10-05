@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { List } from '../src/utils/LinkedList';
 
 const checkEmpty = (lst: List<any>) => {

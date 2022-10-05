@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { dispatch } from "../src/baseballLogic/dispatch";
 import { getState, resetState } from "../src/baseballLogic/GameState";
 

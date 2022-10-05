@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 export abstract class MachineLearning {
     /**
      * The abstract base class for all machine learning models

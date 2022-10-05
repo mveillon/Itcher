@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { checkModel, defaultTimeout } from "./checkModel";
 import { alwaysMean, AlwaysMean } from "../src/ml/models/AlwaysMean";
 import { arange, reshape } from "../src/utils/numJS";

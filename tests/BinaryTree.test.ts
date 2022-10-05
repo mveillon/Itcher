@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { BinaryTree } from "../src/utils/BinaryTree";
 import { arange } from "../src/utils/numJS";
 

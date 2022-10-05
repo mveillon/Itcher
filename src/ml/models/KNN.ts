@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { MachineLearning } from "./MachineLearning.js";
 import { BinaryTree } from "../../utils/BinaryTree.js";
 import { arange, mean, mode, median } from "../../utils/numJS.js";

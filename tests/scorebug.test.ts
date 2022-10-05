@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { getState, resetState } from "../src/baseballLogic/GameState";
 import * as bug from "../src/ui/scorebug";
 

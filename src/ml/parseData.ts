@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { readSpreadSheet, dataPaths, pitcherPath, writeJSON, readJSON } from "../utils/files.js";
 import { Pitch, heatmapSize } from "../baseballLogic/Pitch.js";
 import { Pitcher, pitcherJSON } from "../baseballLogic/Pitcher.js";

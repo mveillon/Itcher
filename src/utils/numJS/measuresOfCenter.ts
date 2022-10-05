@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { sumList } from "./arithmetic.js";
 import { flatten, getSize } from "./shapes.js";
 import { numArray } from "./types.js";

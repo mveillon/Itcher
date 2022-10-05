@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { copyArr, arrGTEq, all, numArray, reshape } from "./numJS.js";
 import seedrandom from "seedrandom";
 

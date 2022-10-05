@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { nameLT } from "../src/utils/utilities";
 import { shuffle } from "../src/utils/random";
 

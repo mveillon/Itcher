@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { numArray } from "./types.js";
 import { broadcast, zeros } from "./shapes.js";
 

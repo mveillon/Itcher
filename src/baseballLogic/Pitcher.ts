@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { pitcherPath, readJSON } from "../utils/files.js";
 import { Pitch, pitchJSON } from "./Pitch.js";
 import { usingNode } from "../utils/usingNode.js";

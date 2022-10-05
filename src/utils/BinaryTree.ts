@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 export class BinaryTree<T> {
     left: BinaryTree<T> | T;
     right: BinaryTree<T> | T;

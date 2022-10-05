@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { MachineLearning } from "./MachineLearning.js";
 import { numAttributes } from "../mappings.js";
 import * as tf from "@tensorflow/tfjs-node";

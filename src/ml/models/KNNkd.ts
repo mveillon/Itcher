@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { KNN } from "./KNN.js";
 import { randInt } from "../../utils/random.js";
 import { BinaryTree } from "../../utils/BinaryTree.js";

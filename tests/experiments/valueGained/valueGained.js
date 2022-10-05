@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 const { nextPitch, getWs } = require("../../../dist/ml/nextPitch");
 const { getLearner } = require("../../../dist/ml/models/getLearner");
 const { getState, setState } = require("../../../dist/baseballLogic/GameState");

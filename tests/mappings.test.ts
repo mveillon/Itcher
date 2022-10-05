@@ -1,6 +1,11 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { GameState } from "../src/baseballLogic/GameState";
-import { 
-    numAttributes, 
+import {
     getFeature,
     oneHotHeatmap
 } from "../src/ml/mappings";

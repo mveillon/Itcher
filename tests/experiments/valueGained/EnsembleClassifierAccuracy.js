@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 const { EnsembleClassifier } = require("../../../dist/ml/models/EnsembleClassifier");
 const { Regression } = require("../../../dist/ml/models/Regression");
 // const { KNNBall } = require("../../../dist/ml/models/KNNBall");

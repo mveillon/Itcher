@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { MachineLearning } from "./MachineLearning.js";
 import { completeFeatsTargs } from "../trainTest.js";
 import { Regression } from "./Regression.js";

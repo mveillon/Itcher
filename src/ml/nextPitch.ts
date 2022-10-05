@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { getFeature } from "./mappings.js";
 import { getState } from "../baseballLogic/GameState.js";
 import { choice } from "../utils/random.js";

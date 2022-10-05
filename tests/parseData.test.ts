@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { 
     pitchAbbreviations,
     aidToPitcher,
@@ -8,7 +14,6 @@ import { allPitchTypes } from "../src/utils/utilities";
 import { readAllPitchers } from "../src/baseballLogic/Pitcher";
 import { getState } from "../src/baseballLogic/GameState";
 import { dispatch } from "../src/baseballLogic/dispatch";
-import { writeJSON } from "../src/utils/files";
 
 test('pitch types', () => {
     const pitchTypes = allPitchTypes();

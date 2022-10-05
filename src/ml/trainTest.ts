@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { aidToPitcher, getPlayType, abToPlat, idToEvent } from "./parseData.js";
 import { MachineLearning } from "./models/MachineLearning.js";
 import { readAllPitchers, Pitcher } from "../baseballLogic/Pitcher.js";
@@ -7,7 +13,6 @@ import { rewards } from "./rewards.js";
 import { pitchFeature, oneHotHeatmap } from "./mappings.js";
 import { mse, ndMap } from "../utils/numJS.js";
 import { heatmapSize } from "../baseballLogic/Pitch.js";
-import { standardScale } from "./standardScale.js";
 
 /**
  * Splits the spreadsheet into features and targets

@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { ndArray, boolArray, numArray } from "./types.js";
 import { broadcast, getShape } from "./shapes.js";
 

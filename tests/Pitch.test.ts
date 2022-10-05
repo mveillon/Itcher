@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { Pitch } from "../src/baseballLogic/Pitch";
 
 test('json', () => {

@@ -1,3 +1,9 @@
+"""
+Itcher
+Michael Veillon, 2022
+https://github.com/mveillon
+"""
+
 import numpy as np
 from typing import Tuple, List
 from os import remove

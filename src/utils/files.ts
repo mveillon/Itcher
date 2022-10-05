@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 /* AVERT YOUR EYES - THIS IS THE HELL REQUIRED TO READ A FILE IN JS */
 export let readFile: (path: string, encoding?: string) => string;
 export let writeFile: (path: string, data: string) => void;

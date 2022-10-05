@@ -1,4 +1,10 @@
 /**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
+/**
  * Checks whether the code is running on the command line (true)
  * or through the browser (false)
  * @returns whether the code is running through node

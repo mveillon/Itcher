@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { readAllPitchers } from "../src/baseballLogic/Pitcher";
 
 test('reading pitchers', () => {

@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { shuffle } from "../../utils/random.js";
 import { MachineLearning } from "./MachineLearning.js";
 import { colAverage, arange, arrIndex } from "../../utils/numJS.js";

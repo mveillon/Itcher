@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { flatten, zeros } from "../utils/numJS.js";
 import { GameState } from "../baseballLogic/GameState.js";
 import { Pitch } from "../baseballLogic/Pitch.js";

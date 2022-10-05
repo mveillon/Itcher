@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 export * from "./numJS/anyAll.js";
 export * from "./numJS/arange.js";
 export * from "./numJS/argBest.js";

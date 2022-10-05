@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { numArray } from "./types.js";
 import { getSize, zeros } from "./shapes.js";
 import { squareDistance } from "./metrics.js";

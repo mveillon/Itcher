@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 class ListNode<T> {
     prev: ListNode<T> | undefined;
     val: T;

@@ -1,5 +1,10 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Main = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setState = exports.getState = exports.resetState = exports.GameState = void 0;
 const Pitcher_js_1 = _dereq_("./Pitcher.js");
@@ -246,8 +251,13 @@ const setState = (newState) => {
 };
 exports.setState = setState;
 
-},{"../utils/LinkedList.js":19,"./Pitcher.js":3}],2:[function(_dereq_,module,exports){
+},{"../utils/LinkedList.js":18,"./Pitcher.js":3}],2:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.heatmapSize = exports.Pitch = void 0;
 const numJS_js_1 = _dereq_("../utils/numJS.js");
@@ -296,8 +306,13 @@ const heatmapSize = () => {
 };
 exports.heatmapSize = heatmapSize;
 
-},{"../utils/numJS.js":21}],3:[function(_dereq_,module,exports){
+},{"../utils/numJS.js":20}],3:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.readAllPitchers = exports.Pitcher = void 0;
 const files_js_1 = _dereq_("../utils/files.js");
@@ -372,8 +387,13 @@ const readAllPitchers = () => {
 };
 exports.readAllPitchers = readAllPitchers;
 
-},{"../ml/parseData.js":14,"../utils/files.js":20,"../utils/usingNode.js":33,"./Pitch.js":2}],4:[function(_dereq_,module,exports){
+},{"../ml/parseData.js":13,"../utils/files.js":19,"../utils/usingNode.js":36,"./Pitch.js":2}],4:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -400,149 +420,13 @@ exports.init = init;
 __exportStar(_dereq_("./ui/buttons.js"), exports);
 __exportStar(_dereq_("./ui/scorebug.js"), exports);
 
-},{"./ui/buttons.js":17,"./ui/scorebug.js":18,"./utils/usingNode.js":33}],5:[function(_dereq_,module,exports){
+},{"./ui/buttons.js":16,"./ui/scorebug.js":17,"./utils/usingNode.js":36}],5:[function(_dereq_,module,exports){
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.correlation = exports.sigmoid = exports.variance = exports.avgVar = exports.dot = exports.average = exports.squaredMag = exports.manhattanDistance = exports.squareDistance = exports.mse = void 0;
-const numJS_js_1 = _dereq_("../utils/numJS.js");
 /**
- * Finds the mean squared error
- * @param x the first array
- * @param y the second array
- * @returns the mean squared error of x and y
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
  */
-const mse = (x, y) => {
-    const minLen = Math.min(x.length, y.length);
-    return minLen > 0 ? (0, exports.squareDistance)(x, y) / minLen : 0;
-};
-exports.mse = mse;
-/**
- * Returns the distance between x and y, but squared for efficiency
- * @param x the first vector
- * @param y the second vector
- * @returns the square of the Pythagorean distance between x and y
- */
-const squareDistance = (x, y) => {
-    let total = 0;
-    for (let i = 0; i < Math.min(x.length, y.length); i++) {
-        total += Math.pow(x[i] - y[i], 2);
-    }
-    return total;
-};
-exports.squareDistance = squareDistance;
-/**
- * Returns the manhattan distance or L1 norm of x and y
- * @returns the manhattan distance of x and y
- */
-const manhattanDistance = (x, y) => {
-    let total = 0;
-    for (let i = 0; i < Math.min(x.length, y.length); i++) {
-        total += Math.abs(x[i] - y[i]);
-    }
-    return total;
-};
-exports.manhattanDistance = manhattanDistance;
-/**
- * Finds the square of the magnitude (distance from origin) of x
- * @param x the vector to measure
- * @returns the square (for efficiency reasons) of the magnitude
- */
-const squaredMag = (x) => {
-    return x.reduce((prev, n) => prev + Math.pow(n, 2), 0);
-};
-exports.squaredMag = squaredMag;
-/**
- * Returns the average of an array of numbers
- * @param x the array to average
- * @returns the mean of x
- */
-const average = (x) => {
-    return (0, exports.avgVar)(x)[0];
-};
-exports.average = average;
-/**
- * Returns the dot product of x and y
- * @param x the first vector
- * @param y the second vector
- * @returns the dot product
- */
-const dot = (x, y) => {
-    let res = 0;
-    for (let i = 0; i < Math.min(x.length, y.length); i++) {
-        res += x[i] * y[i];
-    }
-    return res;
-};
-exports.dot = dot;
-/**
- * Finds the average and the variance of x
- * @param x the array to measure
- * @returns the average and variance of x
- */
-const avgVar = (x) => {
-    const mean = (0, numJS_js_1.sumList)(x) / x.length;
-    let total = 0;
-    for (const n of x) {
-        total += Math.pow(n - mean, 2);
-    }
-    return [mean, total / x.length];
-};
-exports.avgVar = avgVar;
-/**
- * Finds the variance of x
- * @param x the array to measure
- * @returns the variance of x
- */
-const variance = (x) => {
-    return (0, exports.avgVar)(x)[1];
-};
-exports.variance = variance;
-/**
- * Sigmoid function to floor x to somewhere between 0 and 1
- * @param x the number to reduce
- * @returns $1 / (1 + e^-x)$
- */
-const sigmoid = (x) => {
-    return 1 / (1 + Math.exp(-x));
-};
-exports.sigmoid = sigmoid;
-/**
- * Returns the pearson correlation between x and y
- * @param x the first array
- * @param y the second array
- * @returns the correlation between x and y
- */
-const correlation = (x, y) => {
-    let minLen;
-    if (x.length === y.length) {
-        minLen = x.length;
-    }
-    else if (x.length < y.length) {
-        minLen = x.length;
-        y = y.slice(0, minLen);
-    }
-    else {
-        minLen = y.length;
-        x = x.slice(0, minLen);
-    }
-    const xAvg = (0, exports.average)(x);
-    const yAvg = (0, exports.average)(y);
-    let num = 0;
-    let denom = [0, 0];
-    for (let i = 0; i < minLen; i++) {
-        const xDiff = x[i] - xAvg;
-        const yDiff = y[i] - yAvg;
-        num += xDiff * yDiff;
-        denom[0] += Math.pow(xDiff, 2);
-        denom[1] += Math.pow(yDiff, 2);
-    }
-    const prod = denom[0] * denom[1];
-    return prod === 0 ? 0 : num / Math.sqrt(prod);
-};
-exports.correlation = correlation;
-
-},{"../utils/numJS.js":21}],6:[function(_dereq_,module,exports){
-"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.oneHotHeatmap = exports.pitchFeature = exports.getFeature = exports.numAttributes = void 0;
 const numJS_js_1 = _dereq_("../utils/numJS.js");
@@ -618,8 +502,13 @@ const oneHotHeatmap = (x, y, numCells) => {
 };
 exports.oneHotHeatmap = oneHotHeatmap;
 
-},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitch.js":2,"../utils/numJS.js":21}],7:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitch.js":2,"../utils/numJS.js":20}],6:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -690,8 +579,13 @@ class Ensemble extends MachineLearning_js_1.MachineLearning {
 }
 exports.Ensemble = Ensemble;
 
-},{"../../utils/numJS.js":21,"../../utils/random.js":32,"./MachineLearning.js":9}],8:[function(_dereq_,module,exports){
+},{"../../utils/numJS.js":20,"../../utils/random.js":35,"./MachineLearning.js":8}],7:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EnsembleClassifier = void 0;
 const Ensemble_js_1 = _dereq_("./Ensemble.js");
@@ -711,8 +605,13 @@ class EnsembleClassifier extends Ensemble_js_1.Ensemble {
 }
 exports.EnsembleClassifier = EnsembleClassifier;
 
-},{"./Ensemble.js":7,"./RegToClf.js":10}],9:[function(_dereq_,module,exports){
+},{"./Ensemble.js":6,"./RegToClf.js":9}],8:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -741,8 +640,13 @@ class MachineLearning {
 }
 exports.MachineLearning = MachineLearning;
 
-},{}],10:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -756,6 +660,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.regToClf = exports.RegToClf = void 0;
 const MachineLearning_js_1 = _dereq_("./MachineLearning.js");
 const numJS_js_1 = _dereq_("../../utils/numJS.js");
+const random_js_1 = _dereq_("../../utils/random.js");
 class RegToClf extends MachineLearning_js_1.MachineLearning {
     /**
      * Uses a regression model as a binary classifier, converting its outputs
@@ -779,11 +684,35 @@ class RegToClf extends MachineLearning_js_1.MachineLearning {
     }
     fitAsync(features, targets) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this._model.fit(features, this.toBinary(targets));
+            yield this._model.fit(...this.equalClasses(features, targets));
         });
     }
     predict(features) {
         return this.toBinary(this._model.predict(features), 0.5);
+    }
+    /**
+     * Removes features and targets to ensure that there is an equal amount
+     * of samples of each class
+     * @param features the 2D array of features
+     * @param targets the 1D array of targets as passed into the fit function
+     * @returns the new features and targets array
+     */
+    equalClasses(features, targets) {
+        const binTargs = this.toBinary(targets);
+        const inds = (0, numJS_js_1.arange)(features.length);
+        let byClass = [[], []];
+        for (let i = 0; i < binTargs.length; i++) {
+            byClass[binTargs[i]].push(inds[i]);
+        }
+        const smaller = (0, numJS_js_1.argMin)(byClass.map(a => a.length));
+        (0, random_js_1.shuffle)(byClass[1 - smaller]);
+        byClass[1 - smaller] = byClass[1 - smaller].slice(0, byClass[smaller].length);
+        const newInds = byClass[0].concat(byClass[1]);
+        (0, random_js_1.shuffle)(newInds);
+        return [
+            (0, numJS_js_1.arrIndex)(features, newInds),
+            (0, numJS_js_1.arrIndex)(binTargs, newInds)
+        ];
     }
 }
 exports.RegToClf = RegToClf;
@@ -797,8 +726,13 @@ const regToClf = (model) => {
 };
 exports.regToClf = regToClf;
 
-},{"../../utils/numJS.js":21,"./MachineLearning.js":9}],11:[function(_dereq_,module,exports){
+},{"../../utils/numJS.js":20,"../../utils/random.js":35,"./MachineLearning.js":8}],10:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -816,36 +750,47 @@ class Regression extends MachineLearning_js_1.MachineLearning {
     /**
      * Finds a line of best fit of nth degree to make predictions
      * @param degree the degree of the polynomial describing the trendline
+     * @param fixSingular whether to change the features to try and make them
+     * not singular. This also scales the features to have a mean of zero and
+     * a standard deviation of one
      */
-    constructor(degree = 2) {
+    constructor(degree = 2, fixSingular = true) {
         super();
         this._degree = degree;
-        this._w = undefined;
+        this._fixSingular = fixSingular;
     }
     fitAsync(features, targets) {
         return __awaiter(this, void 0, void 0, function* () {
             if (features.length === 0)
                 return;
-            const tarMat = ml_matrix_1.Matrix.columnVector(targets);
-            const zs = this.fillZs(features);
+            // if (this._fixSingular) {
+            //     features = standardScale(features, true) as number[][];
+            // }
+            // const zs = this.fillZs(features);
+            // const zsT = transpose(zs);
+            const zs = new ml_matrix_1.Matrix(this.fillZs(features));
             const zsT = zs.transpose();
             // (zs^T * zs)^-1 * (zs^T * tarMat)
+            // const left: number[][] = matMul(zsT, zs) as number[][];
+            // const inv = invert(left);
+            // const right = matMul(zsT, targets);
+            // this._w = matMul(inv, right) as number[];
             const left = zsT.mmul(zs);
-            let inv;
-            try {
-                inv = (0, ml_matrix_1.inverse)(left);
-            }
-            catch (e) {
-                inv = (0, ml_matrix_1.inverse)(left, true);
-            }
-            this._w = inv.mmul(zsT.mmul(tarMat));
+            const inv = (0, ml_matrix_1.inverse)(left, true);
+            const right = zsT.mmul(ml_matrix_1.Matrix.columnVector(targets));
+            this._w = inv.mmul(right).to1DArray();
         });
     }
     predict(features) {
         if (features.length === 0)
             return [];
-        const res = this.fillZs(features).mmul(this._w);
-        return res.to1DArray();
+        // if (this._fixSingular) {
+        //     features = standardScale(features, false) as number[][];
+        // }
+        // return matMul(this.fillZs(features), this._w) as number[];
+        return (new ml_matrix_1.Matrix(this.fillZs(features))
+            .mmul(ml_matrix_1.Matrix.columnVector(this._w))
+            .to1DArray());
     }
     /**
      * Fills out the features array to include the additional terms required to make
@@ -867,7 +812,7 @@ class Regression extends MachineLearning_js_1.MachineLearning {
             }
             res.push(row);
         }
-        return new ml_matrix_1.Matrix(res);
+        return res;
     }
 }
 exports.Regression = Regression;
@@ -880,8 +825,13 @@ const regression = () => {
 };
 exports.regression = regression;
 
-},{"./MachineLearning.js":9,"ml-matrix":40}],12:[function(_dereq_,module,exports){
+},{"./MachineLearning.js":8,"ml-matrix":43}],11:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -895,6 +845,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getLearner = exports.ensembleChildren = void 0;
 const trainTest_js_1 = _dereq_("../trainTest.js");
 const Regression_js_1 = _dereq_("./Regression.js");
+// import { KNNBall } from "./KNNBall.js";
 const EnsembleClassifier_js_1 = _dereq_("./EnsembleClassifier.js");
 exports.ensembleChildren = 100;
 /**
@@ -902,25 +853,30 @@ exports.ensembleChildren = 100;
  * the expected reward given the current state and what pitch
  * is being thrown.
  * @param numChildren the number of children to use in the ensemble method.
- * Default is 20
+ * Default is 100
  * @returns a machine learning model for selecting pitches
  */
 const getLearner = (numChildren = exports.ensembleChildren) => __awaiter(void 0, void 0, void 0, function* () {
-    let res = new EnsembleClassifier_js_1.EnsembleClassifier(Regression_js_1.regression, numChildren);
+    let res = new EnsembleClassifier_js_1.EnsembleClassifier(() => new Regression_js_1.Regression(2), numChildren);
     const [feats, targs] = (0, trainTest_js_1.completeFeatsTargs)();
     yield res.fit(feats, targs);
     return res;
 });
 exports.getLearner = getLearner;
 
-},{"../trainTest.js":16,"./EnsembleClassifier.js":8,"./Regression.js":11}],13:[function(_dereq_,module,exports){
+},{"../trainTest.js":15,"./EnsembleClassifier.js":7,"./Regression.js":10}],12:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getWs = exports.nextPitch = void 0;
 const mappings_js_1 = _dereq_("./mappings.js");
 const GameState_js_1 = _dereq_("../baseballLogic/GameState.js");
 const random_js_1 = _dereq_("../utils/random.js");
-const calculations_js_1 = _dereq_("./calculations.js");
+const numJS_1 = _dereq_("../utils/numJS");
 /**
  * Given the current game state, computes the next pitch to throw
  * Current game state is in global "state" variable
@@ -945,7 +901,7 @@ const getWs = (learner, pitches) => {
     const state = (0, GameState_js_1.getState)();
     const feats = pitches.map((pitch) => (0, mappings_js_1.getFeature)(pitch, state));
     const rewards = learner.predict(feats);
-    const weights = rewards.map(calculations_js_1.sigmoid);
+    const weights = rewards.map(numJS_1.sigmoid);
     let cum = [weights[0]];
     for (let i = 1; i < rewards.length; i++) {
         cum.push(cum[i - 1] + weights[i]);
@@ -954,8 +910,13 @@ const getWs = (learner, pitches) => {
 };
 exports.getWs = getWs;
 
-},{"../baseballLogic/GameState.js":1,"../utils/random.js":32,"./calculations.js":5,"./mappings.js":6}],14:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"../utils/numJS":20,"../utils/random.js":35,"./mappings.js":5}],13:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.playTypes = exports.pitchAbbreviations = exports.findAllPitchers = exports.getPlayType = exports.aidToPitcher = exports.abToPlat = exports.idToEvent = void 0;
 const files_js_1 = _dereq_("../utils/files.js");
@@ -1201,8 +1162,13 @@ const playTypes = () => {
 };
 exports.playTypes = playTypes;
 
-},{"../baseballLogic/Pitch.js":2,"../baseballLogic/Pitcher.js":3,"../utils/files.js":20,"../utils/numJS.js":21,"../utils/usingNode.js":33,"./mappings.js":6}],15:[function(_dereq_,module,exports){
+},{"../baseballLogic/Pitch.js":2,"../baseballLogic/Pitcher.js":3,"../utils/files.js":19,"../utils/numJS.js":20,"../utils/usingNode.js":36,"./mappings.js":5}],14:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.woba = exports.rewards = void 0;
 /**
@@ -1284,8 +1250,13 @@ const woba = (state) => {
 };
 exports.woba = woba;
 
-},{}],16:[function(_dereq_,module,exports){
+},{}],15:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -1303,9 +1274,8 @@ const files_js_1 = _dereq_("../utils/files.js");
 const GameState_js_1 = _dereq_("../baseballLogic/GameState.js");
 const rewards_js_1 = _dereq_("./rewards.js");
 const mappings_js_1 = _dereq_("./mappings.js");
-const calculations_js_1 = _dereq_("./calculations.js");
-const Pitch_js_1 = _dereq_("../baseballLogic/Pitch.js");
 const numJS_js_1 = _dereq_("../utils/numJS.js");
+const Pitch_js_1 = _dereq_("../baseballLogic/Pitch.js");
 /**
  * Splits the spreadsheet into features and targets
  * @param data the read spreadsheet
@@ -1322,7 +1292,10 @@ const allFeatsTargs = (data) => {
             targets.push(t);
         }
     }
-    return [features, targets];
+    return [
+        features,
+        targets
+    ];
 };
 exports.allFeatsTargs = allFeatsTargs;
 /**
@@ -1340,7 +1313,7 @@ exports.trainLearner = trainLearner;
 const learnerMSE = (learner) => {
     const [features, targets] = (0, exports.validFeatsTargs)();
     const preds = learner.predict(features);
-    return [(0, calculations_js_1.mse)(preds, targets), preds];
+    return [(0, numJS_js_1.mse)(preds, targets), preds];
 };
 exports.learnerMSE = learnerMSE;
 /**
@@ -1413,7 +1386,7 @@ const fromDir = (dirName) => {
 };
 /**
  * Returns all the features and targets for training an ML model
- * @returns the features and targets from 'train.csv'
+ * @returns the features and targets from 'train/raw.ignore..csv'
  */
 const trainFeatsTargs = () => {
     return fromDir((0, files_js_1.dataPaths)().train);
@@ -1421,7 +1394,7 @@ const trainFeatsTargs = () => {
 exports.trainFeatsTargs = trainFeatsTargs;
 /**
  * Returns all the features and targets for validating an ML model
- * @returns the features and the targets from 'valid.csv'
+ * @returns the features and the targets from 'valid/raw.ignore.csv'
  */
 const validFeatsTargs = () => {
     return fromDir((0, files_js_1.dataPaths)().valid);
@@ -1429,7 +1402,7 @@ const validFeatsTargs = () => {
 exports.validFeatsTargs = validFeatsTargs;
 /**
  * Returns all the features and targets for testing an ML model
- * @returns the features and targets from 'test.csv'
+ * @returns the features and targets from 'test/raw.ignore.csv'
  */
 const testFeatsTargs = () => {
     return fromDir((0, files_js_1.dataPaths)().test);
@@ -1452,8 +1425,13 @@ const completeFeatsTargs = () => {
 };
 exports.completeFeatsTargs = completeFeatsTargs;
 
-},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitch.js":2,"../baseballLogic/Pitcher.js":3,"../utils/files.js":20,"../utils/numJS.js":21,"./calculations.js":5,"./mappings.js":6,"./parseData.js":14,"./rewards.js":15}],17:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitch.js":2,"../baseballLogic/Pitcher.js":3,"../utils/files.js":19,"../utils/numJS.js":20,"./mappings.js":5,"./parseData.js":13,"./rewards.js":14}],16:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.undo = exports.lineout = exports.flyout = exports.groundout = exports.doublePlay = exports.error = exports.out = exports.homeRun = exports.triple = exports.double = exports.single = exports.foul = exports.strike = exports.ball = void 0;
 const GameState_js_1 = _dereq_("../baseballLogic/GameState.js");
@@ -1539,8 +1517,13 @@ const changeState = (state, meth) => {
     (0, scorebug_js_1.updateBug)();
 };
 
-},{"../baseballLogic/GameState.js":1,"./scorebug.js":18}],18:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"./scorebug.js":17}],17:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -1842,8 +1825,13 @@ const initBug = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.initBug = initBug;
 
-},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitcher.js":3,"../ml/models/getLearner.js":12,"../ml/nextPitch.js":13,"../utils/usingNode.js":33,"../utils/utilities.js":34}],19:[function(_dereq_,module,exports){
+},{"../baseballLogic/GameState.js":1,"../baseballLogic/Pitcher.js":3,"../ml/models/getLearner.js":11,"../ml/nextPitch.js":12,"../utils/usingNode.js":36,"../utils/utilities.js":37}],18:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.List = void 0;
 class ListNode {
@@ -2013,8 +2001,13 @@ class List {
 }
 exports.List = List;
 
-},{}],20:[function(_dereq_,module,exports){
+},{}],19:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dataPaths = exports.pitcherPath = exports.writeJSON = exports.readJSON = exports.readSpreadSheet = exports.writeFile = exports.readFile = void 0;
 const usingNode_js_1 = _dereq_("./usingNode.js");
@@ -2106,8 +2099,13 @@ const dataPaths = () => {
 };
 exports.dataPaths = dataPaths;
 
-},{"./usingNode.js":33}],21:[function(_dereq_,module,exports){
+},{"./usingNode.js":36}],20:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -2127,15 +2125,24 @@ __exportStar(_dereq_("./numJS/anyAll.js"), exports);
 __exportStar(_dereq_("./numJS/arange.js"), exports);
 __exportStar(_dereq_("./numJS/argBest.js"), exports);
 __exportStar(_dereq_("./numJS/arithmetic.js"), exports);
+__exportStar(_dereq_("./numJS/calculations.js"), exports);
 __exportStar(_dereq_("./numJS/comparing.js"), exports);
 __exportStar(_dereq_("./numJS/copyArr.js"), exports);
+__exportStar(_dereq_("./numJS/indexing.js"), exports);
+__exportStar(_dereq_("./numJS/metrics.js"), exports);
 __exportStar(_dereq_("./numJS/ndMap.js"), exports);
 __exportStar(_dereq_("./numJS/shapes.js"), exports);
 __exportStar(_dereq_("./numJS/types.js"), exports);
-__exportStar(_dereq_("./numJS/indexing.js"), exports);
+__exportStar(_dereq_("./numJS/measuresOfCenter.js"), exports);
+__exportStar(_dereq_("./numJS/linAlg.js"), exports);
 
-},{"./numJS/anyAll.js":22,"./numJS/arange.js":23,"./numJS/argBest.js":24,"./numJS/arithmetic.js":25,"./numJS/comparing.js":26,"./numJS/copyArr.js":27,"./numJS/indexing.js":28,"./numJS/ndMap.js":29,"./numJS/shapes.js":30,"./numJS/types.js":31}],22:[function(_dereq_,module,exports){
+},{"./numJS/anyAll.js":21,"./numJS/arange.js":22,"./numJS/argBest.js":23,"./numJS/arithmetic.js":24,"./numJS/calculations.js":25,"./numJS/comparing.js":26,"./numJS/copyArr.js":27,"./numJS/indexing.js":28,"./numJS/linAlg.js":29,"./numJS/measuresOfCenter.js":30,"./numJS/metrics.js":31,"./numJS/ndMap.js":32,"./numJS/shapes.js":33,"./numJS/types.js":34}],21:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.any = exports.all = void 0;
 /**
@@ -2164,10 +2171,10 @@ const nestedSatisfies = (bools, criterion, ifTrue) => {
  * Returns whether every element of bools is true.
  * Returns false if bools is empty.
  * ```
- * console.log(all([])) // output: false
- * console.log(all(true)) // output: true
- * console.log(all([true, false, true])) // output: true
- * console.log(all([true, true, true])) // output: true
+ * all([]) // output: false
+ * all(true) // output: true
+ * all([true, false, true]) // output: true
+ * all([true, true, true]) // output: true
  * ```
  * @param bools an n-dimensional array of booleans
  * @returns whether all elements of bools are true
@@ -2180,10 +2187,10 @@ exports.all = all;
  * Returns whether any element of bools is true.
  * Returns false if bools is empty.
  * ```
- * console.log(any([])) // output: false
- * console.log(any(true)) // output: true
- * console.log(any([true, false, false])) // output: true
- * console.log(any([false, false, false])) // output: false
+ * any([]) // output: false
+ * any(true) // output: true
+ * any([true, false, false]) // output: true
+ * any([false, false, false]) // output: false
  * ```
  * @param bools an n-dimensional array of booleans
  * @returns whether any elements of bools are true
@@ -2193,8 +2200,13 @@ const any = (bools) => {
 };
 exports.any = any;
 
-},{}],23:[function(_dereq_,module,exports){
+},{}],22:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.arange = void 0;
 /**
@@ -2202,10 +2214,10 @@ exports.arange = void 0;
  * Python's `range` constructor, i.e. if stop is omitted, the array will go from 0 to
  * stop, and step defaults to 1.
  * ```
- * console.log(arange(4)) // output: [0, 1, 2, 3]
- * console.log(arange(1, 5)) // output: [1, 2, 3, 4]
- * console.log(arange(1, 6, 2)) // output: [1, 3, 5]
- * console.log(arange(5, 0, -1)) // output: [5, 4, 3, 2, 1]
+ * arange(4) // output: [0, 1, 2, 3]
+ * arange(1, 5) // output: [1, 2, 3, 4]
+ * arange(1, 6, 2) // output: [1, 3, 5]
+ * arange(5, 0, -1) // output: [5, 4, 3, 2, 1]
  * ```
  * @param start the first element of the array, or the exclusive maximum if stop is omitted
  * @param stop the exclusive max of the return array
@@ -2233,15 +2245,20 @@ const arange = (start, stop, step) => {
 };
 exports.arange = arange;
 
-},{}],24:[function(_dereq_,module,exports){
+},{}],23:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.argMax = exports.argMin = exports.argBest = void 0;
 /**
  * Finds the index of the best element in x, based on comp.
  * ```
- * console.log(argBest([3, 4, 5], (a, b) => a < b)) // output: 0
- * console.log(argBest([3, 4, 5], (a, b) => a >= b)) // output: 2
+ * argBest([3, 4, 5], (a, b) => a < b) // output: 0
+ * argBest([3, 4, 5], (a, b) => a >= b) // output: 2
  * ```
  * @param x the array to look through
  * @param comp how to compare the elements of x. Should return true if the first arg is "better"
@@ -2264,7 +2281,7 @@ exports.argBest = argBest;
 /**
  * Returns the index of the smallest element of x.
  * ```
- * console.log(argMin([3, 4, 5])) // output: 0
+ * argMin([3, 4, 5]) // output: 0
  * ```
  * @param x the array to look at
  * @returns where the smallest element is
@@ -2276,7 +2293,7 @@ exports.argMin = argMin;
 /**
  * Returns the index of the largest element of x.
  * ```
- * console.log(argMax([3, 4, 5])) // output: 2
+ * argMax([3, 4, 5]) // output: 2
  * ```
  * @param x the array to look at
  * @returns where the largest element is
@@ -2286,17 +2303,22 @@ const argMax = (x) => {
 };
 exports.argMax = argMax;
 
-},{}],25:[function(_dereq_,module,exports){
+},{}],24:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sumList = exports.colAverage = exports.scalarMul = exports.subArrays = exports.addArrays = void 0;
 const shapes_js_1 = _dereq_("./shapes.js");
 /**
  * Adds the two n-dimensional matrices element-wise.
  * ```
- * console.log(addArrays(1, 2)) // output: 3
- * console.log(addArrays([1, 2, 3], [3, 4, 5])) // output: [4, 6, 8]
- * console.log(addArrays(2, [1, 2, 3])) // output: [3, 5, 7]
+ * addArrays(1, 2) // output: 3
+ * addArrays([1, 2, 3], [3, 4, 5]) // output: [4, 6, 8]
+ * addArrays(2, [1, 2, 3]) // output: [3, 5, 7]
  * ```
  * @param a1 the first matrix
  * @param a2 the second matrix
@@ -2317,10 +2339,10 @@ exports.addArrays = addArrays;
 /**
  * Subtracts the two n-dimensional matrices element-wise.
  * ```
- * console.log(subArrays(2, 1)) // output: 1
- * console.log(subArrays([3, 4, 5], [1, 2, 3])) // output: [2, 2, 2]
- * console.log(subArrays([1, 2, 3], 1)) // output: [0, 1, 2]
- * console.log(subArrays(3, [1, 2, 3])) // output: [2, 1, 0]
+ * subArrays(2, 1) // output: 1
+ * subArrays([3, 4, 5], [1, 2, 3]) // output: [2, 2, 2]
+ * subArrays([1, 2, 3], 1) // output: [0, 1, 2]
+ * subArrays(3, [1, 2, 3]) // output: [2, 1, 0]
  * ```
  * @param a1 the first matrix
  * @param a2 the second matrix
@@ -2333,9 +2355,9 @@ exports.subArrays = subArrays;
 /**
  * Multiplies every element of A by x and returns a new matrix.
  * ```
- * console.log(scalarMul(1, 2)) // output: 2
- * console.log(scalarMul([1, 2, 3], 3)) // output: [3, 6, 9]
- * console.log(scalarMul([2, 4, 6], 0.5)) // output: [1, 2, 3]
+ * scalarMul(1, 2) // output: 2
+ * scalarMul([1, 2, 3], 3) // output: [3, 6, 9]
+ * scalarMul([2, 4, 6], 0.5) // output: [1, 2, 3]
  * ```
  * @param x the scalar
  * @param A the matrix to multiply
@@ -2355,7 +2377,7 @@ exports.scalarMul = scalarMul;
 /**
  * Returns the averages of the columns of A.
  * ```
- * console.log(colAverage([[1, 2], [3, 4]])) // output: [2, 3]
+ * colAverage([[1, 2], [3, 4]]) // output: [2, 3]
  * ```
  * @param A the 2D matrix to average
  * @returns the column-wise average of A
@@ -2370,9 +2392,9 @@ exports.colAverage = colAverage;
 /**
  * Returns the sum of every element of the n-dimensional list.
  * ```
- * console.log(sumList(1)) // output: 1
- * console.log(sumList([1, 2, 3])) // output: 6
- * console.log(sumList([[1, 2], [3, 4]])) // output: 10
+ * sumList(1) // output: 1
+ * sumList([1, 2, 3]) // output: 6
+ * sumList([[1, 2], [3, 4]]) // output: 10
  * ```
  * @param x the array of numbers
  * @returns the sum of every element in x
@@ -2385,8 +2407,93 @@ const sumList = (x) => {
 };
 exports.sumList = sumList;
 
-},{"./shapes.js":30}],26:[function(_dereq_,module,exports){
+},{"./shapes.js":33}],25:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.colVariance = exports.sigmoid = exports.variance = exports.dot = void 0;
+const shapes_js_1 = _dereq_("./shapes.js");
+const metrics_js_1 = _dereq_("./metrics.js");
+const measuresOfCenter_js_1 = _dereq_("./measuresOfCenter.js");
+const arithmetic_js_1 = _dereq_("./arithmetic.js");
+/**
+ * Returns the dot product of x and y
+ * ```
+ * dot([1], [2]) // output: 2
+ * dot([1, 2, 3], [4, 5, 6]) // output: 32
+ * ```
+ * @param x the first vector
+ * @param y the second vector
+ * @returns the dot product
+ */
+const dot = (x, y) => {
+    let res = 0;
+    for (let i = 0; i < Math.min(x.length, y.length); i++) {
+        res += x[i] * y[i];
+    }
+    return res;
+};
+exports.dot = dot;
+/**
+ * Computes the variance (square of the standard deviation) of x.
+ * ```
+ * variance([1, 1, 1, 1]) // output: 0
+ * variance([0, 1, 1, 2]) // output; 0.6666667
+ * ```
+ * @param x the array to measure
+ * @returns the variance of x
+ */
+const variance = (x) => {
+    return (0, metrics_js_1.squareDistance)(x, (0, measuresOfCenter_js_1.mean)(x)) / ((0, shapes_js_1.getSize)(x) - 1);
+};
+exports.variance = variance;
+/**
+ * Sigmoid function to floor x to somewhere between 0 and 1
+ * ```
+ * sigmoid(0) // output: 0.5
+ * sigmoid(1) // output: ~0.731
+ * sigmoid(-1) // output: ~0.2689
+ * ```
+ * @param x the number to reduce
+ * @returns `1 / (1 + Math.exp(-x))`
+ */
+const sigmoid = (x) => {
+    return 1 / (1 + Math.exp(-x));
+};
+exports.sigmoid = sigmoid;
+/**
+ * Returns the column-wise variances of x.
+ * ```
+ * colVariance([[0, 1, 2], [0, 2, 1]]) // output: [0, 0.5, 0.5]
+ * ```
+ * @param x the matrix to measure
+ * @returns the column-wise variances of x
+ */
+const colVariance = (x) => {
+    const avgs = (0, arithmetic_js_1.colAverage)(x);
+    let sums = (0, shapes_js_1.zeros)([avgs.length]);
+    for (const row of x) {
+        let diffs = [];
+        for (let i = 0; i < row.length; i++) {
+            diffs.push(Math.pow(row[i] - avgs[i], 2));
+        }
+        sums = (0, arithmetic_js_1.addArrays)(sums, diffs);
+    }
+    return (0, arithmetic_js_1.scalarMul)(sums, 1 / (x.length - 1));
+};
+exports.colVariance = colVariance;
+
+},{"./arithmetic.js":24,"./measuresOfCenter.js":30,"./metrics.js":31,"./shapes.js":33}],26:[function(_dereq_,module,exports){
+"use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sameArr = exports.allEqual = exports.arrNot = exports.arrAnd = exports.arrOr = exports.arrGTEq = exports.arrGT = exports.arrLTEq = exports.arrLT = exports.arrEqual = exports.allClose = exports.isClose = void 0;
 const shapes_js_1 = _dereq_("./shapes.js");
@@ -2396,11 +2503,11 @@ const ndMap_js_1 = _dereq_("./ndMap.js");
  * Returns an array where `ith` element corresponds to whether `x[i]` is close enough to `y[i]`,
  * where close enough means within floating-point error bars. Uses the formula `abs(x - y) <= atol + rtol * abs(y)`.
  * ```
- * console.log(isClose(1, 1.0000000001)) // output: true
- * console.log(isClose(1, 2)) // output: false
- * console.log(isClose(1, 2, undefined, 1)) // output: true
- * console.log(isClose([1, 2, 3], [1, 3, 3])) // output: [true, false, true]
- * console.log(isClose([[1, 2], [3, 4]], [[1, 3], [4, 4]])) // output: [[true, false], [false, true]]
+ * isClose(1, 1.0000000001) // output: true
+ * isClose(1, 2) // output: false
+ * isClose(1, 2, undefined, 1) // output: true
+ * isClose([1, 2, 3], [1, 3, 3]) // output: [true, false, true]
+ * isClose([[1, 2], [3, 4]], [[1, 3], [4, 4]]) // output: [[true, false], [false, true]]
  * ```
  * @param x the first array
  * @param y the second array
@@ -2424,10 +2531,10 @@ exports.isClose = isClose;
  * Returns whether every element of x is close to every element of y, using the formula
  * `abs(x - y) <= atol + rtol * abs(y)`.
  * ```
- * console.log(allClose(1, 1)) // output: true
- * console.log(allClose(1, 2)) // output: false
- * console.log(allClose([1, 2, 3], [1.000000001, 2, 3])) // output: true
- * console.log(allClose([1, 2, 3], [2, 2, 3])) // output: false
+ * allClose(1, 1) // output: true
+ * allClose(1, 2) // output: false
+ * allClose([1, 2, 3], [1.000000001, 2, 3]) // output: true
+ * allClose([1, 2, 3], [2, 2, 3]) // output: false
  * ```
  * @param x the first array
  * @param y the second array
@@ -2462,10 +2569,10 @@ const arrayComp = (a, b, comp) => {
  * Checks for equality of a and b element-wise and returns a new array
  * with the results.
  * ```
- * console.log(arrEqual(1, 1)) // output: true
- * console.log(arrEqual(1, 2)) // output: false
- * console.log(arrEqual([1, 2, 3], [2, 2, 3])) // output: [false, true, true]
- * console.log(arrEqual([1, 2, 3], [1.00000001, 2, 3])) // output: [false, true, true] (see isClose)
+ * arrEqual(1, 1) // output: true
+ * arrEqual(1, 2) // output: false
+ * arrEqual([1, 2, 3], [2, 2, 3]) // output: [false, true, true]
+ * arrEqual([1, 2, 3], [1.00000001, 2, 3]) // output: [false, true, true] (see isClose)
  * ```
  * @param a the first array
  * @param b the second array
@@ -2480,10 +2587,10 @@ exports.arrEqual = arrEqual;
  * Checks for a < b element-wise and returns a new array
  * with the results.
  * ```
- * console.log(arrLT(1, 2)) // output: true
- * console.log(arrLT(2, 1)) // output: false
- * console.log(arrLT(1, 1)) // output: false
- * console.log(arrLT([1, 2, 3], [1, 3, 2])) // output: [false, true, false]
+ * arrLT(1, 2) // output: true
+ * arrLT(2, 1) // output: false
+ * arrLT(1, 1) // output: false
+ * arrLT([1, 2, 3], [1, 3, 2]) // output: [false, true, false]
  * ```
  * @param a the first array
  * @param b the second array
@@ -2498,10 +2605,10 @@ exports.arrLT = arrLT;
  * Checks for a <= b element-wise and returns a new array
  * with the results.
  * ```
- * console.log(arrLTEq(1, 2)) // output: true
- * console.log(arrLTEq(2, 1)) // output: false
- * console.log(arrLTEq(1, 1)) // output: true
- * console.log(arrLTEq([1, 2, 3], [1, 3, 2])) // output: [true, true, false]
+ * arrLTEq(1, 2) // output: true
+ * arrLTEq(2, 1) // output: false
+ * arrLTEq(1, 1) // output: true
+ * arrLTEq([1, 2, 3], [1, 3, 2]) // output: [true, true, false]
  * ```
  * @param a the first array
  * @param b the second array
@@ -2516,10 +2623,10 @@ exports.arrLTEq = arrLTEq;
  * Checks for a > b element-wise and returns a new array
  * with the results.
  * ```
- * console.log(arrGT(1, 2)) // output: false
- * console.log(arrGT(2, 1)) // output: true
- * console.log(arrGT(1, 1)) // output: false
- * console.log(arrGT([1, 2, 3], [1, 3, 2])) // output: [false, false, true]
+ * arrGT(1, 2) // output: false
+ * arrGT(2, 1) // output: true
+ * arrGT(1, 1) // output: false
+ * arrGT([1, 2, 3], [1, 3, 2]) // output: [false, false, true]
  * ```
  * @param a the first array
  * @param b the second array
@@ -2534,10 +2641,10 @@ exports.arrGT = arrGT;
  * Checks for a >= b element-wise and returns a new array
  * with the results.
  * ```
- * console.log(arrGTEq(1, 2)) // output: false
- * console.log(arrGTEq(2, 1)) // output: true
- * console.log(arrGTEq(1, 1)) // output: true
- * console.log(arrGTEq([1, 2, 3], [1, 3, 2])) // output: [true, false, true]
+ * arrGTEq(1, 2) // output: false
+ * arrGTEq(2, 1) // output: true
+ * arrGTEq(1, 1) // output: true
+ * arrGTEq([1, 2, 3], [1, 3, 2]) // output: [true, false, true]
  * ```
  * @param a the first array
  * @param b the second array
@@ -2551,11 +2658,11 @@ exports.arrGTEq = arrGTEq;
 /**
  * Computes the element-wise OR of two boolean arrays.
  * ```
- * console.log(arrOr(true, false)) // output: true
- * console.log(arrOr(false, false)) // output: false
- * console.log(arrOr([true, true, false], [false, false, false])) // output: [true, true, false]
- * console.log(arrOr([true, false, true], false)) // output: [true, false, true]
- * console.log(arrOr(true, [[false, false], [false, false]])) // output: [[true, true], [true, true]]
+ * arrOr(true, false) // output: true
+ * arrOr(false, false) // output: false
+ * arrOr([true, true, false], [false, false, false]) // output: [true, true, false]
+ * arrOr([true, false, true], false) // output: [true, false, true]
+ * arrOr(true, [[false, false], [false, false]]) // output: [[true, true], [true, true]]
  * ```
  * @param a the first array
  * @param b the second array
@@ -2570,11 +2677,11 @@ exports.arrOr = arrOr;
 /**
  * Computes the element-wise AND of two boolean arrays.
  * ```
- * console.log(arrOr(true, false)) // output: false
- * console.log(arrOr(true, true)) // output: true
- * console.log(arrOr([true, true, false], [false, true, false])) // output: [false, true, false]
- * console.log(arrOr([true, false, true], true)) // output: [true, false, true]
- * console.log(arrOr(true, [[false, false], [false, false]])) // output: [[false, false], [false, false]]
+ * arrOr(true, false) // output: false
+ * arrOr(true, true) // output: true
+ * arrOr([true, true, false], [false, true, false]) // output: [false, true, false]
+ * arrOr([true, false, true], true) // output: [true, false, true]
+ * arrOr(true, [[false, false], [false, false]]) // output: [[false, false], [false, false]]
  * ```
  * @param a the first array
  * @param b the second array
@@ -2589,10 +2696,10 @@ exports.arrAnd = arrAnd;
 /**
  * Computes the element-wise NOT of a.
  * ```
- * console.log(arrNot(true)) // output: false
- * console.log(arrNot(false)) // output: true
- * console.log(arrNot([true, false, true])) // output: [false, true, false]
- * console.log(arrNot([[true, true], [false, false]])) // output: [[false, false], [true, true]]
+ * arrNot(true) // output: false
+ * arrNot(false) // output: true
+ * arrNot([true, false, true]) // output: [false, true, false]
+ * arrNot([[true, true], [false, false]]) // output: [[false, false], [true, true]]
  * ```
  * @param a the array to negate
  * @returns an array of booleans, each with the opposite value
@@ -2607,10 +2714,10 @@ exports.arrNot = arrNot;
  * a and b can have different shapes and this function can still return `true`.
  * If this is not desired, see `sameArr`.
  * ```
- * console.log(allEqual(1, 1)) // output: true
- * console.log(allEqual(1, 2)) // output: false
- * console.log(allEqual([1, 2, 3], [1, 2, 3])) // output: true
- * console.log(allEqual([1, 2, 3], [[1, 2, 3]])) // output: false
+ * allEqual(1, 1) // output: true
+ * allEqual(1, 2) // output: false
+ * allEqual([1, 2, 3], [1, 2, 3]) // output: true
+ * allEqual([1, 2, 3], [[1, 2, 3])) // output: false
  * ```
  * @param a the first array
  * @param b the second array
@@ -2624,10 +2731,10 @@ exports.allEqual = allEqual;
  * Returns whether every element of a and b are equal and that their shapes
  * are equal.
  * ```
- * console.log(allEqual(1, 1)) // output: true
- * console.log(allEqual(1, 2)) // output: false
- * console.log(allEqual([1, 2, 3], [1, 2, 3])) // output: true
- * console.log(allEqual([1, 2, 3], [[1, 2, 3]])) // output: true
+ * allEqual(1, 1) // output: true
+ * allEqual(1, 2) // output: false
+ * allEqual([1, 2, 3], [1, 2, 3]) // output: true
+ * allEqual([1, 2, 3], [[1, 2, 3]]) // output: true
  * ```
  * @param a the first array
  * @param b the second array
@@ -2642,8 +2749,13 @@ const sameArr = (a, b) => {
 };
 exports.sameArr = sameArr;
 
-},{"./anyAll.js":22,"./ndMap.js":29,"./shapes.js":30}],27:[function(_dereq_,module,exports){
+},{"./anyAll.js":21,"./ndMap.js":32,"./shapes.js":33}],27:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.copyArr = void 0;
 /**
@@ -2684,6 +2796,11 @@ exports.copyArr = copyArr;
 
 },{}],28:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.arrIndex = void 0;
 const shapes_js_1 = _dereq_("./shapes.js");
@@ -2750,16 +2867,16 @@ const numIndex = (arr, inds) => {
 /**
  * Indexes arr using an array of either numbers or booleans.
  * ```
- * console.log(arrIndex([1, 2, 3], 0)) // output: 1
- * console.log(arrIndex([1, 2, 3], [1, 2])) // output: [2, 3]
- * console.log(arrIndex([[1, 2, 3], [4, 5, 6]], 0)) // output: [1, 2, 3]
- * console.log(arrIndex([[1, 2, 3], [4, 5, 6]], [0])) // output: [[1, 2, 3]]
- * console.log(arrIndex([[1, 2, 3], [4, 5, 6]], [[0, 1]])) // output: [2]
+ * arrIndex([1, 2, 3], 0) // output: 1
+ * arrIndex([1, 2, 3], [1, 2]) // output: [2, 3]
+ * arrIndex([[1, 2, 3], [4, 5, 6]], 0) // output: [1, 2, 3]
+ * arrIndex([[1, 2, 3], [4, 5, 6]], [0]) // output: [[1, 2, 3]]
+ * arrIndex([[1, 2, 3], [4, 5, 6]], [[0, 1]]) // output: [2]
  *
- * console.log(arrIndex([1, 2, 3], true)) // output: [1, 2, 3]
- * console.log(arrIndex([1, 2, 3], false)) // output: []
- * console.log(arrIndex([1, 2, 3], [true, false, false])) // output: [1]
- * console.log(arrIndex([[1, 2], [3, 4]], [[true, false], [true, true]])) // output: [[1], [3, 4]]
+ * arrIndex([1, 2, 3], true) // output: [1, 2, 3]
+ * arrIndex([1, 2, 3], false) // output: []
+ * arrIndex([1, 2, 3], [true, false, false]) // output: [1]
+ * arrIndex([[1, 2], [3, 4]], [[true, false], [true, true]]) // output: [[1], [3, 4]]
  * ```
  * @param arr the array to index
  * @param inds what values to get from arr
@@ -2779,17 +2896,441 @@ const arrIndex = (arr, inds) => {
 };
 exports.arrIndex = arrIndex;
 
-},{"./shapes.js":30}],29:[function(_dereq_,module,exports){
+},{"./shapes.js":33}],29:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.invert = exports.eye = exports.transpose = exports.matMul = void 0;
+const shapes_js_1 = _dereq_("./shapes.js");
+const arithmetic_js_1 = _dereq_("./arithmetic.js");
+const calculations_js_1 = _dereq_("./calculations.js");
+const comparing_js_1 = _dereq_("./comparing.js");
+/**
+ * Multiplies the two matrices together. If both matrices are vectors,
+ * computes their dot product.
+ * ```
+ * matMul(2, 3) // output: 6
+ * matMul(5, [1, 2, 3, 4]) // output: [5, 10, 15, 20]
+ * matMul(5, [[1, 2], [3, 4]]) // output: [[5, 10], [15, 20]]
+ * matMul([1, 2, 3], [4, 5, 6]) // output: 32
+ * matMul([[1, 2], [3, 4]], [[1, 0], [0, 1]]) // output: [[1, 2], [3, 4]]
+ * matMul([[1, 2], [3, 4]], [5, 6]) // output: [17, 39]
+ * matMul([5, 6], [[1, 2], [3, 4]]) // output: [23, 34]
+ * ```
+ * @param m1 the first matrix
+ * @param m2 the second matrix
+ * @returns the matrix multiplication of m1 and m2
+ */
+const matMul = (m1, m2) => {
+    let shape1 = (0, shapes_js_1.getShape)(m1);
+    let shape2 = (0, shapes_js_1.getShape)(m2);
+    if (shape1.length === 0) {
+        return (0, arithmetic_js_1.scalarMul)(m2, m1);
+    }
+    if (shape2.length === 0) {
+        return (0, arithmetic_js_1.scalarMul)(m1, m2);
+    }
+    if (shape1.length === 1 && shape2.length === 1) {
+        return (0, calculations_js_1.dot)(m1, m2);
+    }
+    if (shape1.length === 1) {
+        m1 = [m1];
+        shape1 = [1, shape1[0]];
+    }
+    else if (shape2.length === 1) {
+        shape2 = [shape2[0], 1];
+        m2 = (0, shapes_js_1.reshape)(m2, shape2);
+    }
+    if (shape1[1] !== shape2[0]) {
+        throw new Error('Matrix multiplication shapes not compatible ' +
+            `[${(0, shapes_js_1.getShape)(m1)}] vs [${(0, shapes_js_1.getShape)(m2)}]`);
+    }
+    let res = (0, shapes_js_1.zeros)([shape1[0], shape2[1]]);
+    // iteration order from https://cs61.seas.harvard.edu/wiki/images/0/0f/Lec14-Cache_measurement.pdf
+    for (let k = 0; k < shape1[1]; k++) {
+        for (let i = 0; i < shape1[0]; i++) {
+            const point = m1[i][k];
+            for (let j = 0; j < shape2[1]; j++) {
+                res[i][j] += point * m2[k][j];
+            }
+        }
+    }
+    if (shape1[0] === 1) {
+        return res[0];
+    }
+    if (shape2[1] === 1) {
+        return (0, shapes_js_1.reshape)(res, [shape1[0]]);
+    }
+    return res;
+};
+exports.matMul = matMul;
+/**
+ * Transposes m.
+ * ```
+ * transpose([[1, 2], [3, 4]]) // output: [[1, 3], [2, 4]]
+ * transpose([[1, 2], [3, 4], [5, 6]]) // output: [[1, 3, 5], [2, 4, 6]]
+ * ```
+ * @param m the matrix to transpose
+ * @returns the transposed matrix
+ */
+const transpose = (m) => {
+    let res = [];
+    for (let j = 0; j < m[0].length; j++) {
+        let row = [];
+        for (let i = 0; i < m.length; i++) {
+            row.push(m[i][j]);
+        }
+        res.push(row);
+    }
+    return res;
+};
+exports.transpose = transpose;
+/**
+ * Returns the identity matrix with a length and width of len.
+ * By definition, `matMul(eye, m)` for any `m` returns `m`, and
+ * the same is true of `matMul(m, eye)`.
+ * @param len how large the matrix should be
+ * @returns a matrix with all zeros except along the diagonal are ones
+ */
+const eye = (len) => {
+    let res = (0, shapes_js_1.zeros)([len, len]);
+    for (let i = 0; i < len; i++) {
+        res[i][i] = 1;
+    }
+    return res;
+};
+exports.eye = eye;
+/**
+ * Finds the row-reduced echelon form of m, meaning the matrix is
+ * in echelon form, the column of each row's left-most
+ * non-zero value (the pivot) has only one non-zero value, located
+ * in that row, and that pivot value is always a one. Output is saved to m
+ * @param m the matrix to row-reduce. Assumed to be square. Output is saved here
+ */
+const rowReduce = (m) => {
+    echelon(m, 0);
+    for (let i = 0; i < m.length; i++) {
+        let pivot = -1;
+        while (++pivot < m[i].length && m[i][pivot] === 0) { }
+        if (pivot === m[i].length)
+            break;
+        m[i] = (0, arithmetic_js_1.scalarMul)(m[i], 1 / m[i][pivot]);
+        for (let i2 = 0; i2 < m.length; i2++) {
+            if (i !== i2) {
+                m[i2] = (0, arithmetic_js_1.subArrays)(m[i2], (0, arithmetic_js_1.scalarMul)(m[i], m[i2][pivot]));
+            }
+        }
+    }
+};
+/**
+ * Converts the matrix to echelon form, meaning the column of
+ * each row's left-most non-zero value is to the right of that of
+ * the row above it. The output is saved to m
+ * @param m the matrix to reduce. Assumed to be square. Output is saved here
+ * @param n which row and column to change in this recursion
+ */
+const echelon = (m, n) => {
+    if (n === m.length)
+        return;
+    let largest = n;
+    for (let i = n + 1; i < m.length; i++) {
+        if (m[largest][n] < m[i][n]) {
+            largest = i;
+        }
+    }
+    let temp;
+    if (largest !== n) {
+        temp = m[n];
+        m[n] = m[largest];
+        m[largest] = temp;
+    }
+    if (m[n][n] !== 0) {
+        for (let i = n + 1; i < m.length; i++) {
+            m[i] = (0, arithmetic_js_1.subArrays)(m[i], (0, arithmetic_js_1.scalarMul)(m[n], m[i][n] / m[n][n]));
+        }
+    }
+    echelon(m, n + 1);
+};
+/**
+ * Returns the multiplicative inverse of m. By definition,
+ * `matMul(invert(m), m)` equals the identity matrix, as does
+ * `matMul(m, invert(m))`. m must be square
+ * ```
+ * invert([[1, 2], [3, 4]]) // output: [[-2, 1], [1.5, -0.5]]
+ * ```
+ * @param m the matrix to invert
+ * @returns the inverse of m
+ */
+const invert = (m) => {
+    const shape = (0, shapes_js_1.getShape)(m);
+    if (m.length === 0 || m.length !== m[0].length) {
+        throw new Error(`Singular matrix with shape [${shape}]`);
+    }
+    const i = (0, exports.eye)(m.length);
+    let aug = m.map((r, ind) => r.concat(i[ind]));
+    rowReduce(aug);
+    for (let i = 0; i < m.length; i++) {
+        for (let j = 0; j < m[i].length; j++) {
+            if (!(0, comparing_js_1.isClose)(aug[i][j], +(i === j))) {
+                throw new Error('Singular matrix: element at ' +
+                    `[${i}, ${j}] should be ${+(i === j)} ` +
+                    `but is ${aug[i][j]}`);
+            }
+        }
+    }
+    return aug.map(r => r.slice(m.length, aug[0].length));
+};
+exports.invert = invert;
+
+},{"./arithmetic.js":24,"./calculations.js":25,"./comparing.js":26,"./shapes.js":33}],30:[function(_dereq_,module,exports){
+"use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.median = exports.mode = exports.mean = void 0;
+const arithmetic_js_1 = _dereq_("./arithmetic.js");
+const shapes_js_1 = _dereq_("./shapes.js");
+/**
+ * Computes the average aka mean of x.
+ * ```
+ * mean(1) // output; 1
+ * mean([1, 2, 3]) // output: 1
+ * mean([[1, 2], [3, 4]]) // output: 2.5
+ * ```
+ * @param x the array to measure
+ * @returns the mean of x
+ */
+const mean = (x) => {
+    const size = (0, shapes_js_1.getSize)(x);
+    if (size === 0) {
+        throw new Error('Trying to find the mean of empty array');
+    }
+    return (0, arithmetic_js_1.sumList)(x) / size;
+};
+exports.mean = mean;
+/**
+ * Finds the most common element in arr
+ * ```
+ * mode(1) // output: 1
+ * mode([0, 0, 1, 2]) // output: 0
+ * mode([1, 1, 0, 2, 2, 2]) // output: 2
+ * mode([[0, 1], [1, 2]]) // output: 1
+ * ```
+ * @param arr the array to search through
+ * @returns the most common element in arr
+ */
+const mode = (arr) => {
+    arr = (0, shapes_js_1.flatten)(arr);
+    if (Array.isArray(arr)) {
+        const flat = arr;
+        if (arr.length === 0) {
+            throw new Error('Trying to find mode of empty array');
+        }
+        ;
+        let counts = {};
+        for (const n of flat) {
+            counts[n] = n in counts ? counts[n] + 1 : 1;
+        }
+        let best = flat[0];
+        for (const k in counts) {
+            if (counts[k] > counts[best]) {
+                best = parseInt(k);
+            }
+        }
+        return best;
+    }
+    return arr;
+};
+exports.mode = mode;
+/**
+ * Returns the element n such that there are an equal number of elements
+ * in arr greater than or equal to n as there are less than or equal to n
+ * ```
+ * median(1) // output: 1
+ * median([0, 1, 2]) // output: 1
+ * median([0, 0, 1, 1]) // output: 0.5
+ * median([2, 2, 0, 1, 1]) // output: 1
+ * median([[1, 2], [3, 4]]) // output: 2.5
+ * ```
+ * @param arr the array to search through
+ * @returns the median of arr
+ */
+const median = (arr) => {
+    arr = (0, shapes_js_1.flatten)(arr);
+    if (Array.isArray(arr)) {
+        const flat = arr;
+        if (flat.length === 0) {
+            throw new Error('Trying to find median of empty array');
+        }
+        const s = flat.sort((a, b) => a - b);
+        if (flat.length % 2 === 0) {
+            return (s[arr.length / 2 - 1] + s[arr.length / 2]) / 2;
+        }
+        return s[Math.floor(arr.length / 2)];
+    }
+    return arr;
+};
+exports.median = median;
+
+},{"./arithmetic.js":24,"./shapes.js":33}],31:[function(_dereq_,module,exports){
+"use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.squaredMag = exports.correlation = exports.manhattanDistance = exports.squareDistance = exports.mse = void 0;
+const arithmetic_js_1 = _dereq_("./arithmetic.js");
+const shapes_js_1 = _dereq_("./shapes.js");
+const measuresOfCenter_1 = _dereq_("./measuresOfCenter");
+/**
+ * Calculates the mean squared error between x and y.
+ * x and y can be of any shape and are broadcast and compared
+ * element-wise.
+ * ```
+ * mse([0, 1, 2], [3, 2, 1]) // output: 3.66666667
+ * mse([0, 1, 2], 1) // output: 0.66666667
+ * mse([[0, 1], [2, 3]], [0, 1, 2, 3]) // output: 0
+ * ```
+ * @param x the first array of numbers
+ * @param y the second array of numbers
+ * @returns the mean squared error between x and y
+ */
+const mse = (x, y) => {
+    const l = Math.max((0, shapes_js_1.getSize)(x), (0, shapes_js_1.getSize)(y));
+    return l === 0 ? 0 : (0, exports.squareDistance)(x, y) / l;
+};
+exports.mse = mse;
+/**
+ * Returns the square (for efficiency) of the Euclidean distance
+ * between x and y. Arrays are broadcast and compared element-wise
+ * ```
+ * squareDistance([0, 1, 2], [3, 2, 1]) // output: 11
+ * squareDistance([0, 1, 2], 1) // output: 2
+ * squareDistance([[0, 1], [2, 3]], [0, 1, 2, 3]) // output: 0
+ * ```
+ * @param x the first array/vector
+ * @param y the second array/vector
+ * @returns the squared distance between x and y
+ */
+const squareDistance = (x, y) => {
+    [x, y] = (0, shapes_js_1.broadcast)(x, y);
+    if (Array.isArray(x)) {
+        let total = 0;
+        for (let i = 0; i < x.length; i++) {
+            total += (0, exports.squareDistance)(x[i], y[i]);
+        }
+        return total;
+    }
+    return Math.pow(x - y, 2);
+};
+exports.squareDistance = squareDistance;
+/**
+ * Computes the Manhattan distance between x and y. x and y are broadcast
+ * together and compared element-wise.
+ * ```
+ * manhattanDistance([0, 1, 2], [3, 2, 1]) // output: 5
+ * manhattanDistance([0, 1, 2], 1) // output: 2
+ * manhattanDistance([[0, 1], [2, 3]], [0, 1, 2, 3]) // output: 0
+ * ```
+ * @param x the first array of numbers
+ * @param y the second array of numbers
+ * @returns the Manhattan distance between x and y
+ */
+const manhattanDistance = (x, y) => {
+    [x, y] = (0, shapes_js_1.broadcast)(x, y);
+    if (Array.isArray(x)) {
+        let total = 0;
+        for (let i = 0; i < x.length; i++) {
+            total += (0, exports.manhattanDistance)(x[i], y[i]);
+        }
+        return total;
+    }
+    return Math.abs(x - y);
+};
+exports.manhattanDistance = manhattanDistance;
+/**
+ * Returns the correlation between x and y. x and y are broadcast together
+ * and compared element-wise. A correlation of 1 means a perfect positive
+ * correlation, while -1 means a perfect negative correlation. 0 means no
+ * correlation.
+ * ```
+ * correlation([1, 2, 3], [4, 5, 6]) // output: 1
+ * correlation([[1, 2], [3, 4]], [-1, -2, -3, -4]) // output: -1
+ * correlation([1, 2, 3], [1, 1, 1]) // output: 0
+ * correlation([1, 2, 3], 1) // output: 0
+ * ```
+ * @param x
+ * @param y
+ * @returns
+ */
+const correlation = (x, y) => {
+    [x, y] = (0, shapes_js_1.broadcast)(x, y);
+    const xAvg = (0, measuresOfCenter_1.mean)(x);
+    const yAvg = (0, measuresOfCenter_1.mean)(y);
+    const helper = (arr1, arr2) => {
+        if (Array.isArray(arr1)) {
+            let num = 0;
+            let denom = [0, 0];
+            for (let i = 0; i < arr1.length; i++) {
+                const [subNum, subDenom] = helper(arr1[i], arr2[i]);
+                num += subNum;
+                denom = (0, arithmetic_js_1.addArrays)(denom, subDenom);
+            }
+            return [num, denom];
+        }
+        const xDiff = arr1 - xAvg;
+        const yDiff = arr2 - yAvg;
+        return [
+            xDiff * yDiff,
+            [Math.pow(xDiff, 2), Math.pow(yDiff, 2)]
+        ];
+    };
+    const [num, [d1, d2]] = helper(x, y);
+    const prod = d1 * d2;
+    return prod === 0 ? 0 : num / Math.sqrt(prod);
+};
+exports.correlation = correlation;
+/**
+ * Returns the square (for efficiency) of the magnitude (distance from origin)
+ * of x.
+ * ```
+ * squaredMag(1) // output: 1
+ * squaredMag([1, 2, 3]) // output: 14
+ * squaredMag([[1, 2], [3, 4]]) // output: 30
+ * ```
+ * @param x
+ * @returns
+ */
+const squaredMag = (x) => {
+    return (0, exports.squareDistance)(x, 0);
+};
+exports.squaredMag = squaredMag;
+
+},{"./arithmetic.js":24,"./measuresOfCenter":30,"./shapes.js":33}],32:[function(_dereq_,module,exports){
+"use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.toBool = exports.toNum = exports.ndMap = void 0;
 /**
  * Maps func onto every element of x and returns a new array of the same shape as x.
  * ```
  * let double = n => 2 * n;
- * console.log(ndMap(1, double)) // output: 2
- * console.log(ndMap([1, 2, 3], double)) // output: [2, 4, 6]
- * console.log(ndMap([[1, 2], [3, 4, 5]], double)) // output: [[2, 4], [6, 8, 10]]
+ * ndMap(1, double) // output: 2
+ * ndMap([1, 2, 3], double) // output: [2, 4, 6]
+ * ndMap([[1, 2], [3, 4, 5]], double) // output: [[2, 4], [6, 8, 10]]
  * ```
  * @param x the ndArray of any type
  * @param func a function that takes an element of x and returns something else
@@ -2809,10 +3350,10 @@ exports.ndMap = ndMap;
 /**
  * Converts the array of booleans to numbers.
  * ```
- * console.log(toNum(false)) // output: 0
- * console.log(toNum(true)) // output: 1
- * console.log(toNum([true, false, false])) // output: [1, 0, 0]
- * console.log(toNum([[true, false], [false, false]])) // output: [[1, 0], [0, 0]]
+ * toNum(false) // output: 0
+ * toNum(true) // output: 1
+ * toNum([true, false, false]) // output: [1, 0, 0]
+ * toNum([[true, false], [false, false]]) // output: [[1, 0], [0, 0]]
  * ```
  * @param bools an nd array of bools
  * @returns the same array with every `true` mapped to one and every `false`
@@ -2825,10 +3366,10 @@ exports.toNum = toNum;
 /**
  * Converts the array of numbers to booleans.
  * ```
- * console.log(toBool(0)) // output: false
- * console.log(toBool(2)) // output: true
- * console.log(toBool([0, 1, 2])) // output: [false, true, true]
- * console.log(toBool([[0, 1], [-2, 0]])) // output: [[false, true], [true, false]]
+ * toBool(0) // output: false
+ * toBool(2) // output: true
+ * toBool([0, 1, 2]) // output: [false, true, true]
+ * toBool([[0, 1], [-2, 0]]) // output: [[false, true], [true, false]]
  * ```
  * @param nums an nd array of numbers
  * @returns the same array with every zero mapped to `false` and every other
@@ -2839,10 +3380,15 @@ const toBool = (nums) => {
 };
 exports.toBool = toBool;
 
-},{}],30:[function(_dereq_,module,exports){
+},{}],33:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reshape = exports.ones = exports.zeros = exports.getShape = exports.full = exports.flatten = exports.broadcast = void 0;
+exports.getSize = exports.reshape = exports.empty = exports.ones = exports.zeros = exports.getShape = exports.full = exports.flatten = exports.broadcast = void 0;
 /**
  * Allows for element-wise operations to be performed on arrays of different sizes.
  * Similar in concept to Numpy's broadcasting, but the rules and implementation differ
@@ -2853,11 +3399,11 @@ exports.reshape = exports.ones = exports.zeros = exports.getShape = exports.full
  * total number of elements. If both arrays have the same complexity, the first argument
  * is taken as the "ground truth".
  * ```
- * console.log(broadcast([1, 2, 3], [4, 5, 6])) // output: [[1, 2, 3], [4, 5, 6]]
- * console.log(broadcast([1, 2, 3], 4)) // output: [[1, 2, 3], [4, 4, 4]]
- * console.log(broadcast(4, [1, 2, 3])) // output: [[4, 4, 4], [1, 2, 3]]
- * console.log(broadcast([1, 2, 3, 4], [[5, 6], [7, 8]])) // output: [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
- * console.log(broadcast([[1, 2]], [[3], [4]])) // output: [[[1, 2]], [[3, 4]]]
+ * broadcast([1, 2, 3], [4, 5, 6]) // output: [[1, 2, 3], [4, 5, 6]]
+ * broadcast([1, 2, 3], 4) // output: [[1, 2, 3], [4, 4, 4]]
+ * broadcast(4, [1, 2, 3]) // output: [[4, 4, 4], [1, 2, 3]]
+ * broadcast([1, 2, 3, 4], [[5, 6], [7, 8]]) // output: [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
+ * broadcast([[1, 2]], [[3], [4]]) // output: [[[1, 2]], [[3, 4]]]
  * ```
  * @param a1 the first array
  * @param a2 the second array
@@ -2866,11 +3412,14 @@ exports.reshape = exports.ones = exports.zeros = exports.getShape = exports.full
 const broadcast = (a1, a2) => {
     const shape1 = (0, exports.getShape)(a1);
     const shape2 = (0, exports.getShape)(a2);
-    const getTotal = (shape) => shape.reduce((a, b) => a * b, 1);
-    const t1 = getTotal(shape1);
-    const t2 = getTotal(shape2);
+    const t1 = (0, exports.getSize)(a1);
+    const t2 = (0, exports.getSize)(a2);
+    const showArr = Math.max(t1, t2) <= 10;
     const erStr = ('Arguments could not be broadcast together: ' +
-        `${a1}: ${shape1} (${t1} elements) and ${a2}: ${shape2} (${t2} elements).`);
+        (showArr ? `${a1}: ` : '') +
+        `[${shape1}] (${t1} elements) and ` +
+        (showArr ? `${a2}: ` : '') +
+        `[${shape2}] (${t2} elements).`);
     if (t1 !== t2 && shape1.length > 0 && shape2.length > 0) {
         throw new Error(erStr);
     }
@@ -2902,9 +3451,9 @@ exports.broadcast = broadcast;
 /**
  * Flattens the n-dimensional array into just one array.
  * ```
- * console.log(flatten(5)) // output: 5
- * console.log(flatten([1, 2, 3])) // output: [1, 2, 3]
- * console.log(flatten([[1, 2], [3, 4]])) // output: [1, 2, 3, 4]
+ * flatten(5) // output: [5]
+ * flatten([1, 2, 3]) // output: [1, 2, 3]
+ * flatten([[1, 2], [3, 4]]) // output: [1, 2, 3, 4]
  * ```
  * @param A the array to flatten
  * @returns the flattened array
@@ -2921,10 +3470,10 @@ exports.flatten = flatten;
 /**
  * Returns an array full of whatever the value is in any arbitrary shape.
  * ```
- * console.log(full([3], 1)) // output: [1, 1, 1]
- * console.log(full([2, 2], 3)) // output: [[3, 3], [3, 3]]
- * console.log(full([2], undefined, () => 4)) // output: [4, 4]
- * console.log(full([3], 3, () => 2)) // output: [3, 3, 3]
+ * full([3], 1) // output: [1, 1, 1]
+ * full([2, 2], 3) // output: [[3, 3], [3, 3]]
+ * full([2], undefined, () => 4) // output: [4, 4]
+ * full([3], 3, () => 2) // output: [3, 3, 3]
  * ```
  * @param shape the size of each dimension of the output
  * @param value what value to fill the array with. If undefined, the values
@@ -2955,30 +3504,30 @@ exports.full = full;
  * Returns the shape of the array, which should be of uniform dimension
  * to allow for basically constant time calculation.
  * ```
- * console.log(getShape(1)) // output: []
- * console.log(getShape([1, 2, 3])) // output: [3]
- * console.log(getShape([[1, 2, 3], [4, 5, 6]])) // output: [2, 3]
+ * getShape(1) // output: []
+ * getShape([1, 2, 3]) // output: [3]
+ * getShape([[1, 2, 3], [4, 5, 6]]) // output: [2, 3]
  * ```
  * @param arr the array to measure
  * @returns the shape of the array as an array
  */
 const getShape = (arr) => {
-    if (Array.isArray(arr)) {
-        let res = [arr.length];
-        if (arr.length === 0)
-            return res;
-        return res.concat((0, exports.getShape)(arr[0]));
+    let res = [];
+    let current = arr;
+    while (Array.isArray(current)) {
+        res.push(current.length);
+        if (current.length === 0)
+            break;
+        current = current[0];
     }
-    else {
-        return [];
-    }
+    return res;
 };
 exports.getShape = getShape;
 /**
  * Convenience function to create an array full of zeros.
  * ```
- * console.log(zeros([3])) // output: [0, 0, 0]
- * console.log(zeros([2, 2])) // output: [[0, 0], [0, 0]]
+ * zeros([3])) // output: [0, 0, 0]
+ * zeros([2, 2])) // output: [[0, 0], [0, 0]]
  * ```
  * @param shape the shape of the array to create
  * @returns an array of all zeros
@@ -2990,8 +3539,8 @@ exports.zeros = zeros;
 /**
  * Convenience function to create an array full of ones.
  * ```
- * console.log(ones([3])) // output: [1, 1, 1]
- * console.log(ones([2, 2])) // output: [[1, 1], [1, 1]]
+ * ones([3]) // output: [1, 1, 1]
+ * ones([2, 2]) // output: [[1, 1], [1, 1]]
  * ```
  * @param shape the shape of the array to create
  * @returns an array of all ones
@@ -3000,11 +3549,26 @@ const ones = (shape) => {
     return (0, exports.full)(shape, 1);
 };
 exports.ones = ones;
+const empty = (shape) => {
+    if (shape.length === 0) {
+        return undefined;
+    }
+    if (shape.length === 1) {
+        return new Array(shape[0]);
+    }
+    let res = new Array(shape[0]);
+    const rest = shape.slice(1, shape.length);
+    for (let i = 0; i < shape[0]; i++) {
+        res[i] = (0, exports.empty)(rest);
+    }
+    return res;
+};
+exports.empty = empty;
 /**
  * Reshapes arr to be the given shape.
  * ```
- * console.log(reshape([1, 2, 3, 4], [2, 2])) // output: [[1, 2], [3, 4]]
- * console.log(reshape([[1, 2], [3, 4]], [4]))  // output: [1, 2, 3, 4]
+ * reshape([1, 2, 3, 4], [2, 2]) // output: [[1, 2], [3, 4]]
+ * reshape([[1, 2], [3, 4]], [4])  // output: [1, 2, 3, 4]
  * ```
  * @param arr the array to reshape
  * @param shape the shape of the output array
@@ -3037,13 +3601,38 @@ const reshape = (arr, shape) => {
     return res;
 };
 exports.reshape = reshape;
+/**
+ * Finds the total number of elements in the array
+ * ```
+ * getSize(1) // output: 1
+ * getSize([]) // output: 0
+ * getSize([1, 2, 3]) // output: 3
+ * getSize([[1, 2], [3, 4]]) // output: 4
+ * ```
+ * @param arr the array to measure
+ * @returns the number of elements in arr
+ */
+const getSize = (arr) => {
+    return (0, exports.getShape)(arr).reduce((a, b) => a * b, 1);
+};
+exports.getSize = getSize;
 
-},{}],31:[function(_dereq_,module,exports){
+},{}],34:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 
-},{}],32:[function(_dereq_,module,exports){
+},{}],35:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -3077,7 +3666,7 @@ const choice = (arr, ws) => {
         throw new Error('Empty array not allowed in choice function');
     }
     if (typeof ws === 'undefined') {
-        ws = (0, numJS_js_1.arange)(1, arr.length + 1);
+        return arr[(0, exports.randInt)(arr.length)];
     }
     if (ws.length !== arr.length) {
         throw new Error(`Incompatible sizes between ${arr} and ${ws}: ${arr.length} vs ${ws.length}`);
@@ -3144,9 +3733,14 @@ const randArr = (shape, min, max) => {
 };
 exports.randArr = randArr;
 
-},{"./numJS.js":21,"seedrandom":42}],33:[function(_dereq_,module,exports){
+},{"./numJS.js":20,"seedrandom":45}],36:[function(_dereq_,module,exports){
 (function (process){(function (){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.usingNode = void 0;
 /**
@@ -3162,8 +3756,13 @@ const usingNode = () => {
 exports.usingNode = usingNode;
 
 }).call(this)}).call(this,_dereq_('_process'))
-},{"_process":41}],34:[function(_dereq_,module,exports){
+},{"_process":44}],37:[function(_dereq_,module,exports){
 "use strict";
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.nameLT = exports.$ = exports.allPitchTypes = void 0;
 const usingNode_js_1 = _dereq_("./usingNode.js");
@@ -3225,9 +3824,9 @@ const nameLT = (p1, p2) => {
 };
 exports.nameLT = nameLT;
 
-},{"./usingNode.js":33}],35:[function(_dereq_,module,exports){
+},{"./usingNode.js":36}],38:[function(_dereq_,module,exports){
 
-},{}],36:[function(_dereq_,module,exports){
+},{}],39:[function(_dereq_,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isAnyArray = void 0;
@@ -3243,7 +3842,7 @@ function isAnyArray(value) {
 }
 exports.isAnyArray = isAnyArray;
 
-},{}],37:[function(_dereq_,module,exports){
+},{}],40:[function(_dereq_,module,exports){
 'use strict';
 
 var isAnyArray = _dereq_('is-any-array');
@@ -3286,7 +3885,7 @@ function max(input, options = {}) {
 
 module.exports = max;
 
-},{"is-any-array":36}],38:[function(_dereq_,module,exports){
+},{"is-any-array":39}],41:[function(_dereq_,module,exports){
 'use strict';
 
 var isAnyArray = _dereq_('is-any-array');
@@ -3329,7 +3928,7 @@ function min(input, options = {}) {
 
 module.exports = min;
 
-},{"is-any-array":36}],39:[function(_dereq_,module,exports){
+},{"is-any-array":39}],42:[function(_dereq_,module,exports){
 'use strict';
 
 var isAnyArray = _dereq_('is-any-array');
@@ -3386,7 +3985,7 @@ function rescale(input, options = {}) {
 
 module.exports = rescale;
 
-},{"is-any-array":36,"ml-array-max":37,"ml-array-min":38}],40:[function(_dereq_,module,exports){
+},{"is-any-array":39,"ml-array-max":40,"ml-array-min":41}],43:[function(_dereq_,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -8537,7 +9136,7 @@ exports.pseudoInverse = pseudoInverse;
 exports.solve = solve;
 exports.wrap = wrap;
 
-},{"is-any-array":36,"ml-array-rescale":39}],41:[function(_dereq_,module,exports){
+},{"is-any-array":39,"ml-array-rescale":42}],44:[function(_dereq_,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -8723,7 +9322,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],42:[function(_dereq_,module,exports){
+},{}],45:[function(_dereq_,module,exports){
 // A library of seedable RNGs implemented in Javascript.
 //
 // Usage:
@@ -8785,7 +9384,7 @@ sr.tychei = tychei;
 
 module.exports = sr;
 
-},{"./lib/alea":43,"./lib/tychei":44,"./lib/xor128":45,"./lib/xor4096":46,"./lib/xorshift7":47,"./lib/xorwow":48,"./seedrandom":49}],43:[function(_dereq_,module,exports){
+},{"./lib/alea":46,"./lib/tychei":47,"./lib/xor128":48,"./lib/xor4096":49,"./lib/xorshift7":50,"./lib/xorwow":51,"./seedrandom":52}],46:[function(_dereq_,module,exports){
 // A port of an algorithm by Johannes Baagøe <baagoe@baagoe.com>, 2010
 // http://baagoe.com/en/RandomMusings/javascript/
 // https://github.com/nquinlan/better-random-numbers-for-javascript-mirror
@@ -8901,7 +9500,7 @@ if (module && module.exports) {
 
 
 
-},{}],44:[function(_dereq_,module,exports){
+},{}],47:[function(_dereq_,module,exports){
 // A Javascript implementaion of the "Tyche-i" prng algorithm by
 // Samuel Neves and Filipe Araujo.
 // See https://eden.dei.uc.pt/~sneves/pubs/2011-snfa2.pdf
@@ -9006,7 +9605,7 @@ if (module && module.exports) {
 
 
 
-},{}],45:[function(_dereq_,module,exports){
+},{}],48:[function(_dereq_,module,exports){
 // A Javascript implementaion of the "xor128" prng algorithm by
 // George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
 
@@ -9089,7 +9688,7 @@ if (module && module.exports) {
 
 
 
-},{}],46:[function(_dereq_,module,exports){
+},{}],49:[function(_dereq_,module,exports){
 // A Javascript implementaion of Richard Brent's Xorgens xor4096 algorithm.
 //
 // This fast non-cryptographic random number generator is designed for
@@ -9237,7 +9836,7 @@ if (module && module.exports) {
   (typeof define) == 'function' && define   // present with an AMD loader
 );
 
-},{}],47:[function(_dereq_,module,exports){
+},{}],50:[function(_dereq_,module,exports){
 // A Javascript implementaion of the "xorshift7" algorithm by
 // François Panneton and Pierre L'ecuyer:
 // "On the Xorgshift Random Number Generators"
@@ -9336,7 +9935,7 @@ if (module && module.exports) {
 );
 
 
-},{}],48:[function(_dereq_,module,exports){
+},{}],51:[function(_dereq_,module,exports){
 // A Javascript implementaion of the "xorwow" prng algorithm by
 // George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
 
@@ -9424,7 +10023,7 @@ if (module && module.exports) {
 
 
 
-},{}],49:[function(_dereq_,module,exports){
+},{}],52:[function(_dereq_,module,exports){
 /*
 Copyright 2019 David Bau.
 
@@ -9679,5 +10278,5 @@ if ((typeof module) == 'object' && module.exports) {
   Math    // math: package containing random, pow, and seedrandom
 );
 
-},{"crypto":35}]},{},[4])(4)
+},{"crypto":38}]},{},[4])(4)
 });

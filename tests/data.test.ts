@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { readFile, dataPaths } from "../src/utils/files";
 
 test('data sensibility', () => {

@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 const { allFeatsTargs } = require("../../../dist/ml/trainTest");
 const { readSpreadSheet, writeFile } = require("../../../dist/utils/files");
 

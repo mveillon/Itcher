@@ -1,3 +1,9 @@
+/**
+ * Itcher
+ * Michael Veillon, 2022
+ * https://github.com/mveillon
+ */
+
 import { MachineLearning } from "./MachineLearning.js";
 import { numArray, arrGT, toNum, arange, arrIndex, toBool, arrNot, argMin } from "../../utils/numJS.js";
 import { shuffle } from "../../utils/random.js";
