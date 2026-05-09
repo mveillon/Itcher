@@ -3,6 +3,8 @@ This codebase uses machine learning to select what pitch the pitcher should thro
 
 The models have been trained using pitch by pitch data from 2019 found [here](https://www.kaggle.com/datasets/pschale/mlb-pitch-data-20152018?resource=download).
 
+Created by Michael Veillon.
+
 # Mac/Linux
 To install, first download the code. Because of the requirements of some of the dependencies, the path to the root must not have any spaces. We recommend leaving it in your Downloads folder or placing it in your Desktop or Documents folder. Then open Terminal and `cd` into the root directory (on Mac, you can drag the folder from Finder to Terminal to copy the absolute path). Run `npm install` to install all the dependencies and run `npm run run-server` to start the local host and open the HTML in your browser.
 
